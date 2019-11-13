@@ -7,6 +7,7 @@ import sys
 
 # b = Reversi.Board(10)
 
+nbTest = 1
 
 def runMatch():
     b = Reversi.Board(10)
@@ -15,7 +16,7 @@ def runMatch():
     player1 = myPlayer.myPlayer()   #IA (black)
     player1.newGame(b._BLACK)
     players.append(player1)
-    player2 = BeginnerLevelPlayer.myPlayer()   #random (white)
+    player2 = RandomPlayer.myPlayer()   #random (white)
     player2.newGame(b._WHITE)
     players.append(player2)
     
@@ -33,10 +34,13 @@ def runMatch():
     # print(b.legal_moves())
     
     while not b.is_game_over():
-    #     print("Referee Board:")
-    #     print(b)
-    #     print("Before move", nbmoves)
-    #     print("Legal Moves: ", b.legal_moves())
+        if(True):
+            print("Referee Board:")
+            print(b)
+            print("Before move", nbmoves)
+            print("Legal Moves: ", b.legal_moves())
+        
+        
         nbmoves += 1
         otherplayer = (nextplayer + 1) % 2
         othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
@@ -50,10 +54,15 @@ def runMatch():
         sys.stdout = sysstdout
         playeroutput = "\r" + stringio.getvalue()
         stringio.truncate(0)
-    #     print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
+        
+        if(True):
+            print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
         outputs[nextplayer] += playeroutput
         totalTime[nextplayer] += time.time() - currentTime
-    #     print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
+        
+        
+        if(True):
+            print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
         (x,y) = move 
         if not b.is_valid_move(nextplayercolor,x,y):
             print(otherplayer, nextplayer, nextplayercolor)
@@ -65,9 +74,9 @@ def runMatch():
         nextplayer = otherplayer
         nextplayercolor = othercolor
         
+    print(b)        
     return (totalTime, b)
     
-    #     print(b)
 
 def mainLauncher(b):
     (totalTime,b) = runMatch()
@@ -102,7 +111,9 @@ def runMultipleGame(x):
 
 
 print("")
+print("#################")
 # mainLauncher(b)
-runMultipleGame(200)
+runMultipleGame(nbTest)
+print("Over: ", nbTest, "Tests.")
 print("")
 

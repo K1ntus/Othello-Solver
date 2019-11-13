@@ -67,11 +67,11 @@ class myPlayer(PlayerInterface):
         tb_border = False
         
         if(x == 0 or x == WIDTH): #left or right border
-            value += 0
+            value += 1
             lr_border = True
             
         if(y == 0 or y == HEIGHT): #top or bottom border
-            value += 0
+            value += 1
             tb_border = True
         
         if(tb_border and lr_border):
