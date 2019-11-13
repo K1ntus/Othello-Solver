@@ -1,5 +1,5 @@
 import Reversi
-import myPlayer
+import aiPlayer as myPlayer
 import time
 from io import StringIO
 import sys
