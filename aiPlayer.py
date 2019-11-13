@@ -82,8 +82,8 @@ class myPlayer(PlayerInterface):
     def maxBetweenTwoDepthDict(self, dic1, dic2):
         if(dic1 == dic2):
             return dic1
-        print("Dic1:", dic1)
-        print("Dic2:", dic2)
+#         print("Dic1:", dic1)
+#         print("Dic2:", dic2)
         if (self.getSumPointGotFromDict(dic1) > self.getSumPointGotFromDict(dic2)):
             return dic1
         return dic2
@@ -180,10 +180,10 @@ class myPlayer(PlayerInterface):
         depthDic = {}
         depthBestMove = {}
         (depthBestMove, depthDic) = self.setupTree(5, depthDic, depthBestMove, 500)
-        print("Generated dic: ", depthBestMove)
+#         print("Generated dic: ", depthBestMove)
         
         bestMove = depthBestMove.get(5, best_move)
-        time.sleep(1.5)
+#         time.sleep(1.5)
 #         print("Isolated: ", bestMove[1])
 #         time.sleep(1)
 # #         (p,x,y) = depthBestMove

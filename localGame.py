@@ -24,6 +24,7 @@ sysstdout= sys.stdout
 stringio = StringIO()
 
 print(b.legal_moves())
+total_time = 0
 while not b.is_game_over():
     print("Referee Board:")
     print(b)
@@ -35,7 +36,10 @@ while not b.is_game_over():
     
     currentTime = time.time()
     sys.stdout = stringio
+    current_time = time.clock()
     move = players[nextplayer].getPlayerMove()
+    total_time += (time.clock() - current_time)
+    print("Total time consumed: ", total_time, "ms.")
     sys.stdout = sysstdout
     playeroutput = "\r" + stringio.getvalue()
     stringio.truncate(0)
