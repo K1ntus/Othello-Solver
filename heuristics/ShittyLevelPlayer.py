@@ -9,7 +9,7 @@ from asyncio.tasks import sleep
 WIDTH = 9
 HEIGHT = 9
 
-class aiPlayer(PlayerInterface):
+class myPlayer(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -134,19 +134,9 @@ class aiPlayer(PlayerInterface):
         if(y == 0 or y == HEIGHT): #top or bottom border
             value += 0
             tb_border = True
-            
-#         if(y == 1 or y == HEIGHT-1):
-#             if(x == 1 or x == WIDTH-1):
-#                 value -= 3
-#             
-            #malus si pos corner -1
         
         if(tb_border and lr_border):
-            value += 4
-        
-#         print("TODO")
-        #corner = bonus
-        #can lost a lot at next step= malus
+            value += 0
         
         
         return value
@@ -166,27 +156,12 @@ class aiPlayer(PlayerInterface):
 
     def getBestMoveDependOfNumberPoint(self, moves):
         best_move = moves[randint(0,len(moves)-1)]
-#         depthList = [{}, {}, {}]
         
         max_value = 0 + self.applyBiais(best_move)
         depthDic = {}
         depthBestMove = {}
-        (depthBestMove, depthDic) = self.setupTree(3, depthDic, depthBestMove, 500)
-#         print("Generated dic: ", depthBestMove)
-        
+        (depthBestMove, depthDic) = self.setupTree(3, depthDic, depthBestMove, 500)        
         bestMove = depthBestMove.get(5, best_move)
-#         time.sleep(1.5)
-#         print("Isolated: ", bestMove[1])
-#         time.sleep(1)
-# #         (p,x,y) = depthBestMove
-# #         self._board.is_valid_move(p,x,y)
-#         for m in moves:
-#             current = self.pushAndGetNumberPoints(m, self._mycolor) + self.applyBiais(m)
-#             self._board.pop()
-#             if(current > max_value):
-#                 max_value = current + self.applyBiais(m)
-#                 best_move = m
-#                 print("-- Better move: " ,str(max_value), " points")
                 
                 
         return (best_move, max_value)
