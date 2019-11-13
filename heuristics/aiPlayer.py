@@ -9,14 +9,14 @@ from asyncio.tasks import sleep
 WIDTH = 9
 HEIGHT = 9
 
-class myPlayer(PlayerInterface):
+class aiPlayer(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Random Player"
+        return "AI Player"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -82,8 +82,6 @@ class myPlayer(PlayerInterface):
     def maxBetweenTwoDepthDict(self, dic1, dic2):
         if(dic1 == dic2):
             return dic1
-#         print("Dic1:", dic1)
-#         print("Dic2:", dic2)
         if (self.getSumPointGotFromDict(dic1) > self.getSumPointGotFromDict(dic2)):
             return dic1
         return dic2
@@ -92,12 +90,6 @@ class myPlayer(PlayerInterface):
             
             
             
-#     def cleanTree(self, depthDic, minVal):
-#         for (moveSet, value) in depthDic:
-#             if value < minVal:
-#                 depthDic.pop((moveSet, value))
-#                 
-#         return depthDic
                 
             
             
@@ -107,8 +99,8 @@ class myPlayer(PlayerInterface):
             return (depthBestMove, depthDic)
         
         for move in self._board.legal_moves():
-            val = self.pushAndGetNumberPoints(move, self._mycolor)
-            if(val <= 0 and depthValue < 3):
+            val = self.pushAndGetNumberPoints(move, self._mycolor) + self.applyBiais(move)
+            if(val <= 0 and depthValue < 2):
                 self._board.pop()
                 return (depthBestMove, depthDic)
             
@@ -136,11 +128,11 @@ class myPlayer(PlayerInterface):
         tb_border = False
         
         if(x == 0 or x == WIDTH): #left or right border
-            value += 1
+            value += 0
             lr_border = True
             
         if(y == 0 or y == HEIGHT): #top or bottom border
-            value += 1
+            value += 0
             tb_border = True
             
 #         if(y == 1 or y == HEIGHT-1):
@@ -150,7 +142,7 @@ class myPlayer(PlayerInterface):
             #malus si pos corner -1
         
         if(tb_border and lr_border):
-            value += 10
+            value += 4
         
 #         print("TODO")
         #corner = bonus
@@ -179,7 +171,7 @@ class myPlayer(PlayerInterface):
         max_value = 0 + self.applyBiais(best_move)
         depthDic = {}
         depthBestMove = {}
-        (depthBestMove, depthDic) = self.setupTree(5, depthDic, depthBestMove, 500)
+        (depthBestMove, depthDic) = self.setupTree(3, depthDic, depthBestMove, 500)
 #         print("Generated dic: ", depthBestMove)
         
         bestMove = depthBestMove.get(5, best_move)

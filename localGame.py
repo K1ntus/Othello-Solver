@@ -1,5 +1,6 @@
 import Reversi
-import aiPlayer as myPlayer
+from heuristics import BeginnerLevelPlayer
+from heuristics import RandomPlayer
 import time
 from io import StringIO
 import sys
@@ -7,10 +8,10 @@ import sys
 b = Reversi.Board(10)
 
 players = []
-player1 = myPlayer.myPlayer()
+player1 = BeginnerLevelPlayer.myPlayer()   #IA (black)
 player1.newGame(b._BLACK)
 players.append(player1)
-player2 = myPlayer.myPlayer()
+player2 = RandomPlayer.myPlayer()   #random (white)
 player2.newGame(b._WHITE)
 players.append(player2)
 
@@ -26,27 +27,27 @@ stringio = StringIO()
 print(b.legal_moves())
 total_time = 0
 while not b.is_game_over():
-    print("Referee Board:")
-    print(b)
-    print("Before move", nbmoves)
-    print("Legal Moves: ", b.legal_moves())
+#     print("Referee Board:")
+#     print(b)
+#     print("Before move", nbmoves)
+#     print("Legal Moves: ", b.legal_moves())
     nbmoves += 1
     otherplayer = (nextplayer + 1) % 2
     othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
     
     currentTime = time.time()
     sys.stdout = stringio
-    current_time = time.clock()
+    
     move = players[nextplayer].getPlayerMove()
-    total_time += (time.clock() - current_time)
-    print("Total time consumed: ", total_time, "ms.")
+    
+    
     sys.stdout = sysstdout
     playeroutput = "\r" + stringio.getvalue()
     stringio.truncate(0)
-    print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
+#     print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
     outputs[nextplayer] += playeroutput
     totalTime[nextplayer] += time.time() - currentTime
-    print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
+#     print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
     (x,y) = move 
     if not b.is_valid_move(nextplayercolor,x,y):
         print(otherplayer, nextplayer, nextplayercolor)
