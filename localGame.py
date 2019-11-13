@@ -1,5 +1,5 @@
 import Reversi
-from heuristics import ShittyLevelPlayer, BeginnerLevelPlayer, RandomPlayer
+from heuristics import ShittyLevelPlayer, BeginnerLevelPlayer, BeginnerLevelPlayer2, RandomPlayer
 import myPlayer
 import time
 from io import StringIO
@@ -103,6 +103,6 @@ def runMultipleGame(x):
 
 print("")
 # mainLauncher(b)
-runMultipleGame(1)
+runMultipleGame(200)
 print("")
 

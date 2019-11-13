@@ -9,6 +9,8 @@ from asyncio.tasks import sleep
 WIDTH = 9
 HEIGHT = 9
 
+#bit better than the first beginner player
+
 class myPlayer(PlayerInterface):
 
     def __init__(self):
@@ -59,7 +61,24 @@ class myPlayer(PlayerInterface):
 #         Game End
 
     def applyBiais(self, move):
-        return 0
+        (c, x, y) = move
+        value = 0
+        lr_border = False
+        tb_border = False
+        
+        if(x == 0 or x == WIDTH): #left or right border
+            value += 0
+            lr_border = True
+            
+        if(y == 0 or y == HEIGHT): #top or bottom border
+            value += 0
+            tb_border = True
+        
+        if(tb_border and lr_border):
+            value += 3
+        
+        
+        return value
         
         
     def getNumberPoints(self, move):

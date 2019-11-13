@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+
+# The MAIN AI TO DEVELOP
+
 import time
 import Reversi
 from random import randint
