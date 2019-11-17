@@ -1,3 +1,10 @@
 eclipse.preferences.version=1
+encoding//data/__init__.py=utf-8
+encoding//data/bloom_filter.py=utf-8
+encoding//data/python2x3.py=utf-8
+encoding//heuristics/BeginnerLevelPlayer.py=utf-8
+encoding//heuristics/BeginnerLevelPlayer2.py=utf-8
+encoding//heuristics/RandomPlayer.py=utf-8
+encoding//heuristics/ShittyLevelPlayer.py=utf-8
 encoding/Reversi.py=utf-8
-encoding/aiPlayer.py=utf-8
+encoding/myPlayer.py=utf-8

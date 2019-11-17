@@ -26,16 +26,15 @@ class myPlayer(PlayerInterface):
         self._board = Reversi.Board(10)
         self._mycolor = None
         
-#         self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, probe_bitnoer=Array_backend(256), filename=None, start_fresh=False)
         self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, filename=None, start_fresh=False)
         self._bloomTable.add(key=Utils.HashingOperation.generateHashCode(self._board))
         
-        print("Generated a bloom board:", self._bloomTable.__repr__())
 
     def getPlayerName(self):
         return "Random Player"
 
     def getPlayerMove(self):
+        
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1,-1)
@@ -49,6 +48,7 @@ class myPlayer(PlayerInterface):
         (_, move) = self.MaxAlphaBeta(0, 100, 0, True)
         self._board.push(move)
         print("I am playing ", move)
+#         Utils.HashingOperation.generateHashCode(self._board)
         (c,x,y) = move
         assert(c==self._mycolor)
         print("My current board :")
@@ -119,10 +119,9 @@ class myPlayer(PlayerInterface):
         maxValue = 0
         moves = self._board.legal_moves()
         move = None
-        
-#         if(parallelization):
-#             processPool = Pool(processes=2)
-        
+
+        self._bloomTable.__iadd__(key=Utils.HashingOperation.generateHashCode(self._board))
+
         for m in moves:
 #             print("Alpha:",alpha, flush=True)
 #             print("Beta:",beta, flush=True)
@@ -140,7 +139,7 @@ class myPlayer(PlayerInterface):
                     proc = Process(target=self.MinAlphaBeta_wrapper,  args=(alpha, beta, depth +1, q))
                     proc.start()
                     value = q.get()
-                    proc.join(15000)
+                    proc.join(30000)
 #                     value = processPool.map_async(self.MinAlphaBeta_wrapper,  [(alpha, beta, depth +1)])
 #                     value = value.get()
 #                     print("Launched Pool.", flush=True)
@@ -149,12 +148,15 @@ class myPlayer(PlayerInterface):
 #                     value = self.MinAlphaBeta(alpha, beta, depth+1)
 #                     sys.stdout.flush()
                     
-                    print("GOT :",value)
                 else:
                     value = self.MinAlphaBeta(alpha, beta, depth+1)
+                    
+                lock.acquire()
                 if(value > maxValue + self.applyBiais(m)):
                     maxValue = value + self.applyBiais(m)#self.getNumberPoints(m)
                     move = m
+                lock.release()
+                    
             lock.acquire()
             self._board.pop()
             lock.release()
@@ -197,7 +199,7 @@ class myPlayer(PlayerInterface):
             lock.release()
               
             if(depth < alpha_beta_maxDepth):
-                (value, _) = self.MaxAlphaBeta(alpha, beta, depth+1)
+                (value, _) = self.MaxAlphaBeta(alpha, beta, depth+1, parallelization=True)
                 if(value > minValue + self.applyBiais(m)):
                     minValue = value + self.applyBiais(m)#self.getNumberPoints(m)
                     move = m 
