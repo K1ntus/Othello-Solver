@@ -28,7 +28,10 @@ class myPlayer(PlayerInterface):
         print("Available move: ", moves)
 #         time.sleep(1)
 #         move = moves[randint(0,len(moves)-1)]
-        (move, poids) = self.getBestMoveDependOfNumberPoint(moves)
+        if(len(moves) < 5):
+            move = moves[randint(0,len(moves)-1)]
+        else:
+            (move, poids) = self.getBestMoveDependOfNumberPoint(moves)
         self._board.push(move)
         print("I am playing ", move)
         (c,x,y) = move
