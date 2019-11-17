@@ -99,13 +99,13 @@ def runMatch(b, players):
         playeroutput = "\r" + stringio.getvalue()
         stringio.truncate(0)
         
-        if(True):
+        if(False):
             print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
         outputs[nextplayer] += playeroutput
         totalTime[nextplayer] += time.time() - currentTime
         
         
-        if(True):
+        if(False):
             print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
         (x,y) = move 
         if not b.is_valid_move(nextplayercolor,x,y):
@@ -118,7 +118,7 @@ def runMatch(b, players):
         nextplayer = otherplayer
         nextplayercolor = othercolor
         
-#     print(b)        
+        print(b)        
     return (totalTime, b)
     
 

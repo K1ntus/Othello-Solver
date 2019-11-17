@@ -25,7 +25,7 @@ class myPlayer(PlayerInterface):
             print("Referee told me to play but the game is over!")
             return (-1,-1)
         moves = [m for m in self._board.legal_moves()]
-        print("Available move: ", moves)
+#         print("Available move: ", moves)
 #         time.sleep(1)
 #         move = moves[randint(0,len(moves)-1)]
         if(len(moves) < 5):

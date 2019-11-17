@@ -173,7 +173,7 @@ class myPlayer(PlayerInterface):
         move = None
 #         a = args[0]
 #         a = args[0]
-        print("Args: ", alpha, beta, depth, flush=True)
+#         print("Args: ", alpha, beta, depth, flush=True)
 #         time.sleep(1)
           
         for m in self._board.legal_moves():
