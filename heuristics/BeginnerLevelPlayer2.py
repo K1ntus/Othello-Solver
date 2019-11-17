@@ -88,6 +88,7 @@ class myPlayer(PlayerInterface):
         (current_point_white, current_point_black) = self._board.get_nb_pieces()
         self._board.push(move)
         (new_point_white, new_point_black) = self._board.get_nb_pieces()
+        self._board.pop()
         
         if(self._mycolor == 1): #black
             return new_point_black-current_point_black
@@ -97,10 +98,9 @@ class myPlayer(PlayerInterface):
 
     def getBestMoveDependOfNumberPoint(self, moves):
         best_move = moves[randint(0,len(moves)-1)]
-        max_value = + self.applyBiais(best_move)
+        max_value = self.getNumberPoints(best_move) + self.applyBiais(best_move)
         for m in moves:
             current = self.getNumberPoints(m) + self.applyBiais(m)
-            self._board.pop()
             if(current > max_value):
                 max_value = current
                 best_move = m
