@@ -166,27 +166,27 @@ def runMultipleGame(x):
     
     print("Median score: ", median)
 
-def fileno(file_or_fd):
-    fd = getattr(file_or_fd, 'fileno', lambda: file_or_fd)()
-    if not isinstance(fd, int):
-        raise ValueError("Expected a file (`.fileno()`) or a file descriptor")
-    return fd
-
-stdout_fd = sys.stdout.fileno()
-with open('log.txt', 'w') as f:
-    with redirect_stdout(f):
-        print('it now prints to `help.text`')
-    
-    stdout = sys.stdout
-    with os.fdopen(os.dup(stdout_fd), 'wb') as copied: 
-        stdout.flush()  # flush library buffers that dup2 knows nothing about
-        try:
-            os.dup2(fileno(f), stdout_fd)  # $ exec >&to
-        except ValueError:  # filename
-            with open(f, 'wb') as to_file:
-                os.dup2(to_file.fileno(), stdout_fd)  # $ exec > to
-        
-time.sleep(2)
+# def fileno(file_or_fd):
+#     fd = getattr(file_or_fd, 'fileno', lambda: file_or_fd)()
+#     if not isinstance(fd, int):
+#         raise ValueError("Expected a file (`.fileno()`) or a file descriptor")
+#     return fd
+# 
+# stdout_fd = sys.stdout.fileno()
+# with open('log.txt', 'w') as f:
+#     with redirect_stdout(f):
+#         print('it now prints to `help.text`')
+#     
+#     stdout = sys.stdout
+#     with os.fdopen(os.dup(stdout_fd), 'wb') as copied: 
+#         stdout.flush()  # flush library buffers that dup2 knows nothing about
+#         try:
+#             os.dup2(fileno(f), stdout_fd)  # $ exec >&to
+#         except ValueError:  # filename
+#             with open(f, 'wb') as to_file:
+#                 os.dup2(to_file.fileno(), stdout_fd)  # $ exec > to
+#         
+# time.sleep(2)
 
 print("")
 print("#################")

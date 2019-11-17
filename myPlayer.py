@@ -5,20 +5,32 @@
 
 # The MAIN AI TO DEVELOP
 
-import time
-import Reversi
-from random import randint
-from playerInterface import *
 from multiprocessing import Process, Lock, Queue
+from random import randint
 import sys
+import time
+
+import Reversi
+from data import BloomFilter
+from data import __utils__ as Utils
+from playerInterface import *
+from data.bloom_filter import Array_backend
+
 
 alpha_beta_maxDepth = 8
 lock = Lock()
+
 class myPlayer(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
+        
+#         self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, probe_bitnoer=Array_backend(256), filename=None, start_fresh=False)
+        self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, filename=None, start_fresh=False)
+        self._bloomTable.add(key=Utils.HashingOperation.generateHashCode(self._board))
+        
+        print("Generated a bloom board:", self._bloomTable.__repr__())
 
     def getPlayerName(self):
         return "Random Player"
@@ -27,6 +39,7 @@ class myPlayer(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1,-1)
+        
 #         moves = [m for m in self._board.legal_moves()]
 #         move = moves[randint(0,len(moves)-1)]
 #         move = None
@@ -106,7 +119,6 @@ class myPlayer(PlayerInterface):
         maxValue = 0
         moves = self._board.legal_moves()
         move = None
-        processPool = None
         
 #         if(parallelization):
 #             processPool = Pool(processes=2)
