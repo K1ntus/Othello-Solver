@@ -7,18 +7,19 @@
 
 from multiprocessing import Process, Lock, Queue
 from random import randint
-# import sys
-# import time
 
 import Reversi
 from data import BloomFilter
 from data import __utils__ as Utils
-from intelligence import move as mover
-from playerInterface import *
 from heuristics.BeginnerLevelPlayer import WIDTH, HEIGHT
+from intelligence import move as mover
+from intelligence.move import OpeningMove
+from playerInterface import *
 
 
-alpha_beta_maxDepth = 19
+# import sys
+# import time
+alpha_beta_maxDepth = 6
 lock = Lock()
 # __initAlpha__ = 18
 # __initBeta__ = 10000000
@@ -26,7 +27,7 @@ lock = Lock()
 class myPlayer(PlayerInterface):
     @classmethod
     def __alpha__(self):
-        return 12
+        return 0
     
     @classmethod
     def __beta__(self):
@@ -37,7 +38,9 @@ class myPlayer(PlayerInterface):
         self._mycolor = None
         
         self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, filename=None, start_fresh=False)
-#         self._bloomTable.add(key=Utils.HashingOperation.generateHashCode(self._board))
+        self._openingMover = OpeningMove()
+        self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
+        print(self._board)
         
 
     def getPlayerName(self):
@@ -92,6 +95,7 @@ class myPlayer(PlayerInterface):
         
         
         if(nb1+nb2 < 8): #kind of random
+            move = self._openingMover.GetMove(self._board)
             (move, _) = mover.MoveManager.MoveForGameBeginning(self, moves)
         elif (WIDTH*HEIGHT - (nb1+nb2) < 25):   #minmax
             alpha_beta_maxDepth = WIDTH*HEIGHT - (nb1+nb2)
@@ -119,7 +123,7 @@ class myPlayer(PlayerInterface):
 
     def applyBiais(self, move):
         (_, x, y) = move
-        value = 10
+        value = 8
         lr_border = False
         tb_border = False
           
@@ -133,15 +137,15 @@ class myPlayer(PlayerInterface):
               
               
         if(x == 1 or x == 8): #left or right border
-            value -= 4
+            value -= 2
             lr_border = False
               
         if(y == 1 or y == 8): #top or bottom border
-            value -= 4
+            value -= 2
             tb_border = False
           
         if(tb_border and lr_border):
-            value += 1
+            value += 10
          
         if(self._board.is_game_over()):
             
@@ -161,11 +165,11 @@ class myPlayer(PlayerInterface):
         # 10  : win
         # 0   : draw
         # -10 : lose
-        maxValue =  beta
+        maxValue =  self.__beta__()
         moves = self._board.legal_moves()
         move = None
 
-        self._bloomTable.__iadd__(key=Utils.HashingOperation.generateHashCode(self._board))
+        self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
 
         for m in moves:
 #             print("Alpha:",alpha, flush=True)
@@ -183,7 +187,7 @@ class myPlayer(PlayerInterface):
                     q = Queue()
                     proc = Process(target=self.MinAlphaBeta_wrapper,  args=(alpha, beta, depth + 1, q))
                     proc.start()
-                    value = q.get()   + self.applyBiais(m)
+                    value = q.get()
                     proc.join(15000)
 #                     value = processPool.map_async(self.MinAlphaBeta_wrapper,  [(alpha, beta, depth +1)])
 #                     value = value.get()
@@ -194,9 +198,12 @@ class myPlayer(PlayerInterface):
 #                     sys.stdout.flush()
                     
                 else:
-                    value = self.MinAlphaBeta(alpha, beta, depth + 1)  + self.applyBiais(m)
+                    value = self.MinAlphaBeta(alpha, beta, depth + 1)
                     
                 lock.acquire()
+                if(depth == alpha_beta_maxDepth):
+                    value += self.applyBiais(m)
+                    
                 if(value > maxValue):
                     maxValue = value#self.getNumberPoints(m)
                     move = m
@@ -229,7 +236,7 @@ class myPlayer(PlayerInterface):
         # 10  : win
         # 0   : draw
         # -10 : lose
-        minValue = alpha
+        minValue = self.__alpha__()
         
 #         a = args[0]
 #         a = args[0]
@@ -246,7 +253,8 @@ class myPlayer(PlayerInterface):
               
             if(depth < alpha_beta_maxDepth):
                 (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1, parallelization=False)
-                value += self.applyBiais(m)
+                if(depth == alpha_beta_maxDepth):
+                    value += self.applyBiais(m)
                 if(value > minValue):
                     minValue = value#self.getNumberPoints(m)
             lock.acquire()
@@ -271,7 +279,7 @@ class myPlayer(PlayerInterface):
         # 10  : win
         # 0   : draw
         # -10 : lose
-        minValue =  alpha
+        minValue =  self.__alpha__()
         
         
         for m in self._board.legal_moves():
@@ -284,7 +292,8 @@ class myPlayer(PlayerInterface):
             
             if(depth < alpha_beta_maxDepth):
                 (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1)
-                value += self.applyBiais(m)
+                if(depth == alpha_beta_maxDepth):
+                    value += self.applyBiais(m)
                 if(value > minValue ):
                     minValue = value#self.getNumberPoints(m)
             lock.acquire()

@@ -118,7 +118,7 @@ def runMatch(b, players):
         nextplayer = otherplayer
         nextplayercolor = othercolor
         
-#         print(b)        
+        print(b)        
     return (totalTime, b)
     
 
