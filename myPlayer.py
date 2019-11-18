@@ -38,9 +38,8 @@ class myPlayer(PlayerInterface):
         self._mycolor = None
         
         self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, filename=None, start_fresh=False)
-        self._openingMover = OpeningMove()
         self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
-        print(self._board)
+#         print(self._board)
         
 
     def getPlayerName(self):
@@ -58,8 +57,8 @@ class myPlayer(PlayerInterface):
         if(move == None):
             (move, val) = mover.MoveManager.MoveForGameBeginning(self, [m for m in self._board.legal_moves()])
         self._board.push(move)
-        print("Move Value:", val)
-        print("I am playing ", move)
+#         print("Move Value:", val)
+#         print("I am playing ", move)
 
         (c,x,y) = move
         assert(c==self._mycolor)
@@ -74,6 +73,7 @@ class myPlayer(PlayerInterface):
 
     def newGame(self, color):
         self._mycolor = color
+        self._openingMover = OpeningMove(self._mycolor)
         self._opponent = 1 if color == 2 else 2
 
     def endGame(self, winner):
@@ -88,15 +88,14 @@ class myPlayer(PlayerInterface):
 #middle        game = minimax
 #middle+end    game = alphabeta
     def moveManager(self):
-        moves = [m for m in self._board.legal_moves()]
-        move = moves[randint(0,len(moves)-1)]
+        move = None
         (nb1,nb2) = self._board.get_nb_pieces()    
         val = 0  
         
         
-        if(nb1+nb2 < 8): #kind of random
+        if(nb1+nb2 < 10): #kind of random
+            print("Check if ", Utils.HashingOperation.BoardToHashCode(self._board), "is present")
             move = self._openingMover.GetMove(self._board)
-            (move, _) = mover.MoveManager.MoveForGameBeginning(self, moves)
         elif (WIDTH*HEIGHT - (nb1+nb2) < 25):   #minmax
             alpha_beta_maxDepth = WIDTH*HEIGHT - (nb1+nb2)
             (_, move) = self.MaxAlphaBeta(0, self.__beta__(), self.__alpha__(), True)

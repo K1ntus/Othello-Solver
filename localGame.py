@@ -99,13 +99,13 @@ def runMatch(b, players):
         playeroutput = "\r" + stringio.getvalue()
         stringio.truncate(0)
         
-        if(False):
+        if(True):
             print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
         outputs[nextplayer] += playeroutput
         totalTime[nextplayer] += time.time() - currentTime
         
         
-        if(False):
+        if(True):
             print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
         (x,y) = move 
         if not b.is_valid_move(nextplayercolor,x,y):
@@ -199,7 +199,7 @@ def fileno(file_or_fd):
 stdout_fd = sys.stdout.fileno()
 with open('log.txt', 'w') as f:
     with redirect_stdout(f):
-        print('it now prints to `help.text`')
+        print('it now prints to `log.txt`')
         
     stdout = sys.stdout
     with os.fdopen(os.dup(stdout_fd), 'wb') as copied: 

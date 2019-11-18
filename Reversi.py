@@ -217,11 +217,12 @@ class Board:
             return '.'
 
     def __str__(self):
-        toreturn=""
+        toreturn="ABCDEFGHIJ\n"
         for l in self._board:
             for c in l:
                 toreturn += self._piece2str(c)
             toreturn += "\n"
+        toreturn+="ABCDEFGHIJ\n"
         toreturn += "Next player: " + ("BLACK" if self._nextPlayer == self._BLACK else "WHITE") + "\n"
         toreturn += str(self._nbBLACK) + " blacks and " + str(self._nbWHITE) + " whites on board\n"
         toreturn += "(successive pass: " + str(self._successivePass) + " )"

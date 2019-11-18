@@ -25,15 +25,13 @@ class HashingOperation(object):
     
     @staticmethod
     def StringToHashCode(board_str):
-        print("Bloom key is: ")
-        print(board_str)
+        print("Board is: ", board_str)
         byte_str = str.encode(board_str)
         type(byte_str)
         h = byte_str.hex()
 #         h = hashlib.sha256(byte_str)
+        print("Bloom key Instanciated: ", h)
         print("")
-        print("Bloom key Instanciate: ")
-        print(h)
         return h
 #         return int(h.hexdigest(), base=16) 
 #         return int(byte_str.hexdigest(), base=16) 
@@ -89,7 +87,22 @@ class HashingOperation(object):
         else:
             return ''
         return x + str(y)
-        
+#     
+#     @staticmethod
+#     def _str2piece(str):  
+#         c = None
+#         x = HashingOperation.CharToIndice(str.)
+#         y = 0      
+#         x = HashingOperation.IndiceToChar(x)        
+#         
+#         if c==_WHITE:
+#             x = x.upper()
+#         elif c==_BLACK:
+#             x = x.lower()
+#         else:
+#             return ''
+#         return (c,x,y)
+#         
         
         
 
