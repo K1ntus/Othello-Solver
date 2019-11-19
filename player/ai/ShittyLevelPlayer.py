@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import time
-import Reversi
+from game.board import Reversi
+from game.board.playerInterface import *
 from random import randint
-from playerInterface import *
 from asyncio.tasks import sleep
 
 WIDTH = 9
@@ -117,9 +117,9 @@ class myPlayer(PlayerInterface):
     
     def calculation(self):
         print("TODO")
-#         Game Beginning
-#         Mid-Game
-#         Game End
+#         localGame Beginning
+#         Mid-localGame
+#         localGame End
 
     def applyBiais(self, move):
         (c, x, y) = move

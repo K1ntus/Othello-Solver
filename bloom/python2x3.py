@@ -4,7 +4,7 @@
 # pylint: disable=invalid-name
 # invalid-name: We define a few global-scope constants in lower case.  Deal with it.
 
-'''Provides code and data to facilitate writing python code that runs on 2.x and 3.x, including pypy'''
+'''Provides code and bloom to facilitate writing python code that runs on 2.x and 3.x, including pypy'''
 
 # I'm afraid pylint won't like this one...
 

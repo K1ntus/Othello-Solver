@@ -1,4 +1,4 @@
-from BoardWeight import BoardStaticWeight
+from intelligence.heuristics.BoardWeight import BoardStaticWeight
 
 
 # count the corner score on the board of the player

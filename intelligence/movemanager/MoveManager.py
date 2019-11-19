@@ -28,3 +28,15 @@ class MoveManager(object):
                 best_move = m
     
         return (best_move, max_value)
+    
+    
+
+        
+        
+        
+        
+        
+        
+        
+        
+        

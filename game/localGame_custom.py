@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import Reversi
-from heuristics import ShittyLevelPlayer, BeginnerLevelPlayer, BeginnerLevelPlayer2, RandomPlayer
+from game.board import Reversi
+from player.ai import ShittyLevelPlayer, BeginnerLevelPlayer, BeginnerLevelPlayer2, RandomPlayer
 import myPlayer
 import time
 from io import StringIO
@@ -197,7 +197,7 @@ def fileno(file_or_fd):
     return fd
     
 stdout_fd = sys.stdout.fileno()
-with open('log.txt', 'w') as f:
+with open('../logs/log.txt', 'w') as f:
     with redirect_stdout(f):
         print('it now prints to `help.text`')
         
