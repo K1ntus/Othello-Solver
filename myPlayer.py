@@ -52,12 +52,10 @@ class myPlayer(PlayerInterface):
             return (-1,-1)
         
         move = self.moveManager()
-        val = -1
             
         if(move == None):
-            (move, val) = mover.MoveManager.MoveForGameBeginning(self, [m for m in self._board.legal_moves()])
+            (move, _) = mover.MoveManager.MoveForGameBeginning(self, [m for m in self._board.legal_moves()])
         self._board.push(move)
-#         print("Move Value:", val)
 #         print("I am playing ", move)
 
         (c,x,y) = move
@@ -73,6 +71,12 @@ class myPlayer(PlayerInterface):
 
     def newGame(self, color):
         self._mycolor = color
+        
+        if(color == self._board._BLACK):
+            print("Init Black Player ")
+        else:
+            print("Init White Player ")
+            
         self._openingMover = OpeningMove(self._mycolor)
         self._opponent = 1 if color == 2 else 2
 

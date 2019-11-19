@@ -40,23 +40,6 @@ class HashingOperation(object):
     
     
     
-    @staticmethod
-    def IndiceToChar(int_value):
-        convertTable = {
-            1:'a',
-            2:'b',
-            3:'c',
-            4:'d',
-            5:'e',
-            6:'f',
-            7:'g',
-            8:'h',
-            9:'i',
-            10:'j'
-            
-            }
-        
-        return convertTable[int_value]
     
     @staticmethod
     def CharToIndice(char):
@@ -77,6 +60,24 @@ class HashingOperation(object):
         return convertTable[char]
     
     @staticmethod
+    def IndiceToChar(int_value):
+        convertTable = {
+            1:'a',
+            2:'b',
+            3:'c',
+            4:'d',
+            5:'e',
+            6:'f',
+            7:'g',
+            8:'h',
+            9:'i',
+            10:'j'
+            
+            }
+        
+        return convertTable[int_value]
+    
+    @staticmethod
     def _piece2str(c, x, y):        
         x = HashingOperation.IndiceToChar(x)        
         
@@ -87,22 +88,6 @@ class HashingOperation(object):
         else:
             return ''
         return x + str(y)
-#     
-#     @staticmethod
-#     def _str2piece(str):  
-#         c = None
-#         x = HashingOperation.CharToIndice(str.)
-#         y = 0      
-#         x = HashingOperation.IndiceToChar(x)        
-#         
-#         if c==_WHITE:
-#             x = x.upper()
-#         elif c==_BLACK:
-#             x = x.lower()
-#         else:
-#             return ''
-#         return (c,x,y)
-#         
         
         
 

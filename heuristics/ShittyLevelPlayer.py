@@ -117,9 +117,9 @@ class myPlayer(PlayerInterface):
     
     def calculation(self):
         print("TODO")
-#         Game Beginning
-#         Mid-Game
-#         Game End
+#         localGame Beginning
+#         Mid-localGame
+#         localGame End
 
     def applyBiais(self, move):
         (c, x, y) = move

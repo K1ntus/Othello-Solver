@@ -50,43 +50,48 @@ class OpeningMove(object):
         
         hashValue = Utils.HashingOperation.BoardToHashCode(board)
         res_contain = self._bloom.__contains__(key=hashValue)
-        if(res_contain):
-            print("Found the key. Looking for a move to do in the lib.", flush=True)
+#         if(res_contain):
+        print("Search Opening move In The Bloom Filter", flush=True)
             
-            moves = board.legal_moves()
-            move = None
+        moves = board.legal_moves()
+        move = []
+        find_a_move = False
     
 #             self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
-    
-            for m in moves:
-                board.push(m)
+            
+        for m in moves:
+            board.push(m)
                 
                 
-                hashValue = Utils.HashingOperation.BoardToHashCode(board)
-                res_contain = self._bloom.__contains__(key=hashValue)
-                if(res_contain):
-                    print("Playing: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
-                    board.pop()
-                    return m
-                else:
-                    print(Utils.HashingOperation.board_to_str(board), " -> ", hashValue)
-                board.pop()
+            hashValue = Utils.HashingOperation.BoardToHashCode(board)
+            res_contain = self._bloom.__contains__(key=hashValue)
+            if(res_contain):
+                print("Adding: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
+                move.append(m)
+                find_a_move = True
+            else:
+                print(Utils.HashingOperation.board_to_str(board), " -> ", hashValue)
+            board.pop()
+        if(find_a_move):
+            return move[randint(0,len(move)-1)]
                 
-        else:
-            print("Nope, I do not have the key : ", hashValue, flush=True)
-            return None
+#         else:
+#             print("Nope, I do not have the key : ", hashValue, flush=True)
+#             return None
         print("No move has been predicted")
-        return move
+
+        return None
     
     
     
     def InstanciateHashMoveList(self, color):        
         openingMoveArray = self.GetOpeningMoveList(color)
         for input_str in openingMoveArray:
-            if(color == Board._WHITE):
-                someString = input_str.swapcase()
-            else: 
-                someString = input_str
+#             if(color == Board._WHITE):
+#                 someString = input_str.swapcase()
+#             else: 
+#                 someString = input_str
+            someString = input_str
             h = Utils.HashingOperation.StringToHashCode(someString)
             self._bloom.add(key=h)
             print("Instanciate: ", someString, " -> ", h)
@@ -121,7 +126,8 @@ class OpeningMove(object):
         opening_moves = ["e5F5E6f6"]
         
         diagonalOpeningsWhite = [
-            "e5F5E6f6"
+            "e5F5E6f6",
+            "f4e5f5E6f6"                    # DiagonalOpening
             
         ]
         
@@ -139,7 +145,7 @@ class OpeningMove(object):
                 
                 "f4G4e5f5g5h5E6F6G6",                
                 "f3E4f4G4E5f5g5E6f6",       # Heath/Tobidashi
-                "f4g4e5f5G5h5E6F6G6",       # Heath/Tobidashi
+                "f4g4e5f5G5h5E6F6G6",       # Heath/Tobidashi +
                 
 #                 "d4E4D5E5F5E6f6",           
 #                 "d4E4d5E5F5d6e6f6",         # Diagonal Opening ++
@@ -147,31 +153,33 @@ class OpeningMove(object):
 #                 
 #                 # Variations linked to Diagonal Opening ++
 
-                "c4D4c5D5E5c6D6e6D7",       # Cow
-                "c4d4e4c5d5e5c6D6e6D7",     # Chimney
-                "c4D4c5d5e5f5c6D6e6D7",     # Cow +
-                "d3c4d4B5C5d5E5c6d6e6",     # Rose-v-Toth
-                "d3c4D4C5f5c6F6D7",         # Tanida
-                "c4D4C5f5c6D7",             # Cow Bat/Bat/Cambridge
-                "d3c4D4C5B6f5c6D7F6",       # Aircraft/Feldborg  
+                "c4D4c5D5E5c6D6e6D7",           # Cow
+                "c4d4e4c5d5e5c6D6e6D7",         # Chimney
+                "c4D4c5d5e5f5c6D6e6D7",         # Cow +
+                "d3c4d4B5C5d5E5c6d6e6",         # Rose-v-Toth
+                "d3c4D4C5f5c6F6D7",             # Tanida
+                "c4D4C5f5c6D7",                 # Cow Bat/Bat/Cambridge
+                "d3c4D4C5B6f5c6D7F6",           # Aircraft/Feldborg  
 
-#                 "d4E4d5E5F5d6E6f6E7",       # Cow
-#                 "d4e4f4d5e5f5d6E6f6E7",     # Chimney
-#                 "d4E4d5e5f5g5d6E6f6E7",     # Cow +
-#                 "e3d4e4C5D5e5F5d6e6f6",     # Rose-v-Toth
-#                 "D5d4E4d6E7g5G6e3",         # Tanida
-#                 "D5d4E4d6E7g5",             # Cow Bat/Bat/Cambridge
-#                 "D5d4E4d6E7g5G6e3C6",       # Aircraft/Feldborg
+#                 "d4E4d5E5F5d6E6f6E7",           # Cow
+#                 "d4e4f4d5e5f5d6E6f6E7",         # Chimney
+#                 "d4E4d5e5f5g5d6E6f6E7",         # Cow +
+#                 "e3d4e4C5D5e5F5d6e6f6",         # Rose-v-Toth
+#                 "D5d4E4d6E7g5G6e3",             # Tanida
+#                 "D5d4E4d6E7g5",                 # Cow Bat/Bat/Cambridge
+#                 "D5d4E4d6E7g5G6e3C6",           # Aircraft/Feldborg
 
 #                 # End
 
 #                 
 #                 
-#                 "d4E4C5D5E5F5d6e6f6",       # Heath/Tobidashi
-#                 "e3d4e4C5D5e5F5d6e6f6",     # Heath/Tobidashi +
-#                 "e3d4E4C5D4d6E7",           # Heath-Bat
-                "f3E4f4G4E5F5G5E6F6G6",             # Heath-Chimney
-#                 "e3F3d4E4C5D5d6"            # Iwasaki Variation    
+#                 "d4E4C5D5E5F5d6e6f6",           # Heath/Tobidashi
+#                 "e3d4e4C5D5e5F5d6e6f6",         # Heath/Tobidashi +
+#                 "e3d4E4C5D4d6E7",               # Heath-Bat
+                "f3E4f4G4E5F5G5E6F6G6",           # Heath-Chimney
+                "E4F4G4d5e5f5g5h5E6F6G6",         # Heath-Chimney +
+                "E4F4G4E5F5g5h5E6F6G6"
+#                 "e3F3d4E4C5D5d6"                # Iwasaki Variation    
 
 
  
@@ -180,22 +188,26 @@ class OpeningMove(object):
 
        
         parallelOpeningsBlack = [
-            "E4f4E5f5E6f6",         # Parallel Opening
-            "d5e4f4e5f5E6f6"        # Parallel Opening +
+            "E4f4E5f5E6f6",             # Parallel Opening
+            "E4f4d5e5f5E6f6"            # Parallel Opening +
             ]
         parallelOpeningsWhite = [
-            "E4f4E5f5E6f6",         # Parallel Opening
-            "d5e4f4e5f5E6f6"        # Parallel Opening +
+            "E4f4E5f5E6f6",             # Parallel Opening
+            "d5e4f4e5f5E6f6"            # Parallel Opening +
             ]
 
        
         perpendicularOpenings = [
-            "f4e5f5E6F6G6",         # Perpendicular Opening (C4e3)
-            "f4e5f5E6F6G6e7",        # Perpendicular Opening + (C4e3F5)
-            "f4e5f5e6F6G6d7" ,       # Perpendicular Opening + (C4e3F6)
-            "E4f4e5F5e6F6G6d7",      # Tiger +
-            "E4f4e5f5e6f6G6d7f7",      # Tiger ++
-            "E4f4e5F5e6f6g6h6d7"      # Perpendicular Opening + (C4e3F6)
+            "f4e5f5E6F6G6",             # Perpendicular Opening (C4e3)
+            "f4e5f5E6F6G6e7",           # Perpendicular Opening + (C4e3F5)
+            "f4e5f5e6F6G6e7" ,          # Perpendicular Opening + (C4e3F6)
+            "E4f4e5F5e6F6G6d7",         # Tiger +
+            "E4f4e5f5e6f6G6d7f7",       # Tiger ++
+            "E4f4e5F5e6f6g6h6d7",       # Perpendicular Opening + (C4e3F6)
+            "D4f4E5f5e6f6g6h6d7",       # Personak Opening (after Perpendicular Opening + C4e3F6)
+            
+            "F3F4e5F5e6F6G6e7",         # Sweallow
+            "F3F4e5F5e6f6G6e7g7"        # Sweallow +
             
             
             
@@ -257,6 +269,12 @@ class OpeningMove(object):
         
         opening_moves += diagonalOpeningsBlack
         opening_moves += parallelOpeningsBlack
+#         if(color == Board._BLACK):
+#             opening_moves += diagonalOpeningsBlack
+#             opening_moves += parallelOpeningsBlack
+#         else:
+#             opening_moves += diagonalOpeningsWhite
+#             opening_moves += parallelOpeningsWhite
         opening_moves += perpendicularOpenings
          
         return opening_moves
