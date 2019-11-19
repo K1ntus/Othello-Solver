@@ -2,18 +2,18 @@ from BoardWeight import BoardStaticWeight
 
 
 # count the corner score on the board of the player
-def get_corner_score(board, player):
+def get_corner_score(board, my_player):
     my_score = 0
     enemy_score = 0
-    enemy = board._flip(player)
+    enemy = board._flip(my_player)
     last_index = board.get_board_size() - 1;
-    if board[0][last_index] == player:
+    if board[0][last_index] == my_player:
         my_score += BoardStaticWeight.weightTable[0][last_index]
-    if board[last_index][0] == player:
+    if board[last_index][0] == my_player:
         my_score += BoardStaticWeight.weightTable[last_index][0]
-    if board[0][0] == player:
+    if board[0][0] == my_player:
         my_score += BoardStaticWeight.weightTable[0][0]
-    if board[last_index][last_index] == player:
+    if board[last_index][last_index] == my_player:
         my_score += BoardStaticWeight.weightTable[last_index][last_index]
 
     if board[0][last_index] == enemy:
@@ -45,9 +45,11 @@ def get_next_corner_score(board):
             return score
     return 0
 
-# mobility : score is according to the number of moves the player can make
-def get_mobility_score(board,player):
-    my_score = 0
-    enemy_score = 0
-    enemy = board._flip(player)
+# mobility : score is according to the number of moves the player can make on the current state of the game
+# The objective is to mobilize my player and restrict enemy
+def get_mobility_score(board,my_player):
+    my_legal_moves = 0
+    enemy_legal_moves = 0
+    enemy = board._flip(my_player)
+
     #     TODO calculate score
