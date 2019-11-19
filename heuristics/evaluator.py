@@ -45,3 +45,9 @@ def get_next_corner_score(board):
             return score
     return 0
 
+# mobility : score is according to the number of moves the player can make
+def get_mobility_score(board,player):
+    my_score = 0
+    enemy_score = 0
+    enemy = board._flip(player)
+    #     TODO calculate score
