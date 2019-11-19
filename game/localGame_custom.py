@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import Reversi
-from heuristics import ShittyLevelPlayer, BeginnerLevelPlayer, BeginnerLevelPlayer2, RandomPlayer
+from game.board import Reversi
+from player.ai import ShittyLevelPlayer, BeginnerLevelPlayer, BeginnerLevelPlayer2, RandomPlayer
 import myPlayer
 import time
 from io import StringIO
@@ -20,10 +20,10 @@ def firstSet():
     
     players = []
     player1 = myPlayer.myPlayer()   #IA (black)
-    player1.newGame(b._WHITE)
+    player1.newGame(b._BLACK)
     players.append(player1)
     player2 = BeginnerLevelPlayer2.myPlayer()   #random (white)
-    player2.newGame(b._BLACK)
+    player2.newGame(b._WHITE)
     players.append(player2)
     
     return (b, players)
@@ -32,10 +32,10 @@ def secondSet():
     
     players = []
     player1 = myPlayer.myPlayer()   #IA (black)
-    player1.newGame(b._WHITE)
+    player1.newGame(b._BLACK)
     players.append(player1)
     player2 = RandomPlayer.myPlayer()   #random (white)
-    player2.newGame(b._BLACK)
+    player2.newGame(b._WHITE)
     players.append(player2)
     
     return (b, players)
@@ -45,10 +45,10 @@ def thirdSet():
     
     players = []
     player1 = myPlayer.myPlayer()   #IA (black)
-    player1.newGame(b._WHITE)
+    player1.newGame(b._BLACK)
     players.append(player1)
     player2 = BeginnerLevelPlayer.myPlayer()   #random (white)
-    player2.newGame(b._BLACK)
+    player2.newGame(b._WHITE)
     players.append(player2)
     
     return (b, players)
@@ -58,15 +58,15 @@ def runMatch(b, players):
     
     players = []
     player1 = myPlayer.myPlayer()   #IA (black)
-    player1.newGame(b._WHITE)
+    player1.newGame(b._BLACK)
     players.append(player1)
     player2 = BeginnerLevelPlayer2.myPlayer()   #random (white)
-    player2.newGame(b._BLACK)
+    player2.newGame(b._WHITE)
     players.append(player2)
     
     totalTime = [0,0] # total real time for each player
     nextplayer = 0
-    nextplayercolor = b._WHITE
+    nextplayercolor = b._BLACK
     nbmoves = 1
     
     outputs = ["",""]
@@ -99,13 +99,13 @@ def runMatch(b, players):
         playeroutput = "\r" + stringio.getvalue()
         stringio.truncate(0)
         
-        if(True):
+        if(False):
             print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
         outputs[nextplayer] += playeroutput
         totalTime[nextplayer] += time.time() - currentTime
         
         
-        if(True):
+        if(False):
             print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
         (x,y) = move 
         if not b.is_valid_move(nextplayercolor,x,y):
@@ -118,7 +118,7 @@ def runMatch(b, players):
         nextplayer = otherplayer
         nextplayercolor = othercolor
         
-        print(b)        
+#         print(b)        
     return (totalTime, b)
     
 
@@ -197,9 +197,9 @@ def fileno(file_or_fd):
     return fd
     
 stdout_fd = sys.stdout.fileno()
-with open('log.txt', 'w') as f:
+with open('../logs/log.txt', 'w') as f:
     with redirect_stdout(f):
-        print('it now prints to `log.txt`')
+        print('it now prints to `help.text`')
         
     stdout = sys.stdout
     with os.fdopen(os.dup(stdout_fd), 'wb') as copied: 

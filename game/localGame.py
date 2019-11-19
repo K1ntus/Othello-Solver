@@ -1,6 +1,6 @@
-import Reversi
+from game.board import Reversi
 import myPlayer
-import heuristics.BeginnerLevelPlayer2 as Enemy1
+import player.ai.BeginnerLevelPlayer2 as Enemy1
 import time
 from io import StringIO
 import sys
@@ -11,8 +11,8 @@ players = []
 player1 = myPlayer.myPlayer()
 player1.newGame(b._BLACK)
 players.append(player1)
-player2 = myPlayer.myPlayer()
-# player2 = Enemy1.myPlayer()
+# player2 = myPlayer.myPlayer()
+player2 = Enemy1.myPlayer()
 player2.newGame(b._WHITE)
 players.append(player2)
 

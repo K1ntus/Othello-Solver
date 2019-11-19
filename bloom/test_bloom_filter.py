@@ -10,7 +10,7 @@ import random
 import sys
 import time
 
-from data import bloom_filter
+from bloom import bloom_filter
 
 
 try:

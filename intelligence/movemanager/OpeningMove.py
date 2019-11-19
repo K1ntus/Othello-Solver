@@ -1,45 +1,14 @@
-'''
-Created on 17 nov. 2019
-
-@author: jordane
-'''
+#http://www.samsoft.org.uk/reversi/openings.htm
 from IPython.utils.py3compat import xrange
 from random import randint
-import time
 
-from Reversi import Board
-import Reversi
-from data import __utils__ as Utils
-from data.__utils__ import HashingOperation
-from data.bloom_filter import BloomFilter
+from game.board import Reversi
+from bloom import __utils__ as Utils
+from bloom.__utils__ import HashingOperation
+from bloom.bloom_filter import BloomFilter
 
 
-class MoveManager(object):
-    '''
-    classdocs
-    '''
-
-
-    def __init__(self, params):
-        '''
-        Constructor
-        '''
-    
-    @staticmethod
-    def MoveForGameBeginning(player, moves):
-        best_move = moves[randint(0,len(moves)-1)]
-        max_value = player.getNumberPoints(best_move) + player.applyBiais(best_move)
-        for m in moves:
-            current = player.getNumberPoints(m)
-            if(current > max_value):
-                max_value = current
-                best_move = m
-    
-        return (best_move, max_value)
-    
-    
-#http://www.samsoft.org.uk/reversi/openings.htm
-class OpeningMove(object):
+class OpeningMove:
     def __init__(self, color):
         self._bloom = BloomFilter(max_elements=10000, error_rate=0.005, filename=None, start_fresh=False)
         self.InstanciateHashMoveList(color)
@@ -125,11 +94,11 @@ class OpeningMove(object):
         #diagonal opening
         opening_moves = ["e5F5E6f6"]
         
-        diagonalOpeningsWhite = [
-            "e5F5E6f6",
-            "f4e5f5E6f6"                    # DiagonalOpening
-            
-        ]
+#         diagonalOpeningsWhite = [
+#             "e5F5E6f6",
+#             "f4e5f5E6f6"                    # DiagonalOpening
+#             
+#         ]
         
         
         diagonalOpeningsBlack = [
@@ -191,10 +160,10 @@ class OpeningMove(object):
             "E4f4E5f5E6f6",             # Parallel Opening
             "E4f4d5e5f5E6f6"            # Parallel Opening +
             ]
-        parallelOpeningsWhite = [
-            "E4f4E5f5E6f6",             # Parallel Opening
-            "d5e4f4e5f5E6f6"            # Parallel Opening +
-            ]
+#         parallelOpeningsWhite = [
+#             "E4f4E5f5E6f6",             # Parallel Opening
+#             "d5e4f4e5f5E6f6"            # Parallel Opening +
+#             ]
 
        
         perpendicularOpenings = [
@@ -278,14 +247,5 @@ class OpeningMove(object):
         opening_moves += perpendicularOpenings
          
         return opening_moves
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         

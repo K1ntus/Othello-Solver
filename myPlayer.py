@@ -8,13 +8,13 @@
 from multiprocessing import Process, Lock, Queue
 from random import randint
 
-import Reversi
-from data import BloomFilter
-from data import __utils__ as Utils
-from heuristics.BeginnerLevelPlayer import WIDTH, HEIGHT
-from intelligence import move as mover
-from intelligence.move import OpeningMove
-from playerInterface import *
+from bloom import BloomFilter
+from bloom import __utils__ as Utils
+from game.board import Reversi
+from game.board.playerInterface import *
+from intelligence.movemanager.MoveManager import MoveManager
+from intelligence.movemanager.OpeningMove import OpeningMove
+from player.ai.BeginnerLevelPlayer import WIDTH, HEIGHT
 
 
 # import sys
@@ -54,7 +54,7 @@ class myPlayer(PlayerInterface):
         move = self.moveManager()
             
         if(move == None):
-            (move, _) = mover.MoveManager.MoveForGameBeginning(self, [m for m in self._board.legal_moves()])
+            (move, _) = MoveManager.MoveForGameBeginning(self, [m for m in self._board.legal_moves()])
         self._board.push(move)
 #         print("I am playing ", move)
 

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import time
-import Reversi
+from game.board import Reversi
+from game.board.playerInterface import *
 from random import randint
-from playerInterface import *
 from asyncio.tasks import sleep
 
 WIDTH = 9

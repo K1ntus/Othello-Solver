@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import time
-import Reversi
+from game.board import Reversi
+from game.board.playerInterface import *
 from random import randint
-from playerInterface import *
 from asyncio.tasks import sleep
 
 WIDTH = 9
 HEIGHT = 9
+
+#bit better than the first beginner player
 
 class myPlayer(PlayerInterface):
 
@@ -26,7 +28,6 @@ class myPlayer(PlayerInterface):
 #         print("Available move: ", moves)
 #         time.sleep(1)
 #         move = moves[randint(0,len(moves)-1)]
-        move = None
         if(len(moves) < 5):
             move = moves[randint(0,len(moves)-1)]
         else:
@@ -63,13 +64,31 @@ class myPlayer(PlayerInterface):
 #         localGame End
 
     def applyBiais(self, move):
-        return 0
+        (c, x, y) = move
+        value = 0
+        lr_border = False
+        tb_border = False
+        
+        if(x == 0 or x == WIDTH): #left or right border
+            value += 1
+            lr_border = True
+            
+        if(y == 0 or y == HEIGHT): #top or bottom border
+            value += 1
+            tb_border = True
+        
+        if(tb_border and lr_border):
+            value += 3
+        
+        
+        return value
         
         
     def getNumberPoints(self, move):
         (current_point_white, current_point_black) = self._board.get_nb_pieces()
         self._board.push(move)
         (new_point_white, new_point_black) = self._board.get_nb_pieces()
+        self._board.pop()
         
         if(self._mycolor == 1): #black
             return new_point_black-current_point_black
@@ -79,10 +98,9 @@ class myPlayer(PlayerInterface):
 
     def getBestMoveDependOfNumberPoint(self, moves):
         best_move = moves[randint(0,len(moves)-1)]
-        max_value = + self.applyBiais(best_move)
+        max_value = self.getNumberPoints(best_move) + self.applyBiais(best_move)
         for m in moves:
             current = self.getNumberPoints(m) + self.applyBiais(m)
-            self._board.pop()
             if(current > max_value):
                 max_value = current
                 best_move = m

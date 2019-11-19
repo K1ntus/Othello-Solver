@@ -7,7 +7,7 @@ https://llimllib.github.io/bloomfilter-tutorial/
 '''
 import hashlib
 
-import Reversi
+from game.board import Reversi
 
 
 _BLACK = 1
