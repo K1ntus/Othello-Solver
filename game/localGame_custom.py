@@ -14,6 +14,7 @@ from contextlib import redirect_stdout # save in file
 
 nbTest = 300
 
+verb = True
 
 def firstSet():
     b = Reversi.Board(10)
@@ -78,7 +79,7 @@ def runMatch(b, players):
     # print(b.legal_moves())
     
     while not b.is_game_over():
-        if(False):
+        if(verb):
             print("Referee Board:")
             print(b)
             print("Before move", nbmoves)
@@ -99,13 +100,13 @@ def runMatch(b, players):
         playeroutput = "\r" + stringio.getvalue()
         stringio.truncate(0)
         
-        if(False):
+        if(verb):
             print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
         outputs[nextplayer] += playeroutput
         totalTime[nextplayer] += time.time() - currentTime
         
         
-        if(False):
+        if(verb):
             print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
         (x,y) = move 
         if not b.is_valid_move(nextplayercolor,x,y):
@@ -126,18 +127,19 @@ def mainLauncher(b, players):
     (totalTime,b) = runMatch(b, players)
     print("The game is over")
     print(b)
+
     (nbwhites, nbblacks) = b.get_nb_pieces()
     print("Time:", totalTime)
     print("Winner: ", end="")
-    if nbwhites == nbblacks:
-        print("DEUCE")
-        return 0        
-    elif nbwhites > 50:
+    if nbwhites > nbblacks:
         print("WHITE")
         return 0
-    else:
+    elif nbblacks > nbwhites:
         print("BLACK")
         return 1
+    else:
+        print("DEUCE")
+        return 0
 
 def runMultipleGame(x):
     median = 0

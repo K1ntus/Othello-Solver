@@ -15,18 +15,17 @@ class OpeningMove:
     
 
     def GetMove(self, board):
-        print("Board key: ", Utils.HashingOperation.board_to_str(board))
-        
+#         print("Board key: ", Utils.HashingOperation.board_to_str(board))
+
         hashValue = Utils.HashingOperation.BoardToHashCode(board)
         res_contain = self._bloom.__contains__(key=hashValue)
 #         if(res_contain):
-        print("Search Opening move In The Bloom Filter", flush=True)
+#         print("Search Opening move In The Bloom Filter", flush=True)
             
         moves = board.legal_moves()
         move = []
         find_a_move = False
     
-#             self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
             
         for m in moves:
             board.push(m)
@@ -35,7 +34,7 @@ class OpeningMove:
             hashValue = Utils.HashingOperation.BoardToHashCode(board)
             res_contain = self._bloom.__contains__(key=hashValue)
             if(res_contain):
-                print("Adding: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
+#                 print("Adding: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
                 move.append(m)
                 find_a_move = True
             else:
@@ -63,7 +62,7 @@ class OpeningMove:
             someString = input_str
             h = Utils.HashingOperation.StringToHashCode(someString)
             self._bloom.add(key=h)
-            print("Instanciate: ", someString, " -> ", h)
+#             print("Instanciate: ", someString, " -> ", h)
         return
     
     

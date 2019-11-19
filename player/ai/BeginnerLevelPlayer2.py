@@ -36,8 +36,8 @@ class myPlayer(PlayerInterface):
         print("I am playing ", move)
         (c,x,y) = move
         assert(c==self._mycolor)
-        print("My current board :")
-        print(self._board)
+#         print("My current board :")
+#         print(self._board)
         return (x,y) 
 
     def playOpponentMove(self, x,y):
