@@ -20,10 +20,10 @@ def firstSet():
     
     players = []
     player1 = myPlayer.myPlayer()   #IA (black)
-    player1.newGame(b._BLACK)
+    player1.newGame(b._WHITE)
     players.append(player1)
     player2 = BeginnerLevelPlayer2.myPlayer()   #random (white)
-    player2.newGame(b._WHITE)
+    player2.newGame(b._BLACK)
     players.append(player2)
     
     return (b, players)

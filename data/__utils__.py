@@ -25,13 +25,13 @@ class HashingOperation(object):
     
     @staticmethod
     def StringToHashCode(board_str):
-        print("Board is: ", board_str)
+#         print("Board is: ", board_str)
         byte_str = str.encode(board_str)
         type(byte_str)
         h = byte_str.hex()
 #         h = hashlib.sha256(byte_str)
-        print("Bloom key Instanciated: ", h)
-        print("")
+#         print("Bloom key Instanciated: ", h)
+#         print("")
         return h
 #         return int(h.hexdigest(), base=16) 
 #         return int(byte_str.hexdigest(), base=16) 

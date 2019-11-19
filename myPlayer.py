@@ -93,8 +93,9 @@ class myPlayer(PlayerInterface):
         val = 0  
         
         
-        if(nb1+nb2 < 10): #kind of random
+        if(nb1+nb2 < 12): #kind of random
             print("Check if ", Utils.HashingOperation.BoardToHashCode(self._board), "is present")
+            
             move = self._openingMover.GetMove(self._board)
         elif (WIDTH*HEIGHT - (nb1+nb2) < 25):   #minmax
             alpha_beta_maxDepth = WIDTH*HEIGHT - (nb1+nb2)

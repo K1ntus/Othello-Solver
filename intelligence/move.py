@@ -41,27 +41,55 @@ class MoveManager(object):
 #http://www.samsoft.org.uk/reversi/openings.htm
 class OpeningMove(object):
     def __init__(self, color):
-        self._bloom = BloomFilter(max_elements=10000, error_rate=0.1, filename=None, start_fresh=False)
+        self._bloom = BloomFilter(max_elements=10000, error_rate=0.005, filename=None, start_fresh=False)
         self.InstanciateHashMoveList(color)
     
 
     def GetMove(self, board):
+        print("Board key: ", Utils.HashingOperation.board_to_str(board))
+        
         hashValue = Utils.HashingOperation.BoardToHashCode(board)
         res_contain = self._bloom.__contains__(key=hashValue)
         if(res_contain):
-            print("YEAH ! I Contain ", hashValue, flush=True)
-#             time.sleep(20)
+            print("Found the key. Looking for a move to do in the lib.", flush=True)
+            
+            moves = board.legal_moves()
+            move = None
+    
+#             self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
+    
+            for m in moves:
+                board.push(m)
+                
+                
+                hashValue = Utils.HashingOperation.BoardToHashCode(board)
+                res_contain = self._bloom.__contains__(key=hashValue)
+                if(res_contain):
+                    print("Playing: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
+                    board.pop()
+                    return m
+                else:
+                    print(Utils.HashingOperation.board_to_str(board), " -> ", hashValue)
+                board.pop()
+                
         else:
             print("Nope, I do not have the key : ", hashValue, flush=True)
-#             time.sleep(2)
-        return None
+            return None
+        print("No move has been predicted")
+        return move
     
     
     
     def InstanciateHashMoveList(self, color):        
         openingMoveArray = self.GetOpeningMoveList(color)
         for input_str in openingMoveArray:
-            self._bloom.add(key=Utils.HashingOperation.StringToHashCode(input_str.swapcase()))
+            if(color == Board._WHITE):
+                someString = input_str.swapcase()
+            else: 
+                someString = input_str
+            h = Utils.HashingOperation.StringToHashCode(someString)
+            self._bloom.add(key=h)
+            print("Instanciate: ", someString, " -> ", h)
         return
     
     
@@ -90,89 +118,147 @@ class OpeningMove(object):
     @classmethod
     def GetOpeningMoveList(self, color):
         #diagonal opening
-        opening_moves = []
-        diagonalOpenings = [
-                "d4D5e5F5E6f6",             # Diagonal Opening
-                "d4E4D5E5F5E6f6",           # Diagonal Opening +
-                "d4E4d5E5F5d6e6f6",         # Diagonal Opening ++
+        opening_moves = ["e5F5E6f6"]
+        
+        diagonalOpeningsWhite = [
+            "e5F5E6f6"
+            
+        ]
+        
+        
+        diagonalOpeningsBlack = [
+#                 "d4D5e5F5E6f6",           # Diagonal Opening ?good
+                "f4e5f5E6f6",               # Diagonal Opening
+                "E4f4e5f5E6f6",             # Diagonal Opening
+                "f4G4e5F5E6f6",
                 
+                "f4G4e5f5g5E6f6",           # Diagonal Opening +
                 
-                # Variations linked to Diagonal Opening ++
-                "d4E4d5E5F5d6E6f6E7",           # Cow
-                "d4e4f4d5e5f5d6E6f6E7",         # Chimney
-                "d4E4d5e5f5g5d6E6f6E7",         # Cow +
-#                 "e3d4e4C5D5e5F5d6e6f6",       # Rose-v-Toth
-#                 "C4c3D3c5D6f4F5d2",     # Tanida
-#                 "C4c3D3c5D6f4",         # Cow Bat/Bat/Cambridge
-#                 "C4c3D3c5D6f4F5d2B5",   # Aircraft/Feldborg
+                "f4G4e5f5G5E6F6G6",         # Dialog Opening ++
+                "E4F4G4E5f5g5E6f6",         # Dialog Opening ++
+                
+                "f4G4e5f5g5h5E6F6G6",                
+                "f3E4f4G4E5f5g5E6f6",       # Heath/Tobidashi
+                "f4g4e5f5G5h5E6F6G6",       # Heath/Tobidashi
+                
+#                 "d4E4D5E5F5E6f6",           
+#                 "d4E4d5E5F5d6e6f6",         # Diagonal Opening ++
+#                 
+#                 
+#                 # Variations linked to Diagonal Opening ++
+
+                "c4D4c5D5E5c6D6e6D7",       # Cow
+                "c4d4e4c5d5e5c6D6e6D7",     # Chimney
+                "c4D4c5d5e5f5c6D6e6D7",     # Cow +
+                "d3c4d4B5C5d5E5c6d6e6",     # Rose-v-Toth
+                "d3c4D4C5f5c6F6D7",         # Tanida
+                "c4D4C5f5c6D7",             # Cow Bat/Bat/Cambridge
+                "d3c4D4C5B6f5c6D7F6",       # Aircraft/Feldborg  
+
+#                 "d4E4d5E5F5d6E6f6E7",       # Cow
+#                 "d4e4f4d5e5f5d6E6f6E7",     # Chimney
+#                 "d4E4d5e5f5g5d6E6f6E7",     # Cow +
+#                 "e3d4e4C5D5e5F5d6e6f6",     # Rose-v-Toth
+#                 "D5d4E4d6E7g5G6e3",         # Tanida
+#                 "D5d4E4d6E7g5",             # Cow Bat/Bat/Cambridge
+#                 "D5d4E4d6E7g5G6e3C6",       # Aircraft/Feldborg
+
 #                 # End
+
 #                 
 #                 
-                "d4E4C5D5E5F5d6e6f6",       # Heath/Tobidashi
-                "e3d4e4C5D5e5F5d6e6f6",     # Heath/Tobidashi +
-#                 "C4c3D3c5B4d2D6",   # Heath-Bat
-#                 "C4c3D3c5B4e3",     # Heath-Chimney
-#                 "C4c3D3c5B4d2E2"    # Iwasaki Variation          
+#                 "d4E4C5D5E5F5d6e6f6",       # Heath/Tobidashi
+#                 "e3d4e4C5D5e5F5d6e6f6",     # Heath/Tobidashi +
+#                 "e3d4E4C5D4d6E7",           # Heath-Bat
+                "f3E4f4G4E5F5G5E6F6G6",             # Heath-Chimney
+#                 "e3F3d4E4C5D5d6"            # Iwasaki Variation    
+
+
+ 
             
             ]
-#         
-#         parallelOpenings = [
-#             "C4c5",
-#             "C4c5D6"
-#             ]
-#         
-#         perpendicularOpenings = [
-#             "C4e3F6e6F5g6E7c5",
-#             "C4e3F6e6F5g6",
-#             "C4e3F6e6F5c5F4g6F7g5",
-#             "C4e3F6e6F5c5F4g6F7d3",
-#             "C4e3F6e6F5c5F4g6F7",
-#             "C4e3F6e6F5c5F4g5G4f3C6d3D6b3C3b4E2b6",
-#             "C4e3F6e6F5c5F4g5G4f3C6d3D6",
-#             "C4e3F6e6F5c5D6",
-#             "C4e3F6e6F5c5D3",
-#             "C4e3F6e6F5c5C3g5",
-#             "C4e3F6e6F5c5C3c6D6",
-#             "C4e3F6e6F5c5C3c6D3d2E2b3C1c2B4a3A5b5A6a4A2",
-#             "C4e3F6e6F5c5C3c6",
-#             "C4e3F6e6F5c5C3b4D6c6B5a6B6c7",
-#             "C4e3F6e6F5c5C3b4",
-#             "C4e3F6e6F5c5C3",
-#             "C4e3F6e6F5",
-#             "C4e3F6b4",
-#             "C4e3F5e6F4c5D6c6F7g5G6",
-#             "C4e3F5e6F4c5D6c6F7f3",
-#             "C4e3F5e6F4",
-#             "C4e3F5e6D3",
-#             "C4e3F5b4F3f4E2e6G5f6D6c6",
-#             "C4e3F5b4F3",
-#             "C4e3F5b4",
-#             "C4e3F4c5E6",
-#             "C4e3F4c5D6f3E6c6",
-#             "C4e3F4c5D6f3E6c3D3e2D2",
-#             "C4e3F4c5D6f3E6c3D3e2B6f5G5f6",
-#             "C4e3F4c5D6f3E6c3D3e2B6f5G5",
-#             "C4e3F4c5D6f3E6c3D3e2B6f5B4f6G5d7",
-#             "C4e3F4c5D6f3E6c3D3e2B6f5",
-#             "C4e3F4c5D6f3E6c3D3e2B5f5B4f6C2e7D2c7",
-#             "C4e3F4c5D6f3E6c3D3e2B5f5B3",
-#             "C4e3F4c5D6f3E6c3D3e2B5f5",
-#             "C4e3F4c5D6f3E6c3D3e2B5",
-#             "C4e3F4c5D6f3E6c3D3e2",
-#             "C4e3F4c5D6f3E2",
-#             "C4e3F4c5D6f3D3c3",
-#             "C4e3F4c5D6f3D3",
-#             "C4e3F4c5D6f3C6",
-#             "C4e3F4c5D6e6",
-#             "C4e3"
-#             ]
+
+       
+        parallelOpeningsBlack = [
+            "E4f4E5f5E6f6",         # Parallel Opening
+            "d5e4f4e5f5E6f6"        # Parallel Opening +
+            ]
+        parallelOpeningsWhite = [
+            "E4f4E5f5E6f6",         # Parallel Opening
+            "d5e4f4e5f5E6f6"        # Parallel Opening +
+            ]
+
+       
+        perpendicularOpenings = [
+            "f4e5f5E6F6G6",         # Perpendicular Opening (C4e3)
+            "f4e5f5E6F6G6e7",        # Perpendicular Opening + (C4e3F5)
+            "f4e5f5e6F6G6d7" ,       # Perpendicular Opening + (C4e3F6)
+            "E4f4e5F5e6F6G6d7",      # Tiger +
+            "E4f4e5f5e6f6G6d7f7",      # Tiger ++
+            "E4f4e5F5e6f6g6h6d7"      # Perpendicular Opening + (C4e3F6)
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+#             "f4D5d6G6f7D7h7F8",
+#             "f4D5G6f7G7h7",
+#             "f4D5G5d6G6h6f7G7h7G8",
+#             "e4f4D5G5G6d6f7G7h7G8",
+#             "f4D5G5d6G6f7G7h7G8",
+#             "F3D4c4e4f4g4c5D5G5H5d6G6h6c7D7E7f7G7",
+#             "e4f4g4D5E5H5d6G6h6D7E7f7G7",
+#             "f4D5d6G6E7f7G7",
+#             "f4D5d6G6E4f7G7",
+#             "D4f4D5d6G6h6f7G7",
+#             "D4f4D5d6G6d7E7f7G7",
+#             "D2B3d3e3F3b4c4D4E4f4b5C5D5B6c6d6G6B7d7f7G7",
+#             "D4f4D5d6G6d7f7G7",
+#             "D4f4c5D5C6d6G6b7C7d7E7f7G7d8",
+#             "D4f4c5D5d6G6f7G7",
+#             "D4f4D5d6G6f7G7",
+#             "D4f4D5d6G6f7G7",
+# 
+# 
+#             "f4c5D5G7",
+#             "f4D5G5d6G6h6d7E7f7H7G8",
+#             "f4g4D5G5d6G6d7E7f7E8",
+#             "f4D5G5G6f7",
+#             "D3E4f4D5F5e6G6f7",
+#             "f4G4c5D5G6g5F3f7H6g7E7d7",
+#             "f4G4c5D5G6",
+#             "f4c5D5G6",
+#             "f4D5G5d6F7",
+#             "f4D5G5d6E7g4F7d7",
+#             "f4D5G5d6E7g4F7d4E4f3E3",
+# 
+# 
+#             "f4D5G5d6E7g4F7d4E4f3C7g6E6g7",
+#             "f4D5G5d6E7g4F7d4E4f3C7g6E6",
+#             "f4D5G5d6E7g4F7d4E4f3C7g6C5g7H6e8",
+#             "f4D5G5d6E7g4F7d4E4f3C7g6",
+#             "f4D5G5d6E7g4F7d4E4f3C6g6C5g7D3f8E3d8",
+#             "f4D5G5d6E7g4F7d4E4f3C6g6C4",
+#             "f4D5G5d6E7g4F7d4E4f3C6g6",
+#             "f4D5G5d6E7g4F7d4E4f3C6",
+#             "f4D5G5d6E7g4F7d4E4f3",
+#             "f4D5G5d6E7g4F3",
+#             "f4D5G5d6E7g4E4d4",
+#             "f4D5G5d6E7g4E4",
+#             "f4D5G5d6E7g4D7",
+#             "f4D5G5d6E7f7",
+#             "f4D5"
+            ]
         
-        opening_moves += diagonalOpenings
-#         opening_moves += parallelOpenings
-#         opening_moves += perpendicularOpenings
+        opening_moves += diagonalOpeningsBlack
+        opening_moves += parallelOpeningsBlack
+        opening_moves += perpendicularOpenings
          
-        if(color == Board._BLACK):
-            return opening_moves
         return opening_moves
         
         
