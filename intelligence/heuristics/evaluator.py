@@ -14,29 +14,6 @@ def get_corner_score(user):
     if user._mycolor is Reversi.Board._WHITE:
         enemy_score = b
         my_score = w
-        
-        
-    
-        
-#     enemy = player._board._flip(player)
-#     last_index = board.get_board_size() - 1;
-#     if board._board[0][last_index] == player:
-#         my_score += BoardStaticWeight.weightTable[0][last_index]
-#     if board._board[last_index][0] == player:
-#         my_score += BoardStaticWeight.weightTable[last_index][0]
-#     if board._board[0][0] == player:
-#         my_score += BoardStaticWeight.weightTable[0][0]
-#     if board._board[last_index][last_index] == player:
-#         my_score += BoardStaticWeight.weightTable[last_index][last_index]
-# 
-#     if board._board[0][last_index] == enemy:
-#         enemy_score += BoardStaticWeight.weightTable[0][last_index]
-#     if board._board[last_index][0] == enemy:
-#         enemy_score += BoardStaticWeight.weightTable[last_index][0]
-#     if board._board[0][0] == enemy:
-#         enemy_score += BoardStaticWeight.weightTable[0][0]
-#     if board._board[last_index][last_index] == enemy:
-#         enemy_score += BoardStaticWeight.weightTable[last_index][last_index]
 
     try:
         score = 100 * (my_score - enemy_score) / (my_score + enemy_score)
@@ -44,15 +21,26 @@ def get_corner_score(user):
         score = 100 * (my_score - enemy_score) / (my_score + 1 + enemy_score)
         
 #     score = (my_score - enemy_score)
-    print("Score Enemy:", enemy_score, "My Score:", my_score)
+#     print("Score Enemy:", enemy_score, "My Score:", my_score)
     if(score >= 0):
         print("POS SCORE: ", score)
-    else:
-        print("NEG SCORE:", score)
-#     time.sleep(1)
+#     else:
+#         print("NEG SCORE:", score)
     return score
 
 
+# 
+# def getNumberPoints(_board, _mycolor, move):
+#     (current_point_white, current_point_black) = _board.get_nb_pieces()
+#     _board.push(move)
+#     (new_point_white, new_point_black) = _board.get_nb_pieces()
+#     _board.pop()
+#     
+#     if(_mycolor == 1): #black
+#         return (new_point_black-current_point_black) 
+#     else:
+#         return (new_point_white-current_point_white)
+#      
 
 def evaluateBoard(board):
     nbBlack = 0
@@ -63,9 +51,9 @@ def evaluateBoard(board):
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhite += BoardStaticWeight.weightTable[y][x]
+                nbWhite += BoardStaticWeight.weightTable2[x][y]
             elif c is board._BLACK:
-                nbBlack += BoardStaticWeight.weightTable[y][x]
+                nbBlack += BoardStaticWeight.weightTable2[x][y]
             else:
                 empty_cells += 1
             x += 1
