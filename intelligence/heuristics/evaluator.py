@@ -13,46 +13,41 @@ def get_corner_score( my_player):
     enemy = board._flip(my_player)
     last_index = board.get_board_size() - 1
     if board_arr[0][last_index] == my_player:
-        my_score += BoardStaticWeight.weightTable[0][last_index]
+        my_score += BoardStaticWeight.weightTable1[0][last_index]
     if board_arr[last_index][0] == my_player:
-        my_score += BoardStaticWeight.weightTable[last_index][0]
+        my_score += BoardStaticWeight.weightTable1[last_index][0]
     if board_arr[0][0] == my_player:
-        my_score += BoardStaticWeight.weightTable[0][0]
+        my_score += BoardStaticWeight.weightTable1[0][0]
     if board_arr[last_index][last_index] == my_player:
-        my_score += BoardStaticWeight.weightTable[last_index][last_index]
+        my_score += BoardStaticWeight.weightTable1[last_index][last_index]
 
     if board_arr[0][last_index] == enemy:
-        enemy_score += BoardStaticWeight.weightTable[0][last_index]
+        enemy_score += BoardStaticWeight.weightTable1[0][last_index]
     if board_arr[last_index][0] == enemy:
-        enemy_score += BoardStaticWeight.weightTable[last_index][0]
+        enemy_score += BoardStaticWeight.weightTable1[last_index][0]
     if board_arr[0][0] == enemy:
-        enemy_score += BoardStaticWeight.weightTable[0][0]
+        enemy_score += BoardStaticWeight.weightTable1[0][0]
     if board_arr[last_index][last_index] == enemy:
-        enemy_score += BoardStaticWeight.weightTable[last_index][last_index]
-def get_corner_score(user):
-    board = user._board
- 
-    (w,b) = evaluateBoard(board)
-    enemy_score = w
-    my_score = b
-    if user._mycolor is Reversi.Board._WHITE:
-        enemy_score = b
-        my_score = w
+        enemy_score += BoardStaticWeight.weightTable1[last_index][last_index]
+        
 
     try:
         score = 100 * (my_score - enemy_score) / (my_score + enemy_score)
     except ZeroDivisionError:
         score =  100 * (my_score - enemy_score) / (my_score + 1 + enemy_score)
-        
-#     score = (my_score - enemy_score)
-#     print("Score Enemy:", enemy_score, "My Score:", my_score)
-#     if(score >= 0):
-#         print("POS SCORE: ", score)
-#     else:
-#         print("NEG SCORE:", score)
+
     return score
 
-
+def eval(player, nb_move):
+    res = 0
+    res += get_corner_score(player)
+    res += evaluateBoard(player._board)
+    
+    res += get_disc_parity_score(player)
+    
+    res += get_next_corner_score(player._board, nb_move)    
+    
+    return res
 
 def evaluateBoard(board):
     nbBlack = 0
@@ -77,6 +72,7 @@ def evaluateBoard(board):
 # count the score if the player can place make a legal move on the corners
 def get_next_corner_score(board):
     #     get all legal moves
+    board.pop()
     last_index = board.get_board_size() - 1
     moves = board.legal_moves()
     score = 100

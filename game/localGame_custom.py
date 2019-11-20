@@ -149,8 +149,8 @@ def runMultipleGame(x):
     for i in range (0, x, 1):
         print("")
         print("Test: ", i+1)
-        (a1,a2) = thirdSet()
-#         (a1,a2) = firstSet()
+#         (a1,a2) = thirdSet()
+        (a1,a2) = firstSet()
         game1 += mainLauncher(a1,a2)
         print("* Statistiques")
         print("    IA:", game1, "over", i+1)

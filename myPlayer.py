@@ -240,7 +240,7 @@ class myPlayer(PlayerInterface):
         
         moves = self._board.legal_moves()
         if depth == self._maxDepth or len(moves) == 0:
-            (val) = (evaluator.get_corner_score(self))
+            (val) = (evaluator.eval(self, len(moves)))
 #             print("Reached End MinAlpha with val:", val)
 #             time.sleep(1)
             return (val)
