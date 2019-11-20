@@ -5,6 +5,7 @@ from game.board import Reversi
 from game.board.playerInterface import *
 from random import randint
 from asyncio.tasks import sleep
+from intelligence.heuristics import evaluator
 
 WIDTH = 9
 HEIGHT = 9
@@ -67,14 +68,13 @@ class myPlayer(PlayerInterface):
         
         
     def getNumberPoints(self, move):
-        (current_point_white, current_point_black) = self._board.get_nb_pieces()
         self._board.push(move)
-        (new_point_white, new_point_black) = self._board.get_nb_pieces()
+        score = evaluator.get_corner_score(self)
+        self._board.pop()
+        print("Returned: ", score)
         
-        if(self._mycolor == 1): #black
-            return new_point_black-current_point_black
-        else:
-            return new_point_white-current_point_white
+        return score
+        
 
 
     def getBestMoveDependOfNumberPoint(self, moves):

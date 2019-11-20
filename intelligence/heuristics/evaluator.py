@@ -29,11 +29,29 @@ def get_corner_score( my_player):
         enemy_score += BoardStaticWeight.weightTable[0][0]
     if board_arr[last_index][last_index] == enemy:
         enemy_score += BoardStaticWeight.weightTable[last_index][last_index]
+def get_corner_score(user):
+    board = user._board
+ 
+    (w,b) = evaluateBoard(board)
+    enemy_score = w
+    my_score = b
+    if user._mycolor is Reversi.Board._WHITE:
+        enemy_score = b
+        my_score = w
 
     try:
-        return 100 * (my_score - enemy_score) / (my_score + enemy_score)
+        score = 100 * (my_score - enemy_score) / (my_score + enemy_score)
     except ZeroDivisionError:
-        return  100 * (my_score - enemy_score) / (my_score + 1 + enemy_score)
+        score =  100 * (my_score - enemy_score) / (my_score + 1 + enemy_score)
+        
+#     score = (my_score - enemy_score)
+#     print("Score Enemy:", enemy_score, "My Score:", my_score)
+#     if(score >= 0):
+#         print("POS SCORE: ", score)
+#     else:
+#         print("NEG SCORE:", score)
+    return score
+
 
 
 def evaluateBoard(board):
@@ -45,9 +63,9 @@ def evaluateBoard(board):
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhite += BoardStaticWeight.weightTable[y][x]
+                nbWhite += BoardStaticWeight.weightTableStable[y][x]
             elif c is board._BLACK:
-                nbBlack += BoardStaticWeight.weightTable[y][x]
+                nbBlack += BoardStaticWeight.weightTableStable[y][x]
             else:
                 empty_cells += 1
             x += 1

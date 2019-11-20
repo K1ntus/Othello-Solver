@@ -45,10 +45,10 @@ def thirdSet():
     b = Reversi.Board(10)
     
     players = []
-    player1 = myPlayer.myPlayer()   #IA (black)
+    player1 = BeginnerLevelPlayer.myPlayer()   #IA (black)
     player1.newGame(b._BLACK)
     players.append(player1)
-    player2 = BeginnerLevelPlayer.myPlayer()   #random (white)
+    player2 = RandomPlayer.myPlayer()   #random (white)
     player2.newGame(b._WHITE)
     players.append(player2)
     
@@ -149,8 +149,8 @@ def runMultipleGame(x):
     for i in range (0, x, 1):
         print("")
         print("Test: ", i+1)
-#         (a1,a2) = secondSet()
-        (a1,a2) = firstSet()
+        (a1,a2) = thirdSet()
+#         (a1,a2) = firstSet()
         game1 += mainLauncher(a1,a2)
         print("* Statistiques")
         print("    IA:", game1, "over", i+1)
