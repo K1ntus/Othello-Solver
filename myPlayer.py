@@ -171,7 +171,7 @@ class myPlayer(PlayerInterface):
         maxValue =  alpha
         moves = self._board.legal_moves()
         if depth == self._maxDepth or len(moves) == 0:
-            (val) = (evaluator.get_corner_score(self))
+            (val) = (evaluator.eval(self, len(moves)))
             return (val, None)
         
         move = None
@@ -188,9 +188,9 @@ class myPlayer(PlayerInterface):
                 if(parallelization):
                     q = Queue()
                     
-                    proc = Process(target=self.MinAlphaBeta_wrapper,  args=(alpha, beta, depth + 1, q))
-                    proc.start()
+                    proc = Process(target=self.MinAlphaBeta_wrapper,  args=(alpha, beta, depth +1, q))
                     proc.join()
+                    proc.start()
                     
                     value = q.get()
                     
@@ -203,7 +203,7 @@ class myPlayer(PlayerInterface):
                     lock.release()
                     
                 else:
-                    value = self.MinAlphaBeta(alpha, beta, depth + 1)
+                    value = self.MinAlphaBeta(alpha, beta, depth +1 )
                         
                     if(value > maxValue):
                         maxValue = value
@@ -283,11 +283,11 @@ class myPlayer(PlayerInterface):
         minValue =  beta
         
         moves = self._board.legal_moves()
-#         if depth == self._maxDepth or len(moves) == 0:
-#             (val) = (evaluator.get_corner_score(self))
+        if depth == self._maxDepth or len(moves) == 0:
+            (val) = (evaluator.eval(self, len(moves)))
 #             print("Reached End MinAlpha with val:", val)
 #             time.sleep(1)
-#             return (val)
+            return (val)
         value = 0
         for m in self._board.legal_moves():
             if(depth < self._maxDepth -1):

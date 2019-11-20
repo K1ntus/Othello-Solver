@@ -41,11 +41,18 @@ def get_corner_score( my_player):
 def eval(player, nb_move):
     res = 0
     res += get_corner_score(player)
-    res += evaluateBoard(player._board)
+    (b,w) = evaluateBoard(player._board)
+    if(player._mycolor is Reversi.Board._BLACK):
+        res += b
+    else:
+        res += w
+    
     
     res += get_disc_parity_score(player)
     
-    res += get_next_corner_score(player._board, nb_move)    
+    res += get_next_corner_score(player._board)    
+    
+    res += get_mobility_score(player, nb_move)
     
     return res
 
@@ -72,7 +79,6 @@ def evaluateBoard(board):
 # count the score if the player can place make a legal move on the corners
 def get_next_corner_score(board):
     #     get all legal moves
-    board.pop()
     last_index = board.get_board_size() - 1
     moves = board.legal_moves()
     score = 100
