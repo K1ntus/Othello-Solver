@@ -22,25 +22,13 @@ def get_corner_score(user):
         
 #     score = (my_score - enemy_score)
 #     print("Score Enemy:", enemy_score, "My Score:", my_score)
-    if(score >= 0):
-        print("POS SCORE: ", score)
+#     if(score >= 0):
+#         print("POS SCORE: ", score)
 #     else:
 #         print("NEG SCORE:", score)
     return score
 
 
-# 
-# def getNumberPoints(_board, _mycolor, move):
-#     (current_point_white, current_point_black) = _board.get_nb_pieces()
-#     _board.push(move)
-#     (new_point_white, new_point_black) = _board.get_nb_pieces()
-#     _board.pop()
-#     
-#     if(_mycolor == 1): #black
-#         return (new_point_black-current_point_black) 
-#     else:
-#         return (new_point_white-current_point_white)
-#      
 
 def evaluateBoard(board):
     nbBlack = 0
@@ -51,9 +39,9 @@ def evaluateBoard(board):
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhite += BoardStaticWeight.weightTable2[y][x]
+                nbWhite += BoardStaticWeight.weightTableStable[y][x]
             elif c is board._BLACK:
-                nbBlack += BoardStaticWeight.weightTable2[y][x]
+                nbBlack += BoardStaticWeight.weightTableStable[y][x]
             else:
                 empty_cells += 1
             x += 1

@@ -30,7 +30,7 @@ class myPlayer(PlayerInterface):
         
         self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, filename=None, start_fresh=False)
         self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
-        self._maxDepth = 6
+        self._maxDepth = 4
         
 #         self._alphaBetaManager = AlphaBeta.AlphaBeta(self)
 #         print(self._board)
@@ -110,7 +110,7 @@ class myPlayer(PlayerInterface):
 #             self._alphaBetaManager.__update__(self)
 #             (val,move) = self._alphaBetaManager.AlphaBetaWrapper(InitDepth = 0, MaxDepth=6, Parallelization = False)
 
-            (val, move) = self.MaxAlphaBeta(self.__alpha__(), self.__beta__(), 0, True)
+            (val, move) = self.MaxAlphaBeta(self.__alpha__(), self.__beta__(), 0, False)
             
         print("Val is:", val)
 #         time.sleep(1)
@@ -172,15 +172,11 @@ class myPlayer(PlayerInterface):
         moves = self._board.legal_moves()
         if depth == self._maxDepth or len(moves) == 0:
             (val) = (evaluator.get_corner_score(self))
-            print("Reached End MaxAlpha with val:", val)
-#             time.sleep(1)
-#             print("Move: with val:", val)
             return (val, None)
         
         move = None
 
-        self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
-
+#         self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
         for m in moves:
 #             print("Alpha:",alpha, flush=True)
 #             print("Beta:",beta, flush=True)
@@ -190,25 +186,15 @@ class myPlayer(PlayerInterface):
             lock.release()
             if(depth < self._maxDepth):
                 if(parallelization):
-#                     p_args = [alpha, beta, depth]
-                    
-#                     processPool.map(self.MinAlphaBeta_wrapper,  ([alpha, beta, depth +1 ]))
                     q = Queue()
+                    
                     proc = Process(target=self.MinAlphaBeta_wrapper,  args=(alpha, beta, depth + 1, q))
                     proc.start()
-                    value = q.get()
                     proc.join()
-#                     value = processPool.map_async(self.MinAlphaBeta_wrapper,  [(alpha, beta, depth +1)])
-#                     value = value.get()
-#                     print("Launched Pool.", flush=True)
-#                     sys.stdout.flush()
-#                     time.sleep(10)
-#                     value = self.MinAlphaBeta(alpha, beta, depth+1)
-#                     sys.stdout.flush()
+                    
+                    value = q.get()
                     
                     lock.acquire()
-    #                 if(depth == alpha_beta_maxDepth):
-    #                     value += self.applyBiais(m)
                         
                     if(value > maxValue):
                         maxValue = value
@@ -218,29 +204,27 @@ class myPlayer(PlayerInterface):
                     
                 else:
                     value = self.MinAlphaBeta(alpha, beta, depth + 1)
-    #                 if(depth == alpha_beta_maxDepth):
-    #                     value += self.applyBiais(m)
                         
                     if(value > maxValue):
                         maxValue = value
                         move = m
                         
-                    
+            
             lock.acquire()
             self._board.pop()
             lock.release()
             
             
-            
+        
             if (maxValue >= beta):
-                print("Nop at depth:", depth)
+#                 print("Nop at depth:", depth)
                 return (maxValue, move)
             
             if(maxValue > alpha):
-                print("Alpha ", alpha, " -> ", maxValue)
+#                 print("Alpha ", alpha, " -> ", maxValue)
                 alpha = maxValue
                 
-        print("Nop2 at depth:", depth)
+#         print("Nop2 at depth:", depth)
         return (maxValue, move)
 
     def MinAlphaBeta_wrapper(self, a,b,d,q):
@@ -257,10 +241,11 @@ class myPlayer(PlayerInterface):
         moves = self._board.legal_moves()
         if depth == self._maxDepth or len(moves) == 0:
             (val) = (evaluator.get_corner_score(self))
-            print("Reached End MinAlpha with val:", val)
+#             print("Reached End MinAlpha with val:", val)
 #             time.sleep(1)
             return (val)
         
+        value = 0
         for m in self._board.legal_moves():
 #             print("Alpha:",alpha, flush=True)
 #             print("Beta:",beta, flush=True)
@@ -271,6 +256,7 @@ class myPlayer(PlayerInterface):
               
             if(depth <= self._maxDepth):
                 (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1, parallelization=False)
+#                 value += v
 #                 if(depth == alpha_beta_maxDepth):
 #                     value += self.applyBiais(m)
                 if(value < minValue):
@@ -281,7 +267,7 @@ class myPlayer(PlayerInterface):
               
               
             if (minValue <= alpha):
-                print("Nop at min depth:", depth)
+#                 print("Nop at min depth:", depth)
                 return minValue
               
             if(minValue < beta):
@@ -294,45 +280,47 @@ class myPlayer(PlayerInterface):
 
 
     def MinAlphaBeta(self, alpha, beta, depth):
-#         global self._maxDepth
-#         print("TODO")
-        # 10  : win
-        # 0   : draw
-        # -10 : lose
         minValue =  beta
         
         moves = self._board.legal_moves()
-        if depth == self._maxDepth or len(moves) == 0:
-            (val) = (evaluator.get_corner_score(self))
-            print("Reached End MinAlpha with val:", val)
+#         if depth == self._maxDepth or len(moves) == 0:
+#             (val) = (evaluator.get_corner_score(self))
+#             print("Reached End MinAlpha with val:", val)
 #             time.sleep(1)
-            return (val)
-        
+#             return (val)
+        value = 0
         for m in self._board.legal_moves():
-#             print("Alpha:",alpha, flush=True)
-#             print("Beta:",beta, flush=True)
-#             time.sleep(0.5)
-            lock.acquire()
-            self._board.push(m)
-            lock.release()
+            if(depth < self._maxDepth -1):
+                lock.acquire()
+                self._board.push(m)
+                lock.release()
             
-            if(depth < self._maxDepth):
                 (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1)
-#                 if(depth == alpha_beta_maxDepth):
-#                     value += self.applyBiais(m)
+                
+                lock.acquire()
+                self._board.pop()
+                lock.release()
                 if(value < minValue ):
-                    minValue = value#self.getNumberPoints(m)
-            lock.acquire()
-            self._board.pop()
-            lock.release()
+                    minValue = value
+                if (minValue <= alpha):
+                    return minValue
+                     
+                if(minValue < beta):
+                    beta = minValue
+            else:
+                lock.acquire()
+                self._board.push(m)
+                lock.release()
+            
+                (v,_) = self.MaxAlphaBeta(alpha, beta, depth + 1)
+                value += v
+                
+                lock.acquire()
+                self._board.pop()
+                lock.release()
+            
+        return value / len(moves)
             
             
-            if (minValue <= alpha):
-                print("Nop at min depth:", depth)
-                return minValue
             
-            if(minValue < beta):
-                print("Beta ", beta, " -> ", minValue)
-                beta = minValue
-        return minValue
-
+            
