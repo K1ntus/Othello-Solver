@@ -51,9 +51,9 @@ def evaluateBoard(board):
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhite += BoardStaticWeight.weightTable2[x][y]
+                nbWhite += BoardStaticWeight.weightTable2[y][x]
             elif c is board._BLACK:
-                nbBlack += BoardStaticWeight.weightTable2[x][y]
+                nbBlack += BoardStaticWeight.weightTable2[y][x]
             else:
                 empty_cells += 1
             x += 1

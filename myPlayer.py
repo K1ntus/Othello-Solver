@@ -30,7 +30,7 @@ class myPlayer(PlayerInterface):
         
         self._bloomTable = BloomFilter(max_elements=10000, error_rate=0.1, filename=None, start_fresh=False)
         self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
-        self._maxDepth = 2
+        self._maxDepth = 6
         
 #         self._alphaBetaManager = AlphaBeta.AlphaBeta(self)
 #         print(self._board)
