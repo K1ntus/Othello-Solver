@@ -108,7 +108,7 @@ class myPlayer(PlayerInterface):
 #             self._alphaBetaManager.__update__(self)
 #             (val,move) = self._alphaBetaManager.AlphaBetaWrapper(InitDepth = 0, MaxDepth=6, Parallelization = False)
 
-            (val, move) = self._minmax_with_alpha_beta()
+            (val, move) = self._minmax_with_alpha_beta(Parallelization=True)
         print("")
         print("")
         print("")
@@ -167,7 +167,7 @@ class myPlayer(PlayerInterface):
         
         
         
-    def _minmax_with_alpha_beta(self, alphaInit = 0, betaInit = 0, depth = 5, parallelization = False):
+    def _minmax_with_alpha_beta(self, alphaInit = 0, betaInit = 0, depth = 4, Parallelization = False):
         moves = self._board.legal_moves()
         #print "leagal move" + str(moves)
 #         if not isinstance(moves, list):
@@ -184,17 +184,42 @@ class myPlayer(PlayerInterface):
         #ply = 4
         #will define ply later;
         for m in moves:
-            self._board.push(m)
-            score = self.min_score_alpha_beta(depth, bestscore, self.__beta__())
+            score = bestscore
+            move = m   
+            if(Parallelization):
+                q = Queue()
+                 
+                proc = Process(target=self.alphaBetaParallelizationWrapper,  args=(depth, bestscore, self.__beta__(), m))
+                proc.start()
+                proc.join()
+                
+                (score, _) = q.get()      
+            else:
+
+                (score)  = self.alphaBetaNoParallelizationWrapper(depth, bestscore, self.__beta__(), m)
+
             if score > bestscore:
                 bestscore = score
-                return_move = m
-                #print "return move" + str(return_move) + "best score" + str(bestscore)
-            self._board.pop()
+                return_move = move
 
         return (bestscore,return_move)
 
-# Also the max and min value function:
+    def alphaBetaNoParallelizationWrapper(self, depth, alpha, beta, move):
+        score = self.min_score_alpha_beta(depth, alpha, self.__beta__())
+        if score > alpha:            
+            alpha = score
+            #print "return move" + str(return_move) + "best score" + str(bestscore)
+        return (alpha)
+    
+    
+    def alphaBetaParallelizationWrapper(self, depth, alpha, beta, move):
+        score = self.min_score_alpha_beta(depth, alpha, self.__beta__())
+        if score > alpha:            
+            alpha = score
+            #print "return move" + str(return_move) + "best score" + str(bestscore)
+        return (alpha)
+        
+    # Also the max and min value function:
     def max_score_alpha_beta(self, depth, alpha, beta):
         moves = self._board.legal_moves()
         if depth == 0:
@@ -203,10 +228,14 @@ class myPlayer(PlayerInterface):
         bestscore = alpha
         
         
-        for m in moves:            
-            self._board.push(m)
+        for move in moves:          
+            lock.acquire()
+            self._board.push(move)
+            lock.release()
             score = self.min_score_alpha_beta(depth-1, alpha, beta)
+            lock.acquire()
             self._board.pop()
+            lock.release()
             
             if score > bestscore:
                 bestscore = score
@@ -224,10 +253,14 @@ class myPlayer(PlayerInterface):
         bestscore = beta
         
         
-        for m in moves:            
-            self._board.push(m)
+        for move in moves:         
+            lock.acquire()
+            self._board.push(move)
+            lock.release()
             score = self.max_score_alpha_beta( depth-1, alpha, beta)
+            lock.acquire()
             self._board.pop()
+            lock.release()
             
             if score < bestscore:
                 bestscore = score
