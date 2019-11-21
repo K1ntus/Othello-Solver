@@ -217,4 +217,205 @@ class AlphaBeta:
             if(minValue < beta):
                 beta = minValue
         return minValue
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+#     
+# #https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python/
+#     def MaxAlphaBeta(self, alpha, beta, depth, parallelization = False):
+# #         global alpha_beta_maxDepth
+# #         time.sleep(1)
+#         # 10  : win
+#         # 0   : draw
+#         # -10 : lose
+#         maxValue =  alpha
+#         moves = self._board.legal_moves()
+#         move = None
+#         
+#         if depth == self._maxDepth:# or len(moves) == 0:
+#             (val) = (evaluator.getHeuristicValue(self, len(moves)))
+#             return (val, move)
+#         
+# 
+# #         self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
+#         for m in moves:
+# #             print("Alpha:",alpha, flush=True)
+# #             print("Beta:",beta, flush=True)
+#             
+#             lock.acquire()
+#             self._board.push(m)
+#             lock.release()
+#             if(depth < self._maxDepth):
+#                 if(parallelization):
+#                     q = Queue()
+#                     
+#                     proc = Process(target=self.MinAlphaBeta_wrapper,  args=(alpha, beta, depth +1, q))
+#                     proc.join()
+#                     proc.start()
+#                     
+#                     (value, _) = q.get()
+#                     
+#                     lock.acquire()
+#                         
+#                     if(value > maxValue):
+#                         maxValue = value
+#                         move = m
+#                         
+#                     lock.release()
+#                     
+#         
+#                     
+#                 else:
+#                     (value, _) = self.MinAlphaBeta(alpha, beta, depth +1 )
+#                         
+#                     if(value > maxValue):
+#                         maxValue = value
+#                         move = m
+#                         
+#             
+#             lock.acquire()
+#             self._board.pop()
+#             lock.release()
+#             
+#         
+#             if (maxValue >= beta):
+# #                 print("Nop at depth:", depth)
+#                 return (maxValue, move)
+#              
+#             if(maxValue > alpha):
+# #                 print("Alpha ", alpha, " -> ", maxValue)
+#                 alpha = maxValue
+#             
+#                 
+# #         print("Nop2 at depth:", depth)
+#         return (maxValue, move)
+# 
+#     def MinAlphaBeta_wrapper(self, a,b,d,q):
+#         q.put(self.MinAlphaBeta_pool(a,b,d))
+# 
+#     def MinAlphaBeta_pool(self, alpha, beta, depth):
+# #         global self._maxDepth
+#         
+#         # 10  : win
+#         # 0   : draw
+#         # -10 : lose
+#         minValue = beta
+#         
+#         moves = self._board.legal_moves()
+#         move = None
+#         if depth == self._maxDepth:# or len(moves) == 0:
+#             (val) = (evaluator.getHeuristicValue(self, len(moves)))
+# #             print("Reached End MinAlpha with val:", val)
+# #             time.sleep(1)
+#             return (val, move)
+#         
+#         value = 0
+#         for m in self._board.legal_moves():
+# #             print("Alpha:",alpha, flush=True)
+# #             print("Beta:",beta, flush=True)
+# #             time.sleep(0.5)
+#             lock.acquire()
+#             self._board.push(m)
+#             lock.release()
+#               
+#             if(depth <= self._maxDepth):
+#                 (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1, parallelization=False)
+# #                 value += v
+# #                 if(depth == alpha_beta_maxDepth):
+# #                     value += self.applyBiais(m)
+#                 if(value < minValue):
+#                     move = m
+#                     minValue = value#self.getNumberPoints(m)
+#             lock.acquire()
+#             self._board.pop()
+#             lock.release()
+#               
+#               
+#             if (minValue <= alpha):
+# #                 print("Nop at min depth:", depth)
+#                 return (minValue, move)
+#               
+#             if(minValue < beta):
+#                 beta = minValue
+#         return (minValue, move)
+# 
+# #         moves = [m for m in self._board.legal_moves()]
+# #         
+# #         return 1
+# 
+# 
+#     def MinAlphaBeta(self, alpha, beta, depth):
+#         minValue =  beta
+#         
+#         moves = self._board.legal_moves()
+#         move = None
+#         if depth == self._maxDepth:# or len(moves) == 0:
+#             (val) = (evaluator.getHeuristicValue(self, len(moves)))
+# #             print("Reached End MinAlpha with val:", val)
+# #             time.sleep(1)
+#             return (val, move)
+#         value = 0
+#         for m in self._board.legal_moves():
+#             if(depth < self._maxDepth -1):
+#                 lock.acquire()
+#                 self._board.push(m)
+#                 lock.release()
+#             
+#                 (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1)
+#                 
+#                 lock.acquire()
+#                 self._board.pop()
+#                 lock.release()
+#             else:
+#                 lock.acquire()
+#                 self._board.push(m)
+#                 lock.release()
+#             
+#                 (v,_) = self.MaxAlphaBeta(alpha, beta, depth + 1)
+#                 value += v
+#                 
+#                 lock.acquire()
+#                 self._board.pop()
+#                 lock.release()
+#             
+#             if(value < minValue ):
+#                 minValue = value
+#                 move = m
+#             if (minValue <= alpha):
+#                 return (minValue, move)
+#                  
+#             if(minValue < beta):
+#                 beta = minValue
+#                 
+#         return (minValue, move)
+#             
+#             
+#             
+            
 

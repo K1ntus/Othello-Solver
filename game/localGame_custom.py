@@ -57,13 +57,13 @@ def thirdSet():
 
 def runMatch(b, players):
     
-    players = []
-    player1 = myPlayer.myPlayer()   #IA (black)
-    player1.newGame(b._BLACK)
-    players.append(player1)
-    player2 = BeginnerLevelPlayer2.myPlayer()   #random (white)
-    player2.newGame(b._WHITE)
-    players.append(player2)
+#     players = []
+#     player1 = myPlayer.myPlayer()   #IA (black)
+#     player1.newGame(b._BLACK)
+#     players.append(player1)
+#     player2 = BeginnerLevelPlayer2.myPlayer()   #random (white)
+#     player2.newGame(b._WHITE)
+#     players.append(player2)
     
     totalTime = [0,0] # total real time for each player
     nextplayer = 0
@@ -212,7 +212,7 @@ with open('../logs/log.txt', 'w') as f:
             with open(f, 'wb') as to_file:
                 os.dup2(to_file.fileno(), stdout_fd)  # $ exec > to
             
-time.sleep(2)
+time.sleep(0.5)
 
 print("")
 print("#################")

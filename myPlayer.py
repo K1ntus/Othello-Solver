@@ -7,6 +7,7 @@
 
 from multiprocessing import Process, Lock, Queue
 from random import randint
+import sys
 import time
 
 from bloom import BloomFilter
@@ -14,12 +15,13 @@ from bloom import __utils__ as Utils
 from game.board import Reversi
 from game.board.playerInterface import *
 from intelligence.heuristics import evaluator
-# from intelligence.movemanager import AlphaBeta
 from intelligence.movemanager.MoveManager import MoveManager
 from intelligence.movemanager.OpeningMove import OpeningMove
 from player.ai.BeginnerLevelPlayer import WIDTH, HEIGHT
+from h5py.h5f import flush
 
 
+# from intelligence.movemanager import AlphaBeta
 lock = Lock()
 class myPlayer(PlayerInterface):
 
@@ -48,7 +50,7 @@ class myPlayer(PlayerInterface):
         move = self.moveManager()
             
         if(move == None):
-            (move, _) = MoveManager.MoveForGameBeginning(self, [m for m in self._board.legal_moves()])
+            (move, _) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves())
         self._board.push(move)
 #         print("I am playing ", move)
 
@@ -82,11 +84,6 @@ class myPlayer(PlayerInterface):
             print("I lost :(!!")
 
 
-    def __alpha__(self):
-        return 0
-    
-    def __beta__(self):
-        return 10000000
 
 #begin         game = ~random
 #middle        game = minimax
@@ -94,13 +91,14 @@ class myPlayer(PlayerInterface):
     def moveManager(self):
         move = None
         (nb1,nb2) = self._board.get_nb_pieces()    
-        val = -1 
+        val = 0
         
         
         if(nb1+nb2 < 12): #kind of random
             print("Check if ", Utils.HashingOperation.BoardToHashCode(self._board), "is present")
-            
             move = self._openingMover.GetMove(self._board)
+            if(move is not None):
+                val  = -666
 #         elif (WIDTH*HEIGHT - (nb1+nb2) < 25):   #minmax
 #             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
 # #             self._alphaBetaManager.__update__(self)
@@ -110,8 +108,10 @@ class myPlayer(PlayerInterface):
 #             self._alphaBetaManager.__update__(self)
 #             (val,move) = self._alphaBetaManager.AlphaBetaWrapper(InitDepth = 0, MaxDepth=6, Parallelization = False)
 
-            (val, move) = self.MaxAlphaBeta(self.__alpha__(), self.__beta__(), 0, False)
-            
+            (val, move) = self._minmax_with_alpha_beta()
+        print("")
+        print("")
+        print("")
         print("Val is:", val)
 #         time.sleep(1)
         return move
@@ -154,6 +154,11 @@ class myPlayer(PlayerInterface):
 
 
 
+    def __alpha__(self):
+        return 0#-10000000
+    
+    def __beta__(self):
+        return 10000000
 
     
 #     def AlphaBetaWrapper(self, InitDepth = 0, MaxDepth = 8, Parallelization = False):
@@ -161,166 +166,75 @@ class myPlayer(PlayerInterface):
 #         return self.MaxAlphaBeta(InitDepth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), Parallelization)
         
         
-#https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python/
-    def MaxAlphaBeta(self, alpha, beta, depth, parallelization = False):
-#         global alpha_beta_maxDepth
-#         time.sleep(1)
-        # 10  : win
-        # 0   : draw
-        # -10 : lose
-        maxValue =  alpha
-        moves = self._board.legal_moves()
-        if depth == self._maxDepth or len(moves) == 0:
-            (val) = (evaluator.eval(self, len(moves)))
-            return (val, None)
         
-        move = None
+    def _minmax_with_alpha_beta(self, alphaInit = 0, betaInit = 0, depth = 5, parallelization = False):
+        moves = self._board.legal_moves()
+        #print "leagal move" + str(moves)
+#         if not isinstance(moves, list):
+#             score = self._board.count()
+#             (scoreW, scoreB) = self._board.get_nb_pieces()
+#             if(self._mycolor is Reversi.Board._BLACK):
+#                 return scoreW, None
+#             return scoreB, None
 
-#         self._bloomTable.__iadd__(key=Utils.HashingOperation.BoardToHashCode(self._board))
+        #print ply
+        return_move = None
+        bestscore = self.__alpha__()
+        #print "using alpha_beta best score:"+ str(bestscore)
+        #ply = 4
+        #will define ply later;
         for m in moves:
-#             print("Alpha:",alpha, flush=True)
-#             print("Beta:",beta, flush=True)
-            
-            lock.acquire()
             self._board.push(m)
-            lock.release()
-            if(depth < self._maxDepth):
-                if(parallelization):
-                    q = Queue()
-                    
-                    proc = Process(target=self.MinAlphaBeta_wrapper,  args=(alpha, beta, depth +1, q))
-                    proc.join()
-                    proc.start()
-                    
-                    value = q.get()
-                    
-                    lock.acquire()
-                        
-                    if(value > maxValue):
-                        maxValue = value
-                        move = m
-                        
-                    lock.release()
-                    
-                else:
-                    value = self.MinAlphaBeta(alpha, beta, depth +1 )
-                        
-                    if(value > maxValue):
-                        maxValue = value
-                        move = m
-                        
-            
-            lock.acquire()
+            score = self.min_score_alpha_beta(depth, bestscore, self.__beta__())
+            if score > bestscore:
+                bestscore = score
+                return_move = m
+                #print "return move" + str(return_move) + "best score" + str(bestscore)
             self._board.pop()
-            lock.release()
-            
-            
-        
-            if (maxValue >= beta):
-#                 print("Nop at depth:", depth)
-                return (maxValue, move)
-            
-            if(maxValue > alpha):
-#                 print("Alpha ", alpha, " -> ", maxValue)
-                alpha = maxValue
-                
-#         print("Nop2 at depth:", depth)
-        return (maxValue, move)
 
-    def MinAlphaBeta_wrapper(self, a,b,d,q):
-        q.put(self.MinAlphaBeta_pool(a,b,d))
+        return (bestscore,return_move)
 
-    def MinAlphaBeta_pool(self, alpha, beta, depth):
-#         global self._maxDepth
-        
-        # 10  : win
-        # 0   : draw
-        # -10 : lose
-        minValue = beta
-        
+# Also the max and min value function:
+    def max_score_alpha_beta(self, depth, alpha, beta):
         moves = self._board.legal_moves()
-        if depth == self._maxDepth or len(moves) == 0:
-            (val) = (evaluator.eval(self, len(moves)))
-#             print("Reached End MinAlpha with val:", val)
-#             time.sleep(1)
-            return (val)
+        if depth == 0:
+            return (evaluator.getHeuristicValue(self, len(moves)))
         
-        value = 0
-        for m in self._board.legal_moves():
-#             print("Alpha:",alpha, flush=True)
-#             print("Beta:",beta, flush=True)
-#             time.sleep(0.5)
-            lock.acquire()
+        bestscore = alpha
+        
+        
+        for m in moves:            
             self._board.push(m)
-            lock.release()
-              
-            if(depth <= self._maxDepth):
-                (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1, parallelization=False)
-#                 value += v
-#                 if(depth == alpha_beta_maxDepth):
-#                     value += self.applyBiais(m)
-                if(value < minValue):
-                    minValue = value#self.getNumberPoints(m)
-            lock.acquire()
+            score = self.min_score_alpha_beta(depth-1, alpha, beta)
             self._board.pop()
-            lock.release()
-              
-              
-            if (minValue <= alpha):
-#                 print("Nop at min depth:", depth)
-                return minValue
-              
-            if(minValue < beta):
-                beta = minValue
-        return minValue
+            
+            if score > bestscore:
+                bestscore = score
+            if bestscore >= beta:
+                return bestscore
+            
+            alpha = max (alpha,bestscore)
+        return bestscore
 
-#         moves = [m for m in self._board.legal_moves()]
-#         
-#         return 1
-
-
-    def MinAlphaBeta(self, alpha, beta, depth):
-        minValue =  beta
-        
+    def min_score_alpha_beta(self, depth, alpha, beta):
         moves = self._board.legal_moves()
-        if depth == self._maxDepth or len(moves) == 0:
-            (val) = (evaluator.eval(self, len(moves)))
-#             print("Reached End MinAlpha with val:", val)
-#             time.sleep(1)
-            return (val)
-        value = 0
-        for m in self._board.legal_moves():
-            if(depth < self._maxDepth -1):
-                lock.acquire()
-                self._board.push(m)
-                lock.release()
+        if depth == 0:
+            return (evaluator.getHeuristicValue(self, len(moves)))
+        
+        bestscore = beta
+        
+        
+        for m in moves:            
+            self._board.push(m)
+            score = self.max_score_alpha_beta( depth-1, alpha, beta)
+            self._board.pop()
             
-                (value, _) = self.MaxAlphaBeta(alpha, beta, depth + 1)
-                
-                lock.acquire()
-                self._board.pop()
-                lock.release()
-                if(value < minValue ):
-                    minValue = value
-                if (minValue <= alpha):
-                    return minValue
-                     
-                if(minValue < beta):
-                    beta = minValue
-            else:
-                lock.acquire()
-                self._board.push(m)
-                lock.release()
+            if score < bestscore:
+                bestscore = score
+            if bestscore <= alpha:
+                return bestscore
             
-                (v,_) = self.MaxAlphaBeta(alpha, beta, depth + 1)
-                value += v
-                
-                lock.acquire()
-                self._board.pop()
-                lock.release()
-            
-        return value / len(moves)
-            
-            
-            
-            
+            beta = min(beta,bestscore)
+        return bestscore
+      
+      

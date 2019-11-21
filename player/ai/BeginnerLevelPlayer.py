@@ -67,9 +67,9 @@ class myPlayer(PlayerInterface):
         return 0
         
         
-    def getNumberPoints(self, move):
+    def getNumberPoints(self, move, nbmove):
         self._board.push(move)
-        score = evaluator.get_corner_score(self)
+        score = evaluator.getHeuristicValue(self, nbmove)
         self._board.pop()
         print("Returned: ", score)
         
@@ -81,12 +81,13 @@ class myPlayer(PlayerInterface):
         best_move = moves[randint(0,len(moves)-1)]
         max_value = + self.applyBiais(best_move)
         for m in moves:
-            current = self.getNumberPoints(m) + self.applyBiais(m)
-            self._board.pop()
+            current = self.getNumberPoints(m, len(moves)) + self.applyBiais(m)
+#             self._board.pop()
             if(current > max_value):
                 max_value = current
                 best_move = m
                 
+        print("Playing a move with val: ", max_value)
         return (best_move, max_value)
         
       

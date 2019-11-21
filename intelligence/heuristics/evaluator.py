@@ -36,24 +36,74 @@ def get_corner_score( my_player):
     except ZeroDivisionError:
         score =  100 * (my_score - enemy_score) / (my_score + 1 + enemy_score)
 
-    return score
+    return (my_score, enemy_score)
 
-def eval(player, nb_move):
-    res = 0
-    res += get_corner_score(player)
-    (b,w) = evaluateBoard(player._board)
+def getHeuristicValue(player, nb_move):
+    (w,b) = evaluateBoard(player._board)
+#     (vb1,vw1) =  get_corner_score(player)
+#     vb1 = vb1 * 0.5
+#     vw1 = vw1 * 0.5
+# #     (vb2,vw2) = get_next_corner_score(player._board)
+#     (vb3,vw3) = (0,0)#get_disc_parity_score(player._board)
+#     vb3 = vb3 * 0.2
+#     vw3 = vw3 * 0.2
+    me = 0
+    enemy = 0
+    
+    
+    
     if(player._mycolor is Reversi.Board._BLACK):
-        res += b
+        me += w
+        enemy += b
+#         me += vb1
+# #         me += vb2
+#         me += vb3
+#            
+#         enemy += vw1
+# #         enemy += vw2
+#         enemy += vw3
     else:
-        res += w
+        enemy += w
+        me += b
+#         enemy += vb1
+# #         enemy += vb2
+#         enemy += vb3
+#           
+#         me += vw1
+# #         me += vw2
+#         me += vw3
+#     enemy += 1
     
+    try :
+        res = 100 * ((me - enemy) / (me+enemy))
+    except ZeroDivisionError :
+        res = 100 * ((me - enemy) / (me+enemy +1))
     
-    res += get_disc_parity_score(player)
-    
-    res += get_next_corner_score(player._board)    
-    
-    res += get_mobility_score(player, nb_move)
-    
+        
+#     res = 0
+#     res += get_corner_score(player)
+#     (b,w) = evaluateBoard(player._board)
+#     
+#     if(player._mycolor is Reversi.Board._BLACK):
+#         res += b
+#     else:
+#         res += w
+# #     if(player._mycolor is Reversi.Board._BLACK):
+# #         w = 1
+# #         res += 100 * ((b - w)/(b+w))
+# #     else:
+# #         b = 1
+# #         res += 100 * ((w - b)/(b+w))
+#     
+#     
+#     res += get_disc_parity_score(player)
+#     
+#     res += get_next_corner_score(player._board)    
+#     
+# #     res += get_mobility_score(player, nb_move)
+#     
+
+#     print("Value found: ", res)
     return res
 
 def evaluateBoard(board):
@@ -65,14 +115,13 @@ def evaluateBoard(board):
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhite += BoardStaticWeight.weightTableStable[y][x]
+                nbWhite += BoardStaticWeight.weightTable1[y][x]
             elif c is board._BLACK:
-                nbBlack += BoardStaticWeight.weightTableStable[y][x]
+                nbBlack += BoardStaticWeight.weightTable1[y][x]
             else:
                 empty_cells += 1
             x += 1
         y += 1
-    
     
     return (nbBlack, nbWhite)
 
@@ -110,7 +159,8 @@ def get_disc_parity_score(player):
     board = player._board
     nb_black = board._nbBLACK
     nb_white = board._nbWHITE
-    if player._mycolor == board._BLACK :
-        return 100 * (nb_black-nb_white)/(nb_black+nb_white)
-    elif player._mycolor == board._WHITE:
-        return 100 * (nb_white-nb_black)/(nb_black+nb_white)
+#     if player._mycolor == board._BLACK :
+#         return 100 * (nb_black-nb_white)/(nb_black+nb_white)
+#     elif player._mycolor == board._WHITE:
+#         return 100 * (nb_white-nb_black)/(nb_black+nb_white)
+    return (nb_black, nb_white)
