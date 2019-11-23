@@ -19,7 +19,7 @@ class HashingOperation(object):
     '''
 
     @staticmethod
-    def BoardToHashCode(reversi_game):
+    def BoardToHashCode(reversi_game, score = 0):
         board_str = HashingOperation.board_to_str(reversi_game)
         return HashingOperation.StringToHashCode(board_str)
     

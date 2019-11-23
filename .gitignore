@@ -1,5 +1,5 @@
 logs/
 log.txt
 *log*
-
-__pycache__
+.settings/org.eclipse.core.resources.prefs
+__pycache__/

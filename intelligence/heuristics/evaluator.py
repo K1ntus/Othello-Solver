@@ -1,7 +1,9 @@
+import math
 import time
 
 from game.board import Reversi
 from intelligence.heuristics.BoardWeight import BoardStaticWeight
+import numpy as np
 
 
 # count the corner score on the board of the player
@@ -49,81 +51,66 @@ def getHeuristicValue(player, nb_move):
 #     vw3 = vw3 * 0.2
     me = 0
     enemy = 0
+    endGame = False
+    if player._board.is_game_over():
+        endGame = True
     
     
     
     if(player._mycolor is Reversi.Board._BLACK):
         me += w
         enemy += b
-#         me += vb1
-# #         me += vb2
-#         me += vb3
-#            
-#         enemy += vw1
-# #         enemy += vw2
-#         enemy += vw3
     else:
         enemy += w
         me += b
-#         enemy += vb1
-# #         enemy += vb2
-#         enemy += vb3
-#           
-#         me += vw1
-# #         me += vw2
-#         me += vw3
-#     enemy += 1
-    
-    try :
-        res = 100 * ((me - enemy) / (me+enemy))
-    except ZeroDivisionError :
-        res = 100 * ((me - enemy) / (me+enemy +1))
-    
-        
-#     res = 0
-#     res += get_corner_score(player)
-#     (b,w) = evaluateBoard(player._board)
-#     
-#     if(player._mycolor is Reversi.Board._BLACK):
-#         res += b
-#     else:
-#         res += w
-# #     if(player._mycolor is Reversi.Board._BLACK):
-# #         w = 1
-# #         res += 100 * ((b - w)/(b+w))
-# #     else:
-# #         b = 1
-# #         res += 100 * ((w - b)/(b+w))
-#     
-#     
-#     res += get_disc_parity_score(player)
-#     
-#     res += get_next_corner_score(player._board)    
-#     
-# #     res += get_mobility_score(player, nb_move)
-#     
 
-#     print("Value found: ", res)
+    
+
+    res = 100  *  sigmoid(me)
+    
+    if(enemy > me):
+        res = -res
     return res
 
+def sigmoid(val):
+    return 1 / (1 + np.exp(-val))
+
 def evaluateBoard(board):
-    nbBlack = 0
+    nbBlackScored = 0
+    nbWhiteScored = 0
     nbWhite = 0
+    nbBlack = 0
     empty_cells = 0
     y = 0
     for l in board._board:
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhite += BoardStaticWeight.weightTable1[y][x]
+                nbWhiteScored += BoardStaticWeight.weightTable1[y][x]
+                nbWhite += 1
             elif c is board._BLACK:
-                nbBlack += BoardStaticWeight.weightTable1[y][x]
+                nbBlackScored += BoardStaticWeight.weightTable1[y][x]
+                nbBlack += 1
             else:
                 empty_cells += 1
             x += 1
         y += 1
+        
+    if nbWhite < 3:
+        nbWhiteScored = -1000
+    if nbBlack <3:
+        nbBlackScored = -1000
+        
+    if board.is_game_over():
+        if(nbWhite > nbBlack):
+            nbWhiteScored = 1000
+            nbBlackScored = -10000
+        if nbWhite < nbBlack:
+            nbWhiteScored = -10000
+            nbBlackScored = 1000
+            
     
-    return (nbBlack, nbWhite)
+    return (nbBlackScored, nbWhiteScored)
 
 # count the score if the player can place make a legal move on the corners
 def get_next_corner_score(board):
