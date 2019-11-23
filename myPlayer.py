@@ -101,7 +101,7 @@ class myPlayer(PlayerInterface):
 #             (move,val) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves())
             if(move is not None):
                 val  = -666
-        elif (WIDTH*HEIGHT - (nb1+nb2) < 15):   #special depth alpha-beta
+        elif (WIDTH*HEIGHT - (nb1+nb2) < 8):   #special depth alpha-beta
             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
             print("Special depth For Prunning: ", self._maxDepth)
 #             self._alphaBetaManager.__update__(self)
@@ -142,6 +142,9 @@ class myPlayer(PlayerInterface):
     
     def __beta__(self):
         return 101
+    
+    def __minValueForInstanciation__(self):
+        return 99.99
 
     
 #     def AlphaBetaWrapper(self, InitDepth = 0, MaxDepth = 8, Parallelization = False):
@@ -150,7 +153,7 @@ class myPlayer(PlayerInterface):
         
         
         
-    def _minmax_with_alpha_beta(self, alphaInit = 0, betaInit = 0, depth = 6, BloomCheckerFirst=True, Parallelization = False):
+    def _minmax_with_alpha_beta(self, alphaInit = 0, betaInit = 0, depth = 4, BloomCheckerFirst=True, Parallelization = False):
         moves = self._board.legal_moves()
         #print "leagal move" + str(moves)
 #         if not isinstance(moves, list):
@@ -176,8 +179,8 @@ class myPlayer(PlayerInterface):
                 self._board.pop() 
                 res_contain = self._bloomTable.__contains__(key=hashValue)
                 if(res_contain):
-                    print("Find a table with the corresponding move, returning it", score)  
-                    bestscore = 0.99
+                    bestscore = self.__minValueForInstanciation__()
+                    print("Find a table with the corresponding move, returning it", bestscore)  
                     return_move = m
                     break
                     #remove the element from the bloom filter
@@ -200,9 +203,9 @@ class myPlayer(PlayerInterface):
             if score > bestscore:
                 bestscore = score
                 return_move = move
-                if bestscore > 0.99 and BloomCheckerFirst: #instanciate
+                if bestscore >= self.__minValueForInstanciation__() and BloomCheckerFirst: #instanciate
                     self._board.push(m)
-                    print("Instanciate a table with the score", score)  
+#                     print("Instanciate a table with the score", score)  
                     self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
                     self._board.pop() 
 
@@ -235,7 +238,7 @@ class myPlayer(PlayerInterface):
             if(BloomCheckerFirst):
                 hashValue = Utils.HashingOperation.BoardToHashCode(self._board)
                 res_contain = self._bloomTable.__contains__(key=hashValue)
-                if(not res_contain and score > 0.99):
+                if(not res_contain and score > self.__minValueForInstanciation__()):
 #                     print("Instanciate a table with the score", score)  
                     self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
     #             print("Reached bottom of the tree with score:", score)                      
@@ -285,7 +288,8 @@ class myPlayer(PlayerInterface):
                     if(BloomCheckerFirst):
                         hashValue = Utils.HashingOperation.BoardToHashCode(self._board)
                         res_contain = self._bloomTable.__contains__(key=hashValue)
-                        if(not res_contain and minVal >= 0.99):
+                        if(not res_contain and minVal >= self.__minValueForInstanciation__()):
+#                             print("Instanciate a table with the score", score)  
                             self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
                     
                     

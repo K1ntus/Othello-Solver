@@ -150,8 +150,8 @@ def runMultipleGame(x):
         print("")
         print("Test: ", i+1)
 #         (a1,a2) = thirdSet()
-        (a1,a2) = secondSet() #myplayer vs random
-#         (a1,a2) = firstSet()  #myplayer vs beginner strong
+#         (a1,a2) = secondSet() #myplayer vs random
+        (a1,a2) = firstSet()  #myplayer vs beginner strong
         game1 += mainLauncher(a1,a2)
         print("* Statistiques")
         print("    IA:", game1, "over", i+1)
@@ -200,9 +200,8 @@ def fileno(file_or_fd):
     return fd
     
 stdout_fd = sys.stdout.fileno()
-with open('../logs/log_vs_random.txt', 'w') as f:
-# with open('../logs/log.txt', 'w') as f:
-# with open('../logs/log.txt', 'w') as f:
+# with open('../logs/log_vs_random.txt', 'w') as f:
+with open('../logs/log.txt', 'w') as f:
     with redirect_stdout(f):
         print('it now prints to `help.text`')
         

@@ -97,17 +97,17 @@ def evaluateBoard(board):
         y += 1
         
     if nbWhite < 3:
-        nbWhiteScored = -1000
+        nbWhiteScored = -200
     if nbBlack <3:
-        nbBlackScored = -1000
+        nbBlackScored = -200
         
     if board.is_game_over():
         if(nbWhite > nbBlack):
-            nbWhiteScored = 1000
-            nbBlackScored = -10000
+            nbWhiteScored = 500
+            nbBlackScored = -500
         if nbWhite < nbBlack:
-            nbWhiteScored = -10000
-            nbBlackScored = 1000
+            nbWhiteScored = -500
+            nbBlackScored = 500
             
     
     return (nbBlackScored, nbWhiteScored)
