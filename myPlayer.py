@@ -155,7 +155,7 @@ class myPlayer(PlayerInterface):
 
 
     def __alpha__(self):
-        return 0#-10000000
+        return -10000000
     
     def __beta__(self):
         return 10000000
