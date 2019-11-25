@@ -1,7 +1,7 @@
 from game.board import Reversi
 import myPlayer
-# import player.ai.RandomPlayer as Enemy1
-import player.ai.BeginnerLevelPlayer2 as Enemy1
+import player.ai.RandomPlayer as Enemy1
+# import player.ai.BeginnerLevelPlayer2 as Enemy1
 import time
 from io import StringIO
 import sys

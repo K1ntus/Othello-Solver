@@ -10,6 +10,15 @@ class MoveManager(object):
     '''
     classdocs
     '''
+    
+    @staticmethod
+    def __AI_OPENING_MOVE_VALUE__():
+        return 12
+    
+    @staticmethod
+    def __AI_ENDGAME_VALUE__(board):
+        return board._boardsize * board._boardsize - 10 #10 cells are free
+    
 
 
     def __init__(self, params):

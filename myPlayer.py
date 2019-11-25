@@ -4,25 +4,15 @@
 
 
 # The MAIN AI TO DEVELOP
-
-from multiprocessing import Process, Lock, Queue
-from random import randint
-import sys
-import time
-
 from bloom import BloomFilter
 from bloom import __utils__ as Utils
 from game.board import Reversi
 from game.board.playerInterface import *
-from intelligence.heuristics import evaluator
+from intelligence.movemanager.AlphaBeta import AlphaBeta
 from intelligence.movemanager.MoveManager import MoveManager
 from intelligence.movemanager.OpeningMove import OpeningMove
-from player.ai.BeginnerLevelPlayer import WIDTH, HEIGHT
-from h5py.h5f import flush
 
 
-# from intelligence.movemanager import AlphaBeta
-lock = Lock()
 class myPlayer(PlayerInterface):
 
     def __init__(self):
@@ -31,7 +21,6 @@ class myPlayer(PlayerInterface):
         self._BoardScore = None
         
         self._bloomTable = None
-        self._maxDepth = 4
         
 #         self._alphaBetaManager = AlphaBeta.AlphaBeta(self)
 #         print(self._board)
@@ -48,8 +37,6 @@ class myPlayer(PlayerInterface):
         
         move = self.moveManager()
             
-        if(move == None):
-            (move, _) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves())
         self._board.push(move)
 #         print("I am playing ", move)
 
@@ -66,7 +53,6 @@ class myPlayer(PlayerInterface):
 
     def newGame(self, color):
         self._mycolor = color
-#         self._BoardScore = 
         if(color == self._board._BLACK):
             print("Init Black Player ")
         else:
@@ -76,7 +62,7 @@ class myPlayer(PlayerInterface):
         
         self._opponent = 1 if color == 2 else 2
         
-        self._bloomTable = BloomFilter(max_elements=3000, error_rate=0.1, filename=None, start_fresh=False)
+        self._bloomTable = BloomFilter(max_elements=5000, error_rate=0.01, filename=None, start_fresh=False)
 
     def endGame(self, winner):
         if self._mycolor == winner:
@@ -86,29 +72,38 @@ class myPlayer(PlayerInterface):
 
 
 
-#begin         game = ~random
-#middle        game = minimax
-#middle+end    game = alphabeta
     def moveManager(self):
-        move = None
-        (nb1,nb2) = self._board.get_nb_pieces()    
+        (nb1,nb2) = self._board.get_nb_pieces()   
         val = 0
         
-        
-        if(nb1+nb2 < 12): #kind of random
+        # Early-Game: Check opening move in a custom bloom filter
+        if(nb1+nb2 < MoveManager.__AI_OPENING_MOVE_VALUE__()): 
             print("Check if ", Utils.HashingOperation.BoardToHashCode(self._board), "is present")
             move = self._openingMover.GetMove(self._board)
-#             (move,val) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves())
-            if(move is not None):
-                val  = -666
-        elif (WIDTH*HEIGHT - (nb1+nb2) < 8):   #special depth alpha-beta
-            self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
-            print("Special depth For Prunning: ", self._maxDepth)
-#             self._alphaBetaManager.__update__(self)
-#             (val,move) = self._alphaBetaManager.AlphaBetaWrapper(InitDepth = 0, MaxDepth=6, Parallelization = False)
-            (val, move) = self._minmax_with_alpha_beta(Parallelization=False, BloomCheckerFirst=False)
-        else:   #alphabeta
-            (val, move) = self._minmax_with_alpha_beta(Parallelization=False)
+            
+        # End-Game: Special depth alpha-beta
+        elif ((nb1+nb2) > MoveManager.__AI_ENDGAME_VALUE__(self._board)):   
+#             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
+            print("Special depth For Prunning: ", nb1+nb2)
+            (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
+#                                                                 AlphaBeta.__alpha__(), 
+#                                                                 AlphaBeta.__beta__(), 
+                                                                Parallelization=False, 
+                                                                BloomCheckerFirst=False)
+           
+        # Mid-Game: Usual Case. Alpha Beta. Can use the parallelization, or chose to check a bloom filter if a good board has already been find 
+        else:   
+            (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
+#                                                                 AlphaBeta.__alpha__(), 
+#                                                                 AlphaBeta.__beta__(), 
+                                                                depth=4,
+                                                                Parallelization=False, 
+                                                                BloomCheckerFirst=False)
+            
+        # No move has been find, generate one with a simple heuristic
+        if move is None:    
+            (move, _) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves()) 
+            
         print("")
         print("")
         print("")
@@ -118,7 +113,7 @@ class myPlayer(PlayerInterface):
         
 
 
-
+    #bullshit
     def getNumberPoints(self, move):
         (current_point_white, current_point_black) = self._board.get_nb_pieces()
         self._board.push(move)
@@ -132,172 +127,3 @@ class myPlayer(PlayerInterface):
 
 
 
-
-
-
-
-
-    def __alpha__(self):
-        return -99.99
-    
-    def __beta__(self):
-        return 101
-    
-    def __minValueForInstanciation__(self):
-        return 99.99
-
-    
-#     def AlphaBetaWrapper(self, InitDepth = 0, MaxDepth = 8, Parallelization = False):
-#         self._maxDepth = MaxDepth
-#         return self.MaxAlphaBeta(InitDepth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), Parallelization)
-        
-        
-        
-    def _minmax_with_alpha_beta(self, alphaInit = 0, betaInit = 0, depth = 4, BloomCheckerFirst=True, Parallelization = False):
-        moves = self._board.legal_moves()
-        #print "leagal move" + str(moves)
-#         if not isinstance(moves, list):
-#             score = self._board.count()
-#             (scoreW, scoreB) = self._board.get_nb_pieces()
-#             if(self._mycolor is Reversi.Board._BLACK):
-#                 return scoreW, None
-#             return scoreB, None
-
-        #print ply
-        return_move = None
-        bestscore = self.__alpha__()
-        #print "using alpha_beta best score:"+ str(bestscore)
-        #ply = 4
-        #will define ply later;
-        for m in moves:
-            score = bestscore
-            move = m   
-            
-            if(BloomCheckerFirst):
-                self._board.push(m)
-                hashValue = Utils.HashingOperation.BoardToHashCode(self._board)
-                self._board.pop() 
-                res_contain = self._bloomTable.__contains__(key=hashValue)
-                if(res_contain):
-                    bestscore = self.__minValueForInstanciation__()
-                    print("Find a table with the corresponding move, returning it", bestscore)  
-                    return_move = m
-                    break
-                    #remove the element from the bloom filter
-
-#                 return (bestscore, return_move)
-
-                
-            if(Parallelization):
-                q = Queue()
-                 
-                proc = Process(target=self.alphaBetaParallelizationWrapper,  args=(depth, bestscore, self.__beta__(), m, BloomCheckerFirst))
-                proc.start()
-                proc.join()
-                
-                (score, _) = q.get()      
-            else:
-
-                (score)  = self.alphaBetaNoParallelizationWrapper(depth, bestscore, self.__beta__(), m, BloomCheckerFirst)
-
-            if score > bestscore:
-                bestscore = score
-                return_move = move
-                if bestscore >= self.__minValueForInstanciation__() and BloomCheckerFirst: #instanciate
-                    self._board.push(m)
-#                     print("Instanciate a table with the score", score)  
-                    self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
-                    self._board.pop() 
-
-                
-
-
-        return (bestscore,return_move)
-
-    def alphaBetaNoParallelizationWrapper(self, depth, alpha, beta, move, BloomCheckerFirst):
-        score = self.max_score_alpha_beta(depth, alpha, beta, BloomCheckerFirst)
-        if score > alpha:            
-            alpha = score
-            #print "return move" + str(return_move) + "best score" + str(bestscore)
-        return (alpha)
-    
-    
-    def alphaBetaParallelizationWrapper(self, depth, alpha, beta, move, BloomCheckerFirst):
-        score = self.max_score_alpha_beta(depth, alpha, beta, BloomCheckerFirst)
-        if score > alpha:            
-            alpha = score
-            #print "return move" + str(return_move) + "best score" + str(bestscore)
-        return (alpha)
-        
-    # Also the max and min value function:
-    def max_score_alpha_beta(self, depth, alpha, beta, BloomCheckerFirst):
-        moves = self._board.legal_moves()
-        if depth == 0:
-            score = (evaluator.getHeuristicValue(self, len(moves)))
-            
-            if(BloomCheckerFirst):
-                hashValue = Utils.HashingOperation.BoardToHashCode(self._board)
-                res_contain = self._bloomTable.__contains__(key=hashValue)
-                if(not res_contain and score > self.__minValueForInstanciation__()):
-#                     print("Instanciate a table with the score", score)  
-                    self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
-    #             print("Reached bottom of the tree with score:", score)                      
-            return score
-        
-        maxVal = self.__alpha__()
-        
-        for move in moves:          
-            self._board.push(move)
-            score = self.min_score_alpha_beta(depth-1, alpha, beta, BloomCheckerFirst)
-            self._board.pop()
-            
-            if score > maxVal:
-                maxVal = score
-                    
-                if maxVal >= beta:
-                    return maxVal
-            
-                if(maxVal > alpha):
-                    alpha = maxVal
-                    
-                    
-                    
-            
-        return alpha
-
-    def min_score_alpha_beta(self, depth, alpha, beta, BloomCheckerFirst):
-        moves = self._board.legal_moves()
-        if depth == 0:
-            score = (evaluator.getHeuristicValue(self, len(moves)))
-                             
-            return score
-        
-        
-        minVal = self.__beta__()
-        
-        for move in moves:         
-            self._board.push(move)
-            score = self.max_score_alpha_beta( depth-1, alpha, beta, BloomCheckerFirst)
-            self._board.pop()
-            
-            if score < minVal:
-                minVal = score
-                
-                if(minVal < beta):
-                    beta = minVal
-                    if(BloomCheckerFirst):
-                        hashValue = Utils.HashingOperation.BoardToHashCode(self._board)
-                        res_contain = self._bloomTable.__contains__(key=hashValue)
-                        if(not res_contain and minVal >= self.__minValueForInstanciation__()):
-#                             print("Instanciate a table with the score", score)  
-                            self._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(self._board))
-                    
-                    
-                    
-                if minVal <= alpha:
-                    return minVal
-                
-            
-        return beta
-      
-      

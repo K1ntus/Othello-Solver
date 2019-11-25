@@ -45,10 +45,10 @@ def thirdSet():
     b = Reversi.Board(10)
     
     players = []
-    player1 = BeginnerLevelPlayer.myPlayer()   #IA (black)
+    player1 = myPlayer.myPlayer()   #IA (black)
     player1.newGame(b._BLACK)
     players.append(player1)
-    player2 = RandomPlayer.myPlayer()   #random (white)
+    player2 = myPlayer.myPlayer()   #IA (white)
     player2.newGame(b._WHITE)
     players.append(player2)
     
@@ -142,16 +142,14 @@ def mainLauncher(b, players):
         return 0
 
 def runMultipleGame(x):
-    median = 0
     game1 = 0
-    game2 = 0
     
     for i in range (0, x, 1):
         print("")
         print("Test: ", i+1)
-#         (a1,a2) = thirdSet()
-#         (a1,a2) = secondSet() #myplayer vs random
-        (a1,a2) = firstSet()  #myplayer vs beginner strong
+#         (a1,a2) = thirdSet()      #myPlayer vs myPlayer
+        (a1,a2) = secondSet()     #myplayer vs random
+#         (a1,a2) = firstSet()        #myplayer vs beginner strong
         game1 += mainLauncher(a1,a2)
         print("* Statistiques")
         print("    IA:", game1, "over", i+1)
@@ -200,8 +198,9 @@ def fileno(file_or_fd):
     return fd
     
 stdout_fd = sys.stdout.fileno()
-# with open('../logs/log_vs_random.txt', 'w') as f:
-with open('../logs/log.txt', 'w') as f:
+with open('../logs/log_vs_random_parallel.txt', 'w') as f:
+# with open('../logs/log.txt', 'w') as f:
+# with open('../logs/log_versus_and_verbose.txt', 'w') as f:
     with redirect_stdout(f):
         print('it now prints to `help.text`')
         

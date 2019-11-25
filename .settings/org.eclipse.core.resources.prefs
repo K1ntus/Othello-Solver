@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//bloom/__init__.py=utf-8
+encoding//bloom/bloom_filter.py=utf-8
 encoding//data/__init__.py=utf-8
 encoding//data/bloom_filter.py=utf-8
 encoding//data/python2x3.py=utf-8

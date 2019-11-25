@@ -1,5 +1,3 @@
-import math
-import time
 
 from game.board import Reversi
 from intelligence.heuristics.BoardWeight import BoardStaticWeight
@@ -41,7 +39,7 @@ def get_corner_score( my_player):
     return (my_score, enemy_score)
 
 def getHeuristicValue(player, nb_move):
-    (w,b) = evaluateBoard(player._board)
+    (w,b, nbWhite, nbBlack) = evaluateBoard(player._board)
 #     (vb1,vw1) =  get_corner_score(player)
 #     vb1 = vb1 * 0.5
 #     vw1 = vw1 * 0.5
@@ -51,25 +49,28 @@ def getHeuristicValue(player, nb_move):
 #     vw3 = vw3 * 0.2
     me = 0
     enemy = 0
-    endGame = False
-    if player._board.is_game_over():
-        endGame = True
-    
     
     
     if(player._mycolor is Reversi.Board._BLACK):
         me += w
         enemy += b
+        res = 100  *  sigmoid(me)
+        if nbBlack <3:
+            return -100
     else:
         enemy += w
         me += b
+        res = 100  *  sigmoid(me)
+        if nbWhite <3:
+            return -100
 
     
 
-    res = 100  *  sigmoid(me)
     
     if(enemy > me):
         res = -res
+        
+        
     return res
 
 def sigmoid(val):
@@ -86,31 +87,19 @@ def evaluateBoard(board):
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhiteScored += BoardStaticWeight.weightTable1[y][x]
+                nbWhiteScored += BoardStaticWeight.weightTableStable[y][x]
                 nbWhite += 1
             elif c is board._BLACK:
-                nbBlackScored += BoardStaticWeight.weightTable1[y][x]
+                nbBlackScored += BoardStaticWeight.weightTableStable[y][x]
                 nbBlack += 1
             else:
                 empty_cells += 1
             x += 1
         y += 1
         
-    if nbWhite < 3:
-        nbWhiteScored = -200
-    if nbBlack <3:
-        nbBlackScored = -200
-        
-    if board.is_game_over():
-        if(nbWhite > nbBlack):
-            nbWhiteScored = 500
-            nbBlackScored = -500
-        if nbWhite < nbBlack:
-            nbWhiteScored = -500
-            nbBlackScored = 500
             
     
-    return (nbBlackScored, nbWhiteScored)
+    return (nbBlackScored, nbWhiteScored, nbBlack, nbWhite)
 
 # count the score if the player can place make a legal move on the corners
 def get_next_corner_score(board):
