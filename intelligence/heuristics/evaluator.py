@@ -54,22 +54,17 @@ def getHeuristicValue(player, nb_move):
     if(player._mycolor is Reversi.Board._BLACK):
         me += w
         enemy += b
-        res = 100  *  sigmoid(me)
-        if nbBlack <3:
-            return -100
     else:
         enemy += w
         me += b
-        res = 100  *  sigmoid(me)
-        if nbWhite <3:
-            return -100
 
     
 
     
     if(enemy > me):
-        res = -res
-        
+        res = -100 * sigmoid(enemy)
+    else:
+        res =  100 * sigmoid(me)
         
     return res
 
@@ -87,10 +82,10 @@ def evaluateBoard(board):
         x = 0
         for c in l:
             if c is board._WHITE:
-                nbWhiteScored += BoardStaticWeight.weightTableStable[y][x]
+                nbWhiteScored += BoardStaticWeight.weightTable1[y][x]
                 nbWhite += 1
             elif c is board._BLACK:
-                nbBlackScored += BoardStaticWeight.weightTableStable[y][x]
+                nbBlackScored += BoardStaticWeight.weightTable1[y][x]
                 nbBlack += 1
             else:
                 empty_cells += 1

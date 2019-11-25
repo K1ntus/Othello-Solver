@@ -58,10 +58,8 @@ class myPlayer(PlayerInterface):
         else:
             print("Init White Player ")
             
-        self._openingMover = OpeningMove(self._mycolor)
-        
-        self._opponent = 1 if color == 2 else 2
-        
+        self._openingMover = OpeningMove(self._mycolor)        
+        self._opponent = 1 if color == 2 else 2        
         self._bloomTable = BloomFilter(max_elements=5000, error_rate=0.01, filename=None, start_fresh=False)
 
     def endGame(self, winner):
@@ -85,18 +83,16 @@ class myPlayer(PlayerInterface):
         elif ((nb1+nb2) > MoveManager.__AI_ENDGAME_VALUE__(self._board)):   
 #             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
             print("Special depth For Prunning: ", nb1+nb2)
-            (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
-#                                                                 AlphaBeta.__alpha__(), 
-#                                                                 AlphaBeta.__beta__(), 
+            (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self,
+                                                                depth=4, 
                                                                 Parallelization=False, 
                                                                 BloomCheckerFirst=False)
            
         # Mid-Game: Usual Case. Alpha Beta. Can use the parallelization, or chose to check a bloom filter if a good board has already been find 
         else:   
+            #Alpha and Beta should be set directly on the AlphaBeta class
             (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
-#                                                                 AlphaBeta.__alpha__(), 
-#                                                                 AlphaBeta.__beta__(), 
-                                                                depth=4,
+                                                                depth=2,
                                                                 Parallelization=False, 
                                                                 BloomCheckerFirst=False)
             

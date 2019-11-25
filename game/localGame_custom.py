@@ -198,7 +198,7 @@ def fileno(file_or_fd):
     return fd
     
 stdout_fd = sys.stdout.fileno()
-with open('../logs/log_vs_random_parallel.txt', 'w') as f:
+with open('../logs/log_vs_random.txt', 'w') as f:
 # with open('../logs/log.txt', 'w') as f:
 # with open('../logs/log_versus_and_verbose.txt', 'w') as f:
     with redirect_stdout(f):
