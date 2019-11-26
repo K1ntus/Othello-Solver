@@ -4,6 +4,8 @@
 
 
 # The MAIN AI TO DEVELOP
+import time
+
 from bloom import BloomFilter
 from bloom import __utils__ as Utils
 from game.board import Reversi
@@ -102,6 +104,11 @@ class myPlayer(PlayerInterface):
             
         # No move has been find, generate one with a simple heuristic
         if move is None:    
+            print("")
+            print("")
+            print("Default value. No move has been found")
+            val = -7578748789
+            time.sleep(1)
             (move, _) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves()) 
             
         print("")

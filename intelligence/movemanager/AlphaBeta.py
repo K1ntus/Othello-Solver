@@ -8,6 +8,7 @@ from multiprocessing import Queue, Process, Lock
 from bloom import __utils__ as Utils
 from game.board import Reversi
 from intelligence.heuristics.stability import StableHeuristic as heuristic
+from intelligence.heuristics import evaluator
 
 
 lock = Lock()
@@ -41,7 +42,7 @@ class AlphaBeta:
 
     @staticmethod
     def __alpha__():
-        return 0
+        return -100
     
     @staticmethod
     def __beta__():
@@ -49,7 +50,7 @@ class AlphaBeta:
     
     @classmethod
     def __minValueForInstanciation__(self):
-        return 99.98
+        return 99.95
 
     
 #     def AlphaBetaWrapper(player, InitDepth = 0, MaxDepth = 8, Parallelization = False):
@@ -57,7 +58,7 @@ class AlphaBeta:
 #         return player.MaxAlphaBeta(InitDepth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), Parallelization)
         
     @classmethod
-    def __CopyCurrentBoard__(player):
+    def __CopyCurrentBoard__(self, player):
         res = Reversi.Board(player._board._boardsize)        
         
         for x in range(0,res._boardsize,1):
@@ -95,12 +96,13 @@ class AlphaBeta:
                     bestscore = AlphaBeta.__minValueForInstanciation__()
                     print("Find a table with the corresponding move, returning it", bestscore)  
                     return_move = m
+                    return (AlphaBeta.__minValueForInstanciation__(), m)
                     #remove the element from the bloom filter
                     #auto return move ?
                     
                 
             if(Parallelization):                 
-                proc = Process(target=player.alphaBetaParallelizationWrapper,  args=(player, depth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), m, q, BloomCheckerFirst))
+                proc = Process(target=AlphaBeta.alphaBetaParallelizationWrapper,  args=(player, depth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), m, q, BloomCheckerFirst))
                 proc.start()
                 process_list.append(proc)
             else:
@@ -146,7 +148,7 @@ class AlphaBeta:
     
     @classmethod
     def alphaBetaParallelizationWrapper(self, player, depth, alpha, beta, move, queue, BloomCheckerFirst):
-        copiedBoard = AlphaBeta.__CopyCurrentBoard__()
+        copiedBoard = AlphaBeta.__CopyCurrentBoard__(player)
         score = AlphaBeta.max_score_alpha_beta(player, copiedBoard, depth, alpha, beta, BloomCheckerFirst)
         if score > alpha:            
             alpha = score
@@ -169,10 +171,10 @@ class AlphaBeta:
                         res_contain = player._bloomTable.__contains__(key=hashValue)
                         if(not res_contain): 
                             player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
-                    return 100
+                    return AlphaBeta.__beta__()
                 
                 else:   #lose board
-                    return -101
+                    return AlphaBeta.__alpha__()
             else:       #win board
                 if nbW > nbB:                
                     if(BloomCheckerFirst):
@@ -180,15 +182,15 @@ class AlphaBeta:
                         res_contain = player._bloomTable.__contains__(key=hashValue)
                         if(not res_contain):
                             player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
-                    return 100
+                    return AlphaBeta.__beta__()
                 
                 else:   #lose board
-                    return -101
+                    return AlphaBeta.__alpha__()
             
         if depth == 0:  # leaves of alpha-beta pruning         
-            op = player._board._flip(player._mycolor)
-            score =  heuristic.stability(player._board, op)
-#             score = (evaluator.getHeuristicValue(player, len(moves)))
+#             op = player._board._flip(player._mycolor)
+#             score =  heuristic.stability(player._board, op)
+            score = (evaluator.getHeuristicValue(player))
 
 
             
@@ -223,18 +225,19 @@ class AlphaBeta:
             (nbB, nbW) = board.get_nb_pieces()
             if player._mycolor is Reversi.Board._BLACK:
                 if nbB > nbW:
-                    return 100
+                    return AlphaBeta.__beta__()
                 else:
-                    return -100
+                    return AlphaBeta.__alpha__()
             else:
                 if nbW > nbB:
-                    return 100
+                    return AlphaBeta.__beta__()
                 else:
-                    return -100
+                    return AlphaBeta.__alpha__()
                 
         if depth == 0:
-            op = player._board._flip(player._mycolor)
-            return heuristic.stability(player._board, op)
+#             op = player._board._flip(player._mycolor)
+#             return heuristic.stability(player._board, op)
+            return (evaluator.getHeuristicValue(player))
         
         
         minVal = AlphaBeta.__beta__()
@@ -254,7 +257,7 @@ class AlphaBeta:
                 if(BloomCheckerFirst):
                     hashValue = Utils.HashingOperation.BoardToHashCode(board)
                     res_contain = player._bloomTable.__contains__(key=hashValue)
-                    if(not res_contain and beta >= player.__minValueForInstanciation__()):
+                    if(not res_contain and beta >= AlphaBeta.__minValueForInstanciation__()):
 #                        print("Instanciate a table with the score", score)  
                         player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
                 

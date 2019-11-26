@@ -38,7 +38,7 @@ def get_corner_score( my_player):
 
     return (my_score, enemy_score)
 
-def getHeuristicValue(player, nb_move):
+def getHeuristicValue(player):
     (w,b, nbWhite, nbBlack) = evaluateBoard(player._board)
 #     (vb1,vw1) =  get_corner_score(player)
 #     vb1 = vb1 * 0.5
@@ -67,7 +67,7 @@ def getHeuristicValue(player, nb_move):
     
 
     
-    if(enemy > me):
+    if(enemy < me or me < 0):
         res = -res
         
         

@@ -28,10 +28,10 @@ stringio = StringIO()
 
 print(b.legal_moves())
 while not b.is_game_over():
-    print("Referee Board:")
-    print(b)
-    print("Before move", nbmoves)
-    print("Legal Moves: ", b.legal_moves())
+#     print("Referee Board:")
+#     print(b)
+#     print("Before move", nbmoves)
+#     print("Legal Moves: ", b.legal_moves())
     nbmoves += 1
     otherplayer = (nextplayer + 1) % 2
     othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
