@@ -1,6 +1,4 @@
-import sys
-# sys.path.insert(1, '/player')
-print(sys.path)
+
 import player.ai.AiPlayer1 as AiPlayer1
 import player.ai.RandomPlayer as RandomPlayer
 import game.board.Reversi as Reversi
@@ -102,4 +100,4 @@ def run(times):
     print("averge time :", str(s / size))
 
 
-run(10)
+run(3)
