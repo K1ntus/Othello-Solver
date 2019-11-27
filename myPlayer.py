@@ -7,7 +7,7 @@
 from bloom import BloomFilter
 from bloom import __utils__ as Utils
 from game.board import Reversi
-from game.board.playerInterface import *
+from player.playerInterface import *
 from intelligence.movemanager.AlphaBeta import AlphaBeta
 from intelligence.movemanager.MoveManager import MoveManager
 from intelligence.movemanager.OpeningMove import OpeningMove

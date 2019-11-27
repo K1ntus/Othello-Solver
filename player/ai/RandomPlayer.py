@@ -2,7 +2,7 @@
 
 import time
 from game.board import Reversi
-from game.board.playerInterface import *
+from player.playerInterface import *
 from random import randint
 
 class myPlayer(PlayerInterface):

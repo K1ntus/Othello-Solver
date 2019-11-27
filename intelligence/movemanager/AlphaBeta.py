@@ -8,7 +8,8 @@ from multiprocessing import Queue, Process, Lock
 from bloom import __utils__ as Utils
 from game.board import Reversi
 from intelligence.heuristics import evaluator
-from intelligence.heuristics.stability import StableHeuristic as heuristic
+
+import intelligence.heuristics.eval as eval
 
 
 lock = Lock()
@@ -42,11 +43,11 @@ class AlphaBeta:
 
     @staticmethod
     def __alpha__():
-        return 0
+        return -100000
     
     @staticmethod
     def __beta__():
-        return 100
+        return 100000
     
     @classmethod
     def __minValueForInstanciation__(self):
@@ -190,7 +191,8 @@ class AlphaBeta:
             op = player._board._flip(player._mycolor)
 #             stability_score =  heuristic.stability(player._board, op)
 #             board_score = (evaluator.getHeuristicValue(player, len(moves)))
-            score =  heuristic.stability(player._board, op)
+
+            score =  eval.getTotal(player,player._mycolor)
 #             score = (stability_score + board_score) / 2
             
             if(BloomCheckerFirst):
@@ -235,7 +237,8 @@ class AlphaBeta:
                 
         if depth == 0:
             op = player._board._flip(player._mycolor)
-            return heuristic.stability(player._board, op)
+
+            return eval.getTotal(player,player._mycolor)
         
         
         minVal = AlphaBeta.__beta__()
