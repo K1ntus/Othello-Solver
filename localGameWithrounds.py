@@ -5,7 +5,7 @@ import game.board.Reversi as Reversi
 import myPlayer
 import time
 from io import StringIO
-
+import sys
 
 list = []
 
