@@ -1,11 +1,13 @@
-
+import sys
+# sys.path.insert(1, '/player')
+print(sys.path)
 import player.ai.AiPlayer1 as AiPlayer1
 import player.ai.RandomPlayer as RandomPlayer
 import game.board.Reversi as Reversi
 import myPlayer
 import time
 from io import StringIO
-import sys
+
 
 list = []
 
