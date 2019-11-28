@@ -30,6 +30,20 @@ def stability(player, color):
     else:
         return 0
 
+
+def stabilityNegaMax(player, color):
+    if (player._board._nbBLACK + player._board._nbWHITE) < 12:
+        return 0
+    # this is for nega max
+    my_color = color
+    op_color = boardHelper.getOpColor(my_color)
+    myStable = 20 * stabilityForPlayer(player, my_color)
+    opStable = 20 * stabilityForPlayer(player, op_color)
+    if (myStable + opStable) != 0:
+        return 100 * (myStable - opStable) / (myStable + opStable)
+    else:
+        return 0
+
 def stabilityThread(player, color):
     if (player._board._nbBLACK + player._board._nbWHITE) < 12:
         return 0
@@ -95,7 +109,7 @@ def fromTopRight(player, color, stableBoard):
         else:
             break
     for x in range(0, size + 1):
-        if boardHelper.getCaseColor(currentBoard, x, size) == player:
+        if boardHelper.getCaseColor(currentBoard, x, size) == color:
             playerHelper.markStable(stableBoard, x, size)
             nbRight += 1
         else:

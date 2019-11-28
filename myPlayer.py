@@ -85,7 +85,7 @@ class myPlayer(PlayerInterface):
             print("Special depth For Prunning: ", nb1+nb2)
             (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self,
                                                                 depth=4, 
-                                                                Parallelization=False, 
+                                                                Parallelization=False,
                                                                 BloomCheckerFirst=False)
            
         # Mid-Game: Usual Case. Alpha Beta. Can use the parallelization, or chose to check a bloom filter if a good board has already been find 
@@ -93,7 +93,7 @@ class myPlayer(PlayerInterface):
             #Alpha and Beta should be set directly on the AlphaBeta class
             (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
                                                                 depth=2,
-                                                                Parallelization=False, 
+                                                                Parallelization=False,
                                                                 BloomCheckerFirst=False)
             
         # No move has been find, generate one with a simple heuristic

@@ -1,3 +1,5 @@
+import intelligence.heuristics.eval as eval
+
 _NotSTABLE = 0
 _STABLE = 1
 
@@ -22,3 +24,28 @@ def createNewStableDic(size):
                 key = ""+str(x)+""+str(y)
                 stable[key] =_NotSTABLE
     return stable
+
+def legal_moves_for_player(board,player_color):
+        size = board.get_board_size()
+        moves = []
+        for x in range(0,size):
+            for y in range(0,size):
+                if board.lazyTest_ValidMove(player_color, x, y):
+                    moves.append([player_color,x,y])
+        if len(moves) is 0:
+            moves = [[player_color, -1, -1]] # We shall pass
+        return moves
+
+# base on player on current board
+def getSortedMoves(board):
+    sortedMoves = []
+    # moves = legal_moves_for_player(board,player_color)
+    moves = board.legal_moves()
+    for m in moves:
+        board.push(m)
+        sortedMoves.append((m,eval.evalBoard(board,board._nextPlayer)))
+        board.pop()
+    sortedMoves = sorted(sortedMoves, key=lambda node: node[1], reverse=True)
+    sortedMoves = [node[0] for node in sortedMoves]
+    return sortedMoves
+

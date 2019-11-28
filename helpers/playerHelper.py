@@ -24,8 +24,8 @@ def getNbStable(player, color):
     else:
         return player._nbOpStable
 
-def getOpColor(player):
-    mycolor = player._mycolor
+def getOpColor(color):
+    mycolor = color
     if mycolor == _BLACK:
         return _WHITE
     return _BLACK

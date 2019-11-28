@@ -1,5 +1,5 @@
 
-import player.ai.AiPlayer1 as AiPlayer1
+import player.ai.AiPlayer2 as AiPlayer2
 import player.ai.RandomPlayer as RandomPlayer
 import game.board.Reversi as Reversi
 import myPlayer
@@ -14,7 +14,7 @@ def startGame():
     b = Reversi.Board(10)
 
     players = []
-    player1 = AiPlayer1.AiPlayer1()
+    player1 = AiPlayer2.AiPlayer2()
     player1.newGame(b._BLACK)
 
     players.append(player1)
