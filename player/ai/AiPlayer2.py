@@ -90,3 +90,5 @@ class AiPlayer2(PlayerInterface):
                 list_of_equal_moves.append(move)
             self._board.pop()
         return list_of_equal_moves
+
+

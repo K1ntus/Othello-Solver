@@ -95,7 +95,6 @@ class AiPlayer3(PlayerInterface):
         sortedMoves = boardHelper.getSortedMoves(self._board)
         for move in sortedMoves:
             self._board.push(move)
-            # v = self.NegamaxABSM(depth, alpha, beta,self._mycolor)
             v = self.negaMax_ABS_scout(depth, alpha, beta, playerHelper.getOpColor(self._mycolor))
             if v > best or best_shot is None:
                 best = v
