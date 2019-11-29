@@ -42,11 +42,11 @@ class AlphaBeta:
 
     @staticmethod
     def __alpha__():
-        return -100
+        return -100000
     
     @staticmethod
     def __beta__():
-        return 100
+        return 100000
     
     @classmethod
     def __minValueForInstanciation__(self):
@@ -57,8 +57,8 @@ class AlphaBeta:
 #         player._maxDepth = MaxDepth
 #         return player.MaxAlphaBeta(InitDepth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), Parallelization)
         
-    @classmethod
-    def __CopyCurrentBoard__(self, player):
+    @staticmethod
+    def __CopyCurrentBoard__(player):
         res = Reversi.Board(player._board._boardsize)        
         
         for x in range(0,res._boardsize,1):
@@ -187,12 +187,13 @@ class AlphaBeta:
                 else:   #lose board
                     return AlphaBeta.__alpha__()
             
-        if depth == 0:  # leaves of alpha-beta pruning         
-#             op = player._board._flip(player._mycolor)
-#             score =  heuristic.stability(player._board, op)
-            score = (evaluator.getHeuristicValue(player))
+        if depth == 0:  # leaves of alpha-beta pruning                
+            op = player._board._flip(player._mycolor)
+#             stability_score =  heuristic.stability(player._board, op)
+#             board_score = (evaluator.getHeuristicValue(player, len(moves)))
 
-
+            score =  eval.getTotal(player,player._mycolor)
+#             score = (stability_score + board_score) / 2
             
             if(BloomCheckerFirst):
                 hashValue = Utils.HashingOperation.BoardToHashCode(board)
@@ -237,7 +238,9 @@ class AlphaBeta:
         if depth == 0:
 #             op = player._board._flip(player._mycolor)
 #             return heuristic.stability(player._board, op)
-            return (evaluator.getHeuristicValue(player))
+            op = player._board._flip(player._mycolor)
+
+            return eval.getTotal(player,player._mycolor)
         
         
         minVal = AlphaBeta.__beta__()

@@ -1,5 +1,5 @@
 #http://www.samsoft.org.uk/reversi/openings.htm
-from IPython.utils.py3compat import xrange
+# from IPython.utils.py3compat import xrange
 from random import randint
 
 from game.board import Reversi
@@ -71,7 +71,7 @@ class OpeningMove:
     def MoveStringToHash(input_str):
         _board = Reversi.Board(10)
         
-        for char_id in xrange(0, len(input_str), 2):
+        for char_id in range(0, len(input_str), 2):
             (x_and_color, posY) = input_str[char_id:char_id+1]
             (color, x, y) = (0, 0, posY)
             
@@ -246,5 +246,6 @@ class OpeningMove:
         opening_moves += perpendicularOpenings
          
         return opening_moves
+        
         
         

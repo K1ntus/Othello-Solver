@@ -6,10 +6,9 @@ from random import randint
 from player.playerInterface import *
 import intelligence.heuristics.eval as eval
 import helpers.playerHelper as playerHelper
-import helpers.boardHelper as boardHelper
 
 
-class myPlayer(PlayerInterface):
+class AiPlayer1(PlayerInterface):
     _NotSTABLE=0
     _STABLE=1
     def __init__(self):
@@ -24,7 +23,7 @@ class myPlayer(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1, -1)
-        moves = self.ia_NegamaxABSM(2)
+        moves = self._ia_max_min(2)
         print("play1 ai moves : ", moves)
         move = moves[randint(0, len(moves) - 1)]
         self._board.push(move)
@@ -49,29 +48,44 @@ class myPlayer(PlayerInterface):
             print("I won!!!")
         else:
             print("I lost :(!!")
-    # negamax alpha beta sorted moves
-    def NegamaxABSM(self,depth, alpha, beta, color):
-        sign = 1 if color == self._mycolor else -1
-        op_color = playerHelper.getOpColor(color)
+
+    def _max_min(self, depth=3,alpha=-10000,beta=10000):
         if depth == 0 or self._board.is_game_over():
-            return  eval.getTotal(self,self._mycolor)
-            # return eval.getTotalNegaMAx(self,color)
-        sortedMoves = boardHelper.getSortedMoves(self._board)
-        # sortedMoves = self._board.legal_moves()
-
-        # best = -10000
-        for move in sortedMoves:
+            return eval.getTotal(self, self._mycolor)
+        best = -8000
+        moves = self._board.legal_moves()
+        for move in moves:
             self._board.push(move)
-            val = -(self.NegamaxABSM(depth - 1, -beta, -alpha, op_color))
-            # best = max(best, val)
+            val = self._min_max(depth - 1,alpha,beta)
             self._board.pop()
-            alpha = max(alpha, val)
-            if alpha >= beta:
-                return alpha
-        return alpha
+            if val > best:
+                best = val
+            if best>=beta:
+                return best
+            if best > alpha:
+                alpha=best
 
+        return best
 
-    def ia_NegamaxABSM(self,depth):
+    def _min_max(self, depth=3,alpha=-10000,beta=10000):
+        if depth == 0 or self._board.is_game_over():
+            return eval.getTotal(self, self._mycolor)
+        worst = 8000
+        moves = self._board.legal_moves()
+        for move in moves:
+            self._board.push(move)
+            val = self._max_min(depth - 1,alpha,beta)
+            self._board.pop()
+            if val < worst:
+                worst = val
+            if worst <= alpha:
+                return worst
+            if worst > beta:
+                beta = worst
+        return worst
+
+    # take in count the best shot
+    def _ia_max_min(self, depth=3):
         best = -8000
         alpha = -10000
         beta = 10000
@@ -80,8 +94,7 @@ class myPlayer(PlayerInterface):
         moves = self._board.legal_moves()
         for move in moves:
             self._board.push(move)
-            # v = self.NegamaxABSM(depth, alpha, beta,self._mycolor)
-            v = self.NegamaxABSM(depth, alpha, beta,playerHelper.getOpColor(self._mycolor))
+            v = self._max_min(depth,alpha,beta)
             if v > best or best_shot is None:
                 best = v
                 best_shot = move
