@@ -54,10 +54,10 @@ class AiPlayer2(PlayerInterface):
         sign = 1 if color == self._mycolor else -1
         op_color = playerHelper.getOpColor(color)
         if depth == 0 or self._board.is_game_over():
-            return  sign*eval.getTotal(self,color)
+            return  eval.getTotal(self,self._mycolor)
             # return eval.getTotalNegaMAx(self,color)
-        # sortedMoves = boardHelper.getSortedMoves(self._board)
-        sortedMoves = self._board.legal_moves()
+        sortedMoves = boardHelper.getSortedMoves(self._board)
+        # sortedMoves = self._board.legal_moves()
 
         # best = -10000
         for move in sortedMoves:
