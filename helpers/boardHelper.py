@@ -1,5 +1,5 @@
-import intelligence.heuristics.eval as eval
-
+from intelligence.heuristics import eval as eval
+import helpers.playerHelper as playerHelper
 _NotSTABLE = 0
 _STABLE = 1
 
@@ -43,7 +43,7 @@ def getSortedMoves(board):
     moves = board.legal_moves()
     for m in moves:
         board.push(m)
-        sortedMoves.append((m,eval.evalBoard(board,board._nextPlayer)))
+        sortedMoves.append((m,eval.evalBoard(board,playerHelper.getOpColor(board._nextPlayer))))
         board.pop()
     sortedMoves = sorted(sortedMoves, key=lambda node: node[1], reverse=True)
     sortedMoves = [node[0] for node in sortedMoves]

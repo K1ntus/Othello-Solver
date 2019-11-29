@@ -80,8 +80,8 @@ class AiPlayer2(PlayerInterface):
         moves = self._board.legal_moves()
         for move in moves:
             self._board.push(move)
-            # v = self.NegamaxABSM(depth, alpha, beta,self._mycolor)
-            v = self.NegamaxABSM(depth, alpha, beta,playerHelper.getOpColor(self._mycolor))
+            v = self.NegamaxABSM(depth, alpha, beta,self._mycolor)
+            # v = self.NegamaxABSM(depth, alpha, beta,playerHelper.getOpColor(self._mycolor))
             if v > best or best_shot is None:
                 best = v
                 best_shot = move
