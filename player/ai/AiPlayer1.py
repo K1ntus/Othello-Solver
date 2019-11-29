@@ -17,7 +17,7 @@ class AiPlayer1(PlayerInterface):
 
 
     def getPlayerName(self):
-        return "Player 1"
+        return "AI MinMax AB"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
