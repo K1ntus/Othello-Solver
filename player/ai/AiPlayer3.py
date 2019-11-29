@@ -8,6 +8,10 @@ import intelligence.heuristics.eval as eval
 import helpers.playerHelper as playerHelper
 import helpers.boardHelper as boardHelper
 
+import queue
+from threading import Thread
+import copy
+
 
 class AiPlayer3(PlayerInterface):
     _NotSTABLE = 0
@@ -105,3 +109,27 @@ class AiPlayer3(PlayerInterface):
             self._board.pop()
         return list_of_equal_moves
 
+    def ia_negaMax_ABS_scout_thread(self, depth):
+        alpha = -10000
+        beta = 10000
+        sortedMoves = boardHelper.getSortedMoves(self._board)
+        que = queue.Queue()
+        for move in sortedMoves:
+            clonedPlayer = copy.deepcopy(self)
+            clonedPlayer._board.push(move)
+            worker = Thread(target=lambda q, cp, d, A, B, c, m: q.put((self.negaMax_ABS_scout(d, A, B, c), m)),
+                            args=(que, clonedPlayer, depth, alpha, beta, playerHelper.getOpColor(self._mycolor)))
+            worker.start()
+
+        data = []
+        for w in range(len(sortedMoves)):
+            data.append(que.get())
+
+        tmp = sorted(data, key=lambda d: d[0], reverse=True)
+        best = tmp[0][0]
+        bestMoves = []
+        for i in tmp:
+            if tmp[i][0] == best:
+                bestMoves.append(tmp[i][1])
+
+        return bestMoves
