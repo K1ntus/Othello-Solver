@@ -1,4 +1,4 @@
-import intelligence.heuristics.eval as eval
+from intelligence.heuristics import eval  as eval
 
 _NotSTABLE = 0
 _STABLE = 1
