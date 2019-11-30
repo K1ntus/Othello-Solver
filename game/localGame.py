@@ -67,7 +67,6 @@ while not b.is_game_over():
     if(DISPLAY_MODE):
         (nbB, nbW) = b.get_nb_pieces()
         game_board.update(board=b, blacks=nbB, whites=nbW, current_player_color=nextplayercolor)
-        game_board.show_game()
 #         time.sleep(2)
 
     nextplayer = otherplayer
