@@ -104,7 +104,7 @@ class myPlayer(PlayerInterface):
             print("")
             print("Default value. No move has been found")
             val = -7578748789
-            time.sleep(1)
+#             time.sleep(1)
             (move, _) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves()) 
             
         print("")

@@ -25,7 +25,7 @@ class myPlayer(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1, -1)
-        moves = self.ia_NegamaxABSM(depth=2, Parallelization=True)
+        moves = self.ia_NegamaxABSM(depth=2, Parallelization=False)
         print("play1 ai moves : ", moves)
         if(len(moves) > 1):
             move = moves[randint(0, len(moves) - 1)]

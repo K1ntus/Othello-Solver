@@ -213,7 +213,7 @@ with open('../logs/log_vs_random.txt', 'w') as f:
             with open(f, 'wb') as to_file:
                 os.dup2(to_file.fileno(), stdout_fd)  # $ exec > to
             
-time.sleep(0.5)
+# time.sleep(0.5)
 
 print("")
 print("#################")

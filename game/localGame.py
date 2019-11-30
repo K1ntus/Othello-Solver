@@ -5,6 +5,9 @@ import player.ai.RandomPlayer as Enemy1
 import time
 from io import StringIO
 import sys
+from ui.ui import Gui
+
+DISPLAY_MODE=True
 
 b = Reversi.Board(10)
 
@@ -21,6 +24,11 @@ totalTime = [0,0] # total real time for each player
 nextplayer = 0
 nextplayercolor = b._BLACK
 nbmoves = 1
+game_board = None
+if(DISPLAY_MODE):
+    game_board = Gui()
+    game_board.show_game()
+#     time.sleep(1)
 
 outputs = ["",""]
 sysstdout= sys.stdout
@@ -53,9 +61,18 @@ while not b.is_game_over():
         break
     b.push([nextplayercolor, x, y])
     players[otherplayer].playOpponentMove(x,y)
+    
+    
+    
+    if(DISPLAY_MODE):
+        (nbB, nbW) = b.get_nb_pieces()
+        game_board.update(board=b, blacks=nbB, whites=nbW, current_player_color=nextplayercolor)
+        game_board.show_game()
+#         time.sleep(2)
 
     nextplayer = otherplayer
     nextplayercolor = othercolor
+    
 #     time.sleep(5)
 
 #     print(b)
