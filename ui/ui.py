@@ -38,8 +38,8 @@ class Gui:
         self.screen = pygame.display.set_mode(self.SCREEN_SIZE)
 
         # messages
-        self.BLACK_LAB_POS = (5, __WIDTH__ / 4)
-        self.WHITE_LAB_POS = (__HEIGHT__ - __HEIGHT__/4, __WIDTH__ / 4)
+        self.BLACK_LAB_POS = (5, __HEIGHT__ / 4)
+        self.WHITE_LAB_POS = (__WIDTH__ - __WIDTH__/4, __HEIGHT__ / 4)
         self.font = pygame.font.SysFont("Times New Roman", 22)
         self.scoreFont = pygame.font.SysFont("Serif", 58)
 
@@ -52,7 +52,7 @@ class Gui:
             RESOURCE_FOLDER, "black.bmp")).convert()
         self.white_img = pygame.image.load(os.path.join(
             RESOURCE_FOLDER, "white.bmp")).convert()
-        self.tip_img = pygame.image.load(os.path.join(RESOURCE_FOLDER,
+        self.avail_img = pygame.image.load(os.path.join(RESOURCE_FOLDER,
                                                       "avail.bmp")).convert()
         self.clear_img = pygame.image.load(os.path.join(RESOURCE_FOLDER,
                                                         "empty.bmp")).convert()
@@ -104,13 +104,18 @@ class Gui:
         elif color == WHITE:
             img = self.white_img
         else:
-            img = self.tip_img
+            img = self.avail_img
 
         x = pos[0] * self.SQUARE_SIZE + self.BOARD[0]
         y = pos[1] * self.SQUARE_SIZE + self.BOARD[1]
 
         self.screen.blit(img, (x, y), img.get_rect())
         pygame.display.flip()
+        
+    def clear_board(self, board):
+        for x in range(0,board._boardsize,1):
+            for y in range(0,board._boardsize,1):
+                self.clear_square((x,y))
 
     def clear_square(self, pos):
         """ Puts in the given position a background image, to simulate that the
@@ -125,9 +130,14 @@ class Gui:
         pygame.display.flip()
         
 
-    def update(self, board, blacks, whites, current_player_color):
+    def update(self, board, blacks, whites, availMove, current_player_color):
         """Updates screen
         """
+        if(availMove is not None):
+            for move in availMove:
+                (c,x,y) = move
+                self.put_stone((x,y), None)
+        
         for x in range(0,board._boardsize,1):
             for y in range(0,board._boardsize,1):
                 if board._board[y][x] != Reversi.Board._EMPTY:

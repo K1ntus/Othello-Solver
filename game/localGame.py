@@ -59,15 +59,28 @@ while not b.is_game_over():
         print(otherplayer, nextplayer, nextplayercolor)
         print("Problem: illegal move")
         break
-    b.push([nextplayercolor, x, y])
+    
+    
+    if(DISPLAY_MODE):
+        
+        #si les available move sont mal affiches, mets a None. Je debuggerais qd je serais sur mon linux
+        availMove = [m for m in players[nextplayer]._board.legal_moves()]
+        (nbB, nbW) = b.get_nb_pieces()
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
+        
+        
+        b.push([nextplayercolor, x, y])
+        game_board.clear_board(b)
+        
+        (nbB, nbW) = b.get_nb_pieces()
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
+    else:        
+        b.push([nextplayercolor, x, y])
+        
     players[otherplayer].playOpponentMove(x,y)
     
     
     
-    if(DISPLAY_MODE):
-        (nbB, nbW) = b.get_nb_pieces()
-        game_board.update(board=b, blacks=nbB, whites=nbW, current_player_color=nextplayercolor)
-#         time.sleep(2)
 
     nextplayer = otherplayer
     nextplayercolor = othercolor
