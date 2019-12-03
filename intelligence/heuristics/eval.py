@@ -1,7 +1,8 @@
 import intelligence.heuristics.stability.StableHeuristic as StableStrategy
 import intelligence.heuristics.cornerStrategy.cornerGrab as cornerStrategy
 from intelligence.heuristics.BoardWeight import BoardStaticWeight as BoardStaticWeight
-import helpers.boardHelper as boardHelper
+from helpers import boardHelper as boardHelper
+from helpers import playerHelper as playerHelper
 
 
 # return the score of all heuristic functions

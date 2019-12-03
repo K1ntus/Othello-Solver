@@ -1,12 +1,14 @@
+from io import StringIO
+import sys
+import time
+
 from game.board import Reversi
 import myPlayer
 import player.ai.RandomPlayer as Enemy1
-# import player.ai.BeginnerLevelPlayer2 as Enemy1
-import time
-from io import StringIO
-import sys
 from ui.ui import Gui
 
+
+# import player.ai.BeginnerLevelPlayer2 as Enemy1
 DISPLAY_MODE=True
 
 b = Reversi.Board(10)
@@ -66,14 +68,15 @@ while not b.is_game_over():
         #si les available move sont mal affiches, mets a None. Je debuggerais qd je serais sur mon linux
         availMove = [m for m in players[nextplayer]._board.legal_moves()]
         (nbB, nbW) = b.get_nb_pieces()
-        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=None, current_player_color=nextplayercolor)
         
         
         b.push([nextplayercolor, x, y])
         game_board.clear_board(b)
         
         (nbB, nbW) = b.get_nb_pieces()
-        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=None, current_player_color=nextplayercolor)
+        availMove = None
     else:        
         b.push([nextplayercolor, x, y])
         
@@ -100,4 +103,6 @@ elif nbblacks > nbwhites:
     print("BLACK")
 else:
     print("DEUCE")
+    
+time.sleep(10)
 

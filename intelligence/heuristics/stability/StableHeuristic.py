@@ -1,8 +1,8 @@
 
 from threading import Thread
 
-import helpers.boardHelper as boardHelper
-import helpers.playerHelper as playerHelper
+from helpers import boardHelper as boardHelper
+from helpers import playerHelper as playerHelper
 import copy
 
 #  ------------------------------ Stability -----------------------------------#

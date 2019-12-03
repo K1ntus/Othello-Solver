@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import time
-import game.board.Reversi as Reversi
-from random import randint
-from player.playerInterface import *
-import intelligence.heuristics.eval as eval
-import helpers.playerHelper as playerHelper
-import helpers.boardHelper as boardHelper
 from multiprocessing import Queue, Process, Lock
+from random import randint
+import time
+
+from game.board import Reversi
+from helpers import boardHelper as boardHelper
+from helpers import playerHelper as playerHelper
+import intelligence.heuristics.eval as eval
+from player.playerInterface import PlayerInterface
 
 
 class myPlayer(PlayerInterface):

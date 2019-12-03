@@ -24,21 +24,21 @@ class Gui:
 
         # colors
         self.BLACK = (0, 0, 0)
-        self.BACKGROUND = (0, 0, 255)
-        self.WHITE = (255, 255, 255)
+        self.BACKGROUND = (255, 255, 255)
+        self.WHITE = (0, 0, 0)
         self.BLUE = (0, 0, 255)
         self.YELLOW = (128, 128, 0)
 
         # display
         self.SCREEN_SIZE = (__WIDTH__, __HEIGHT__)
-        self.BOARD_POS = (100, 20)
+        self.BOARD_POS = (100, 20) #150
         self.BOARD = (120, 40)
         self.BOARD_SIZE = 500
         self.SQUARE_SIZE = 50
         self.screen = pygame.display.set_mode(self.SCREEN_SIZE)
 
         # messages
-        self.BLACK_LAB_POS = (5, __HEIGHT__ / 4)
+        self.BLACK_LAB_POS = (__WIDTH__ - __WIDTH__/4, __HEIGHT__ / 4 +  __HEIGHT__ / 4 )
         self.WHITE_LAB_POS = (__WIDTH__ - __WIDTH__/4, __HEIGHT__ / 4)
         self.font = pygame.font.SysFont("Times New Roman", 22)
         self.scoreFont = pygame.font.SysFont("Serif", 58)
@@ -47,7 +47,7 @@ class Gui:
         APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
         RESOURCE_FOLDER = os.path.join(APP_FOLDER, "resources")
         self.board_img = pygame.image.load(os.path.join(
-            RESOURCE_FOLDER, "board.bmp")).convert()
+            RESOURCE_FOLDER, "board.png")).convert()
         self.black_img = pygame.image.load(os.path.join(
             RESOURCE_FOLDER, "black.bmp")).convert()
         self.white_img = pygame.image.load(os.path.join(
@@ -143,21 +143,35 @@ class Gui:
                 if board._board[y][x] != Reversi.Board._EMPTY:
                     self.put_stone((y, x), board._board[y][x])
 
-        blacks_str = '%02d ' % int(blacks)
-        whites_str = '%02d ' % int(whites)
+        blacks_str = '%02d ' % int(whites)
+        whites_str = '%02d ' % int(blacks)
         self.showScore(blacks_str, whites_str, current_player_color)
         pygame.display.flip()
-        pygame.time.wait(1000)
+#         pygame.time.wait(1000)
 
     def showScore(self, blackStr, whiteStr, current_player_color):
         black_background = self.YELLOW if current_player_color == WHITE else self.BACKGROUND
         white_background = self.YELLOW if current_player_color == BLACK else self.BACKGROUND
         text = self.scoreFont.render(blackStr, True, self.BLACK,
                                      black_background)
+        text_1 = self.scoreFont.render("Black", True, self.BLACK,
+                                     black_background)
+        text_2 = self.scoreFont.render("White", True, self.WHITE,
+                                     white_background)
         text2 = self.scoreFont.render(whiteStr, True, self.WHITE,
                                       white_background)
+        self.screen.blit(text_1,
+                         (self.BLACK_LAB_POS[0], self.BLACK_LAB_POS[1] - 40))
         self.screen.blit(text,
                          (self.BLACK_LAB_POS[0], self.BLACK_LAB_POS[1] + 40))
+        self.screen.blit(text_2,
+                         (self.WHITE_LAB_POS[0], self.WHITE_LAB_POS[1] - 40))
         self.screen.blit(text2,
                          (self.WHITE_LAB_POS[0], self.WHITE_LAB_POS[1] + 40))
+
+    
+
+
+
+
 
