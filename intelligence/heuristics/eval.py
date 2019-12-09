@@ -12,7 +12,8 @@ def getTotal(player, color):
     stabilityScore = StableStrategy.stability(player, color)
     cornerGrabScore = cornerStrategy.cornerGrab(player)
     staticBoardScore = evalBoard(player._board, player._mycolor)
-    total = 1.2*staticBoardScore + 1.7 * stabilityScore + 397 * cornerGrabScore
+    total = 1.2*staticBoardScore + 100 * stabilityScore + 397 * cornerGrabScore
+#     print("Score:", total)
 
     return total
 
@@ -21,7 +22,7 @@ def getTotalNegaMAx(player, color):
     cornerGrabScore = cornerStrategy.cornerGrabNegaMax(player,color)
     staticBoardScore = evalBoard(player._board,color)
 
-    total = 1.2*staticBoardScore + 1.7 * stabilityScore + 397 * cornerGrabScore
+    total = 1.2*staticBoardScore + 100 * stabilityScore + 397 * cornerGrabScore
 
 
     return total

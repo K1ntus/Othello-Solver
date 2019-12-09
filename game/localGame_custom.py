@@ -14,7 +14,7 @@ from contextlib import redirect_stdout # save in file
 
 nbTest = 300
 
-verb = False
+verb = True
 
 def firstSet():
     b = Reversi.Board(10)

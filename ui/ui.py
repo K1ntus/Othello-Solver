@@ -135,7 +135,7 @@ class Gui:
         """
         if(availMove is not None):
             for move in availMove:
-                (c,x,y) = move
+                (_,x,y) = move
                 self.put_stone((x,y), None)
         
         for x in range(0,board._boardsize,1):

@@ -34,7 +34,7 @@ class OpeningMove:
             hashValue = Utils.HashingOperation.BoardToHashCode(board)
             res_contain = self._bloom.__contains__(key=hashValue)
             if(res_contain):
-#                 print("Adding: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
+                print("Adding: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
                 move.append(m)
                 find_a_move = True
             else:

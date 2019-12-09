@@ -3,13 +3,13 @@ import sys
 import time
 
 from game.board import Reversi
-import myPlayer
+import myPlayer as myPlayer
 import player.ai.RandomPlayer as Enemy1
 from ui.ui import Gui
 
 
 # import player.ai.BeginnerLevelPlayer2 as Enemy1
-DISPLAY_MODE=True
+DISPLAY_MODE=False
 
 b = Reversi.Board(10)
 
@@ -30,7 +30,7 @@ game_board = None
 if(DISPLAY_MODE):
     game_board = Gui()
     game_board.show_game()
-#     time.sleep(1)
+    time.sleep(1)
 
 outputs = ["",""]
 sysstdout= sys.stdout
@@ -67,15 +67,16 @@ while not b.is_game_over():
         
         #si les available move sont mal affiches, mets a None. Je debuggerais qd je serais sur mon linux
         availMove = [m for m in players[nextplayer]._board.legal_moves()]
+
         (nbB, nbW) = b.get_nb_pieces()
-        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=None, current_player_color=nextplayercolor)
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
         
         
         b.push([nextplayercolor, x, y])
         game_board.clear_board(b)
-        
+        print(b)
         (nbB, nbW) = b.get_nb_pieces()
-        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=None, current_player_color=nextplayercolor)
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
         availMove = None
     else:        
         b.push([nextplayercolor, x, y])
@@ -90,7 +91,7 @@ while not b.is_game_over():
     
 #     time.sleep(5)
 
-#     print(b)
+    
 
 print("The game is over")
 print(b)
