@@ -26,6 +26,7 @@ class MoveManager(object):
         Constructor
         '''
     
+
     @staticmethod
     def MoveForGameBeginning(player, moves):
         best_move = moves[randint(0,len(moves)-1)]

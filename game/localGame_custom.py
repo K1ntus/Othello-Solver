@@ -2,7 +2,7 @@
 
 from game.board import Reversi
 from player.ai import ShittyLevelPlayer, BeginnerLevelPlayer, BeginnerLevelPlayer2, RandomPlayer
-import myPlayer
+from player.ai import AlphaBetaPlayer as myPlayer
 import time
 from io import StringIO
 import sys
@@ -198,7 +198,7 @@ def fileno(file_or_fd):
     return fd
     
 stdout_fd = sys.stdout.fileno()
-with open('../logs/log_vs_random.txt', 'w') as f:
+with open('../logs/log_vs_random_without_stability_and_corner.txt', 'w') as f:
 # with open('../logs/log.txt', 'w') as f:
 # with open('../logs/log_versus_and_verbose.txt', 'w') as f:
     with redirect_stdout(f):
@@ -213,7 +213,7 @@ with open('../logs/log_vs_random.txt', 'w') as f:
             with open(f, 'wb') as to_file:
                 os.dup2(to_file.fileno(), stdout_fd)  # $ exec > to
             
-time.sleep(0.5)
+# time.sleep(0.5)
 
 print("")
 print("#################")

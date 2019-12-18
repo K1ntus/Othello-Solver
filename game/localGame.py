@@ -1,10 +1,17 @@
-from game.board import Reversi
-import myPlayer
-import player.ai.RandomPlayer as Enemy1
-# import player.ai.BeginnerLevelPlayer2 as Enemy1
-import time
 from io import StringIO
 import sys
+import time
+
+from game.board import Reversi
+import player.ai.AlphaBetaPlayer as myPlayer
+from ui.ui import Gui
+
+
+
+# import player.ai.RandomPlayer as Enemy1
+import player.ai.BeginnerLevelPlayer2 as Enemy1
+# import player.ai.BeginnerLevelPlayer2 as Enemy1
+DISPLAY_MODE=True
 
 b = Reversi.Board(10)
 
@@ -21,6 +28,11 @@ totalTime = [0,0] # total real time for each player
 nextplayer = 0
 nextplayercolor = b._BLACK
 nbmoves = 1
+game_board = None
+if(DISPLAY_MODE):
+    game_board = Gui()
+    game_board.show_game()
+    time.sleep(1)
 
 outputs = ["",""]
 sysstdout= sys.stdout
@@ -28,10 +40,10 @@ stringio = StringIO()
 
 print(b.legal_moves())
 while not b.is_game_over():
-    print("Referee Board:")
-    print(b)
-    print("Before move", nbmoves)
-    print("Legal Moves: ", b.legal_moves())
+#     print("Referee Board:")
+#     print(b)
+#     print("Before move", nbmoves)
+#     print("Legal Moves: ", b.legal_moves())
     nbmoves += 1
     otherplayer = (nextplayer + 1) % 2
     othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
@@ -51,14 +63,35 @@ while not b.is_game_over():
         print(otherplayer, nextplayer, nextplayercolor)
         print("Problem: illegal move")
         break
-    b.push([nextplayercolor, x, y])
+    
+    
+    if(DISPLAY_MODE):
+        #si les available move sont mal affiches, mets a None. Je debuggerais qd je serais sur mon linux
+        availMove = [m for m in players[nextplayer]._board.legal_moves()]
+
+        (nbB, nbW) = b.get_nb_pieces()
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
+        
+        b.push([nextplayercolor, x, y])
+        game_board.clear_board(b)
+        print(b)
+        (nbB, nbW) = b.get_nb_pieces()
+        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
+        availMove = None
+    else:        
+        b.push([nextplayercolor, x, y])
+        
     players[otherplayer].playOpponentMove(x,y)
+    
+    
+    
 
     nextplayer = otherplayer
     nextplayercolor = othercolor
+    
 #     time.sleep(5)
 
-#     print(b)
+    
 
 print("The game is over")
 print(b)
@@ -71,4 +104,6 @@ elif nbblacks > nbwhites:
     print("BLACK")
 else:
     print("DEUCE")
+    
+time.sleep(10)
 
