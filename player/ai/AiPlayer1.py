@@ -6,6 +6,7 @@ from random import randint
 from player.playerInterface import *
 import intelligence.heuristics.eval as eval
 import helpers.playerHelper as playerHelper
+import helpers.boardHelper as boardHelper
 
 
 class AiPlayer1(PlayerInterface):
@@ -23,7 +24,7 @@ class AiPlayer1(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1, -1)
-        moves = self._ia_max_min(4)
+        moves = self._ia_max_min(2)
         print("play1 ai moves : ", moves)
         move = moves[randint(0, len(moves) - 1)]
         self._board.push(move)
@@ -53,7 +54,7 @@ class AiPlayer1(PlayerInterface):
         if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self, self._mycolor)
         best = -9999999999
-        moves = self._board.legal_moves()
+        moves = boardHelper.getSortedMoves(self._board)
         for move in moves:
             self._board.push(move)
             val = self._min_max(depth - 1,alpha,beta)
@@ -69,9 +70,9 @@ class AiPlayer1(PlayerInterface):
 
     def _min_max(self, depth=3,alpha=-10000,beta=10000):
         if depth == 0 or self._board.is_game_over():
-            return eval.getTotal(self, self._mycolor)
+            return eval.getTotal(self,playerHelper.getOpColor(self._mycolor))
         worst = 9999999999
-        moves = self._board.legal_moves()
+        moves = boardHelper.getSortedMoves(self._board)
         for move in moves:
             self._board.push(move)
             val = self._max_min(depth - 1,alpha,beta)
