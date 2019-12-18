@@ -1,7 +1,7 @@
 
 from game.board import Reversi
 from intelligence.heuristics.BoardWeight import BoardStaticWeight
-import numpy as np
+import numpy
 
 
 # count the corner score on the board of the player
@@ -38,7 +38,7 @@ def get_corner_score( my_player):
 
     return (my_score, enemy_score)
 
-def getHeuristicValue(player, nb_move):
+def getHeuristicValue(player):
     (w,b, nbWhite, nbBlack) = evaluateBoard(player._board)
 #     (vb1,vw1) =  get_corner_score(player)
 #     vb1 = vb1 * 0.5
@@ -58,9 +58,7 @@ def getHeuristicValue(player, nb_move):
         enemy += w
         me += b
 
-    
 
-    
     if(enemy > me):
         res = -100 * sigmoid(enemy)
     else:
@@ -69,7 +67,7 @@ def getHeuristicValue(player, nb_move):
     return res
 
 def sigmoid(val):
-    return 1 / (1 + np.exp(-val))
+    return 1 / (1 + numpy.exp(-val))
 
 def evaluateBoard(board):
     nbBlackScored = 0

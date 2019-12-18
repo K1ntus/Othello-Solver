@@ -1,5 +1,4 @@
-
-from intelligence.heuristics import eval as eval
+from intelligence.heuristics import eval
 import helpers.playerHelper as playerHelper
 
 _NotSTABLE = 0
