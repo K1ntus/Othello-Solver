@@ -9,7 +9,7 @@ import helpers.playerHelper as playerHelper
 import helpers.boardHelper as boardHelper
 
 
-class AiPlayer1(PlayerInterface):
+class myPlayer(PlayerInterface):
     _NotSTABLE=0
     _STABLE=1
     def __init__(self):
@@ -24,7 +24,7 @@ class AiPlayer1(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1, -1)
-        moves = self._ia_max_min(2)
+        moves = self._ia_max_min(3)
         print("play1 ai moves : ", moves)
         move = moves[randint(0, len(moves) - 1)]
         self._board.push(move)
@@ -51,9 +51,11 @@ class AiPlayer1(PlayerInterface):
             print("I lost :(!!")
 
     def _max_min(self, depth=3,alpha=-10000,beta=10000):
-        if depth == 0 or self._board.is_game_over():
+        if self._board.is_game_over():
+            return 9999999999
+        if depth == 0:
             return eval.getTotal(self, self._mycolor)
-        best = -9999999999
+        best = alpha
         moves = boardHelper.getSortedMoves(self._board)
         for move in moves:
             self._board.push(move)
@@ -69,9 +71,11 @@ class AiPlayer1(PlayerInterface):
         return best
 
     def _min_max(self, depth=3,alpha=-10000,beta=10000):
-        if depth == 0 or self._board.is_game_over():
+        if self._board.is_game_over():
+            return -9999999999
+        if depth == 0:
             return eval.getTotal(self,playerHelper.getOpColor(self._mycolor))
-        worst = 9999999999
+        worst = beta
         moves = boardHelper.getSortedMoves(self._board)
         for move in moves:
             self._board.push(move)
@@ -87,9 +91,9 @@ class AiPlayer1(PlayerInterface):
 
     # take in count the best shot
     def _ia_max_min(self, depth=3):
-        best = -8000
-        alpha = -10000
-        beta = 10000
+        best = -9999999999
+        alpha = -9999999999
+        beta = 9999999999
         best_shot = None
         list_of_equal_moves = []
         moves = self._board.legal_moves()

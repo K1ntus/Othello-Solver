@@ -21,14 +21,20 @@ def potentialMobility(player):
 # 1 if my player is expected to make the last move
 # -1 if other player is expected to make the last move
 
-def parity(player):
+def parity(player,color):
     currentBoard = player._board
     size = currentBoard.get_board_size() * currentBoard.get_board_size()
     remain = size - currentBoard._nbWHITE - currentBoard._nbBLACK
     if remain % 2 == 0:
-        return - 1
+        if color == player._mycolor:
+            return - 1
+        else:
+            return 1
     else:
-        return 1
+        if color == player._mycolor:
+            return 1
+        else:
+            return -1
 
 
 # disc different between my player and other player
@@ -45,18 +51,18 @@ def discDiff(player):
 def boardWeight(player, player_color):
     board = player._board
     weightTable = [
-        [200, -100, 100, 8, 8, 8, 8, 100, -100, 200],
-        [-100, -200, -50, -50, -50, -50, -50, -50, -200, -100],
-        [100, -50, 100, 50, 25, 25, 50, 100, -50, 100],
-        [50, -50, 50, -100, 0, 0, -100, 50, -50, 50],
-        [50, -50, 25, 0, 0, 0, 0, 25, -50, 50],
-        [50, -50, 25, 0, 0, 0, 0, 25, -50, 50],
-        [50, -50, 50, -100, 0, 0, -100, 50, -50, 50],
-        [100, -50, 100, 50, 25, 25, 50, 100, -50, 100],
-        [-100, -200, -50, -50, -50, -50, -50, -50, -200, -100],
-        [200, -100, 100, 50, 50, 50, 50, 100, -100, 200],
+        [200,    -100,    100,       8,      8,      8,      8,       100,      -100,     200],
+        [-100,   -200,    100,     -50,    -50,    -50,    -50,       100,      -200,    -100],
+        [100,     100,    150,      50,     25,     25,     50,       150,       100,     100],
+        [50,      -50,     50,    -100,      0,      0,   -100,        50,       -50,      50],
+        [50,      -50,     25,       0,      0,      0,      0,        25,       -50,      50],
+        [50,      -50,     25,       0,      0,      0,      0,        25,       -50,      50],
+        [50,      -50,     50,    -100,      0,      0,   -100,        50,       -50,      50],
+        [100,     100,    150,      50,     25,     25,     50,       150,       100,     100],
+        [-100,   -200,    100,     -50,    -50,    -50,    -50,       100,      -200,    -100],
+        [200,    -100,    100,      50,     50,     50,     50,       100,      -100,     200],
     ]
-    weightTable = BoardWeight.BoardStaticWeight.weightTable2 + BoardWeight.BoardStaticWeight.weightPreventKillerMove * 10
+    # weightTable = BoardWeight.BoardStaticWeight.weightTable2 + BoardWeight.BoardStaticWeight.weightPreventKillerMove * 10
     empty = board._EMPTY
 
     size = board.get_board_size() - 1
@@ -96,7 +102,7 @@ def boardWeight(player, player_color):
     #         weightTable[4][y] = 0
 
     # bottom right
-    # if boardHelper.getCaseColor(board, size, size) != empty:
+    # # if boardHelper.getCaseColor(board, size, size) != empty:
     #     for y in range(7, size + 1):
     #         weightTable[5][y] = 0
     #     for y in range(6, size + 1):
@@ -108,11 +114,16 @@ def boardWeight(player, player_color):
     #         weightTable[size][y] = 0
 
     my_weight = 0
+    op_weight = 0
     for x in range(size + 1):
         for y in range(size + 1):
             if boardHelper.getCaseColor(board, x, y) == player_color:
                 my_weight += weightTable[x][y]
+            elif boardHelper.getCaseColor(board, x, y) == playerHelper.getOpColor(player_color):
+                op_weight += weightTable[x][y]
+
     if player_color == player._mycolor :
         return my_weight
-    return -my_weight
+    else :
+        return -op_weight
 

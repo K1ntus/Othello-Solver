@@ -20,23 +20,23 @@ from intelligence.heuristics.BoardWeight import BoardStaticWeight
 
 def getTotal(player, color):
     mobilityScore = strategy.mobility(player)
-    parityScore = strategy.parity(player)
+    parityScore = strategy.parity(player,color)
     discDiffScore = strategy.discDiff(player)
 
     staticBoardScore = strategy.boardWeight(player, color)
     cornerGrabScore = CornerStrategy.cornerGrab(player)
 
 
-    # stabilityScore = StableStrategy.stability(player, color)
-    stabilityScore = 0
+    stabilityScore = StableStrategy.stability(player, color)
+    # stabilityScore = 0
 
     nbOccupied = player._board._nbWHITE + player._board._nbBLACK
     # early game
     if nbOccupied <= 31:
-        return 5 * mobilityScore + 20 * staticBoardScore + 10000 * cornerGrabScore + 10000 * stabilityScore
+        return 8 * mobilityScore + 20 * staticBoardScore + 10000 * cornerGrabScore + 10000 * stabilityScore
     # mid game
     elif nbOccupied <= 89:
-        return 2 * mobilityScore + 10 * staticBoardScore + 10 * parityScore + 10 * discDiffScore + 10000 * cornerGrabScore + 10000 * stabilityScore
+        return 5 * mobilityScore + 10 * staticBoardScore + 10 * parityScore + 10 * discDiffScore + 10000 * cornerGrabScore + 10000 * stabilityScore
     # late gme
     else:
         return 500 * parityScore + 500 * discDiffScore + 10000 * cornerGrabScore + 10000 * stabilityScore

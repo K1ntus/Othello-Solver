@@ -14,7 +14,7 @@ import copy
 import sys
 
 
-class AiPlayer3(PlayerInterface):
+class myPlayer(PlayerInterface):
     _NotSTABLE = 0
     _STABLE = 1
 
@@ -30,9 +30,8 @@ class AiPlayer3(PlayerInterface):
             # print("Referee told me to play but the game is over!")
             return (-1, -1)
 
-        #  -------negaABS scount -------------#
-        moves = self.ia_negaMax_ABS_scout(2)
-        # moves = self.ia_negaMax_ABS_scout_thread(2)
+        #  -------negE scount -------------#
+        moves = self.ia_negaC(3)
         move = moves[randint(0, len(moves) - 1)]
         #  ------- end negaABS scount -------------#
 
@@ -59,48 +58,51 @@ class AiPlayer3(PlayerInterface):
         else:
             print("I lost :(!!")
 
-    # nega max with alpha beta pruning with sorted moves with scout
-    def negaMax_ABS_scout(self, clonedPlayer, depth, alpha, beta, color):
-        # if we reach the end of game or maximum depth
-        if depth == 0 or clonedPlayer._board.is_game_over():
-            return eval.getTotal(clonedPlayer, clonedPlayer._mycolor)
-            # if color == self._mycolor:
-            #     return eval.getTotal(self, color)
-            # else:
-            #     return -eval.getTotal(self, color)
+    def negE(self, depth, alpha,beta):
+        if self._board.is_game_over() or depth==0:
+            return eval.getTotal(self,self._mycolor)
 
-        score = -8000
+        best = -9999999999
+        moves = boardHelper.getSortedMoves(self._board)
+        for move in moves:
+            self._board.push(move)
+            val = - self.negE(depth-1,-beta,-alpha)
+            self._board.pop()
+            if val > best:
+                best = val
+                if best > alpha:
+                    alpha = best
+                    if alpha >= beta:
+                        return best
+        return best
 
-        n = beta
-        sortedMoves = boardHelper.getSortedMoves(clonedPlayer._board)
-        for move in sortedMoves:
-            clonedPlayer._board.push(move)
-            cur = - clonedPlayer.negaMax_ABS_scout(clonedPlayer, depth - 1, -n, -alpha, playerHelper.getOpColor(color))
-            if cur > score:
-                if n == beta or (depth <= 2):
-                    score = cur
-                else:
-                    score = - clonedPlayer.negaMax_ABS_scout(clonedPlayer, depth - 1, -beta, -cur,
-                                                             playerHelper.getOpColor(color))
 
-            if score > alpha:
-                alpha = score
-            clonedPlayer._board.pop()
-            if alpha >= beta:
-                return alpha
-            n = alpha + 1
-        return score
+    def negC(self, depth):
+        if self._board.is_game_over() or depth==0:
+            return eval.getTotal(self,self._mycolor)
 
-    def ia_negaMax_ABS_scout(self, depth):
-        best = -8000
-        alpha = -10000
-        beta = 10000
+        alpha = -99999999999
+        beta = 99999999999
+        while alpha!=beta:
+            v = (alpha+beta)/2
+            t = self.negE(depth,v,v+1)
+            if t>v:
+                alpha= t
+            else:
+                beta=t
+        return alpha
+
+
+    def ia_negaC(self, depth):
+        best = -99999999999
+        alpha = -99999999999
+        beta = 99999999999
         best_shot = None
         list_of_equal_moves = []
         sortedMoves = boardHelper.getSortedMoves(self._board)
         for move in sortedMoves:
             self._board.push(move)
-            v = self.negaMax_ABS_scout(self,depth, alpha, beta, playerHelper.getOpColor(self._mycolor))
+            v = -self.negC(depth)
             if v > best or best_shot is None:
                 best = v
                 best_shot = move
@@ -110,29 +112,4 @@ class AiPlayer3(PlayerInterface):
             self._board.pop()
         return list_of_equal_moves
 
-    def ia_negaMax_ABS_scout_thread(self, depth):
-        alpha = -10000
-        beta = 10000
-        sortedMoves = boardHelper.getSortedMoves(self._board)
-        que = queue.Queue()
-        for move in sortedMoves:
-            clonedPlayer = copy.deepcopy(self)
-            clonedPlayer._board.push(move)
-            worker = Thread(target=lambda q, cp, d, A, B, c, m: q.put(
-                (clonedPlayer.negaMax_ABS_scout(clonedPlayer, d, A, B, c), m)),
-                            args=(que, clonedPlayer, depth, alpha, beta, playerHelper.getOpColor(clonedPlayer._mycolor),
-                                  move))
-            worker.start()
 
-        data = []
-        for w in range(len(sortedMoves)):
-            data.append(que.get())
-
-        tmp = sorted(data, key=lambda d: d[0], reverse=True)
-        best = tmp[0][0]
-        bestMoves = []
-        for i in tmp:
-            if i[0] == best:
-                bestMoves.append(i[1])
-        que.task_done()
-        return bestMoves
