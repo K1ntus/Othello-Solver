@@ -18,11 +18,6 @@ def isStable(stableBaord,x,y):
 
     return key in stableBaord
 
-def getNbStable(player, color):
-    if player._mycolor == color:
-        return player._nbMyStable
-    else:
-        return player._nbOpStable
 
 def getOpColor(color):
     mycolor = color

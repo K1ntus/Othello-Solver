@@ -23,7 +23,7 @@ class AiPlayer1(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1, -1)
-        moves = self._ia_max_min(2)
+        moves = self._ia_max_min(4)
         print("play1 ai moves : ", moves)
         move = moves[randint(0, len(moves) - 1)]
         self._board.push(move)
@@ -52,7 +52,7 @@ class AiPlayer1(PlayerInterface):
     def _max_min(self, depth=3,alpha=-10000,beta=10000):
         if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self, self._mycolor)
-        best = -8000
+        best = -9999999999
         moves = self._board.legal_moves()
         for move in moves:
             self._board.push(move)
@@ -70,7 +70,7 @@ class AiPlayer1(PlayerInterface):
     def _min_max(self, depth=3,alpha=-10000,beta=10000):
         if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self, self._mycolor)
-        worst = 8000
+        worst = 9999999999
         moves = self._board.legal_moves()
         for move in moves:
             self._board.push(move)

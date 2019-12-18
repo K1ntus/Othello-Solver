@@ -21,7 +21,7 @@ class myPlayer(PlayerInterface):
         moves = [m for m in self._board.legal_moves()]
         move = moves[randint(0,len(moves)-1)]
         self._board.push(move)
-        print("I am playing ", move)
+        # print("I am playing ", move)
         (c,x,y) = move
         assert(c==self._mycolor)
 #         print("My current board :")

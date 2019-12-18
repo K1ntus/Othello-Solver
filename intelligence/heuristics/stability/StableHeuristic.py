@@ -22,27 +22,14 @@ def stability(player, color):
     if (player._board._nbBLACK + player._board._nbWHITE) < 12:
         return 0
     my_color = player._mycolor
+    # TODO to be update
     op_color = boardHelper.getOpColor(my_color)
     myStable = 20 * stabilityForPlayer(player, my_color)
     opStable = 20 * stabilityForPlayer(player, op_color)
-    if (myStable + opStable) != 0:
-        return 100 * (myStable - opStable) / (myStable + opStable)
-    else:
-        return 0
+
+    return myStable - opStable
 
 
-def stabilityNegaMax(player, color):
-    if (player._board._nbBLACK + player._board._nbWHITE) < 12:
-        return 0
-    # this is for nega max
-    my_color = color
-    op_color = boardHelper.getOpColor(my_color)
-    myStable = 20 * stabilityForPlayer(player, my_color)
-    opStable = 20 * stabilityForPlayer(player, op_color)
-    if (myStable + opStable) != 0:
-        return 100 * (myStable - opStable) / (myStable + opStable)
-    else:
-        return 0
 
 def stabilityThread(player, color):
     if (player._board._nbBLACK + player._board._nbWHITE) < 12:
