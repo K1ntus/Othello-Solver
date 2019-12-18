@@ -27,8 +27,8 @@ def getTotal(player, color):
     cornerGrabScore = CornerStrategy.cornerGrab(player)
 
 
-    # stabilityScore = StableStrategy.stability(player, color)
-    stabilityScore = 0
+    stabilityScore = StableStrategy.stability(player, color)
+#     stabilityScore = 0
 
     nbOccupied = player._board._nbWHITE + player._board._nbBLACK
     # early game

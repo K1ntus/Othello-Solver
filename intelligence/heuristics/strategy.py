@@ -56,7 +56,7 @@ def boardWeight(player, player_color):
         [-100, -200, -50, -50, -50, -50, -50, -50, -200, -100],
         [200, -100, 100, 50, 50, 50, 50, 100, -100, 200],
     ]
-    weightTable = BoardWeight.BoardStaticWeight.weightTable2 + BoardWeight.BoardStaticWeight.weightPreventKillerMove * 10
+    weightTable = BoardWeight.BoardStaticWeight.weightTable2 + BoardWeight.BoardStaticWeight.weightPreventKillerMove * 2
     empty = board._EMPTY
 
     size = board.get_board_size() - 1

@@ -9,7 +9,7 @@ import helpers.playerHelper as playerHelper
 import helpers.boardHelper as boardHelper
 
 
-class AiPlayer1(PlayerInterface):
+class myPlayer(PlayerInterface):
     _NotSTABLE=0
     _STABLE=1
     def __init__(self):

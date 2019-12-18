@@ -92,7 +92,7 @@ class myPlayer(PlayerInterface):
         else:   
             #Alpha and Beta should be set directly on the AlphaBeta class
             (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
-                                                                depth=2,
+                                                                depth=3,
                                                                 Parallelization=False,
                                                                 BloomCheckerFirst=False)
             

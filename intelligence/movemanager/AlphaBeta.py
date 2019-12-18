@@ -8,6 +8,7 @@ from multiprocessing import Queue, Process, Lock
 from bloom import __utils__ as Utils
 from game.board import Reversi
 from intelligence.heuristics import eval
+from ase.calculators.emt import beta
 
 
 class AlphaBeta:
@@ -75,7 +76,6 @@ class AlphaBeta:
 
 
         for m in moves:
-            score = bestscore
             move = m   
             
             if(BloomCheckerFirst):
@@ -101,15 +101,15 @@ class AlphaBeta:
             else:
 
                 (score)  = AlphaBeta.alphaBetaNoParallelizationWrapper(player, depth, bestscore, AlphaBeta.__beta__(), m, BloomCheckerFirst)
-
+    
                 if score > bestscore:
                     bestscore = score
                     return_move = move
-                    if bestscore >= AlphaBeta.__minValueForInstanciation__() and BloomCheckerFirst: #instanciate
-                        player._board.push(m)
-    #                     print("Instanciate a table with the score", score)  
-                        player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(player._board))
-                        player._board.pop() 
+                if bestscore >= AlphaBeta.__minValueForInstanciation__() and BloomCheckerFirst: #instanciate
+                    player._board.push(m)
+#                     print("Instanciate a table with the score", score)  
+                    player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(player._board))
+                    player._board.pop() 
 
                 
         if(Parallelization):
@@ -119,7 +119,7 @@ class AlphaBeta:
                 proc.join(timeout=tout)
             while q.qsize() > 0:
                 (score,move) = q.get(block=False, timeout=.100)
-                
+                 
                 if score > bestscore:
                     bestscore = score
                     return_move = move
@@ -133,9 +133,11 @@ class AlphaBeta:
 
     @classmethod
     def alphaBetaNoParallelizationWrapper(self, player, depth, alpha, beta, move, BloomCheckerFirst):
+        player._board.push(move)
         score = AlphaBeta.max_score_alpha_beta(player, player._board, depth, alpha, beta, BloomCheckerFirst)
         if score > alpha:            
             alpha = score
+        player._board.pop()
         return (alpha)
     
     
@@ -154,7 +156,7 @@ class AlphaBeta:
     def max_score_alpha_beta(self, player, board, depth, alpha, beta, BloomCheckerFirst):
         moves = board.legal_moves()
         
-        
+         
         if board.is_game_over():
             (nbB, nbW) = board.get_nb_pieces()
             if player._mycolor is Reversi.Board._BLACK:
@@ -165,7 +167,7 @@ class AlphaBeta:
                         if(not res_contain): 
                             player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
                     return AlphaBeta.__beta__()
-                
+                 
                 else:   #lose board
                     return AlphaBeta.__alpha__()
             else:       #win board
@@ -176,13 +178,14 @@ class AlphaBeta:
                         if(not res_contain):
                             player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
                     return AlphaBeta.__beta__()
-                
+                 
                 else:   #lose board
                     return AlphaBeta.__alpha__()
             
-        if depth == 0:  # leaves of alpha-beta pruning          
+        if depth == 0 or board.is_game_over():  # leaves of alpha-beta pruning          
             score =  eval.getTotal(player,player._mycolor)
-            
+            return score
+             
             if(BloomCheckerFirst):
                 hashValue = Utils.HashingOperation.BoardToHashCode(board)
                 res_contain = player._bloomTable.__contains__(key=hashValue)
@@ -190,45 +193,34 @@ class AlphaBeta:
                     player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
             return score
         
-#         maxVal = AlphaBeta.__alpha__()
         maxVal = alpha
         
         
-        for move in moves:          
+        for move in moves:       
             board.push(move)
             score = AlphaBeta.min_score_alpha_beta(player, board, depth-1, alpha, beta, BloomCheckerFirst)
             board.pop()
             
-            maxVal = max(maxVal, score)
-            alpha = max(alpha, maxVal)
-            if alpha >= beta:
-                return maxVal                    
+            if score > maxVal:
+                maxVal = score
+            if maxVal >= beta:
+                return maxVal
+        
+            if maxVal > alpha:
+                alpha = maxVal
+                 
             
-        return alpha
+        return maxVal
 
 
     @classmethod
     def min_score_alpha_beta(self, player, board, depth, alpha, beta, BloomCheckerFirst):
         moves = board.legal_moves()
         
-        if board.is_game_over():
-            (nbB, nbW) = board.get_nb_pieces()
-            if player._mycolor is Reversi.Board._BLACK:
-                if nbB > nbW:
-                    return AlphaBeta.__beta__()
-                else:
-                    return AlphaBeta.__alpha__()
-            else:
-                if nbW > nbB:
-                    return AlphaBeta.__beta__()
-                else:
-                    return AlphaBeta.__alpha__()
                 
-        if depth == 0:
+        if depth == 0 or board.is_game_over():
             return eval.getTotal(player,player._mycolor)
         
-        
-#         minVal = AlphaBeta.__beta__()
         minVal = beta
         
         for move in moves:         
@@ -236,11 +228,11 @@ class AlphaBeta:
             score = AlphaBeta.max_score_alpha_beta(player, board, depth-1, alpha, beta, BloomCheckerFirst)
             board.pop()
             
-                    
-                    
-            minVal = min(minVal, score)
-            beta = min(beta, minVal)
-            if beta <= alpha:
+            
+            
+            if score < minVal:
+                minVal = score
+            if minVal <= alpha:
                 return minVal
             else:
                 if(BloomCheckerFirst):
@@ -249,9 +241,14 @@ class AlphaBeta:
                     if(not res_contain and beta >= AlphaBeta.__minValueForInstanciation__()):
 #                        print("Instanciate a table with the score", score)  
                         player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
-                
+                 
+        
+            if minVal > beta:
+                beta = minVal
+                    
+                    
             
-        return beta
+        return minVal
       
       
 
