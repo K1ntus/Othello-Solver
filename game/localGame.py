@@ -3,13 +3,13 @@ import sys
 import time
 
 from game.board import Reversi
-import myPlayer
+import player.ai.AlphaBetaPlayer as myPlayer
 import player.ai.RandomPlayer as Enemy1
 from ui.ui import Gui
 
 
 # import player.ai.BeginnerLevelPlayer2 as Enemy1
-DISPLAY_MODE=True
+DISPLAY_MODE=False
 
 b = Reversi.Board(10)
 

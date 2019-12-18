@@ -1,8 +1,7 @@
-import intelligence.heuristics.stability.StableHeuristic as StableStrategy
-import intelligence.heuristics.cornerStrategy.cornerGrab as cornerStrategy
-from intelligence.heuristics.BoardWeight import BoardStaticWeight as BoardStaticWeight
 from helpers import boardHelper as boardHelper
 from helpers import playerHelper as playerHelper
+from intelligence.heuristics import StableStrategy, CornerStrategy
+from intelligence.heuristics.BoardWeight import BoardStaticWeight as BoardStaticWeight
 
 
 # return the score of all heuristic functions
@@ -10,7 +9,7 @@ from helpers import playerHelper as playerHelper
 # eval will also return a score between -100 and 100
 def getTotal(player, color):
     stabilityScore = StableStrategy.stability(player, color)
-    cornerGrabScore = cornerStrategy.cornerGrab(player)
+    cornerGrabScore = CornerStrategy.cornerGrab(player)
     staticBoardScore = evalBoard(player._board, player._mycolor)
     total = 1.2*staticBoardScore + 1.7 * stabilityScore + 397 * cornerGrabScore
 
@@ -18,7 +17,7 @@ def getTotal(player, color):
 
 def getTotalNegaMAx(player, color):
     stabilityScore = StableStrategy.stabilityNegaMax(player, color)
-    cornerGrabScore = cornerStrategy.cornerGrabNegaMax(player,color)
+    cornerGrabScore = CornerStrategy.cornerGrabNegaMax(player,color)
     staticBoardScore = evalBoard(player._board,color)
 
     total = 1.2*staticBoardScore + 1.7 * stabilityScore + 397 * cornerGrabScore
