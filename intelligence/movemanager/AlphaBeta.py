@@ -7,10 +7,9 @@ from multiprocessing import Queue, Process, Lock
 
 from bloom import __utils__ as Utils
 from game.board import Reversi
-from intelligence.heuristics.stability import StableHeuristic as heuristic
-from intelligence.heuristics import evaluator
+from intelligence.heuristics import eval
 
- 
+
 class AlphaBeta:
  
     def __init__(self, player):
@@ -30,21 +29,15 @@ class AlphaBeta:
         
         
         
-        
-        
-        
-        
-
-
 
 
     @staticmethod
     def __alpha__():
-        return -100000
+        return -float('Inf')
     
     @staticmethod
     def __beta__():
-        return 100000
+        return float('Inf')
     
     @classmethod
     def __minValueForInstanciation__(self):
@@ -99,10 +92,12 @@ class AlphaBeta:
                     #auto return move ?
                     
                 
-            if(Parallelization):                 
-                proc = Process(target=AlphaBeta.alphaBetaParallelizationWrapper,  args=(player, depth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), m, q, BloomCheckerFirst))
-                proc.start()
-                process_list.append(proc)
+            if(Parallelization): 
+#                 if __name__ == '__main__':
+#                     freeze_support()                
+                    proc = Process(target=AlphaBeta.alphaBetaParallelizationWrapper,  args=(player, depth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), m, q, BloomCheckerFirst))
+                    proc.start()
+                    process_list.append(proc)
             else:
 
                 (score)  = AlphaBeta.alphaBetaNoParallelizationWrapper(player, depth, bestscore, AlphaBeta.__beta__(), m, BloomCheckerFirst)
@@ -118,7 +113,7 @@ class AlphaBeta:
 
                 
         if(Parallelization):
-            tout=.5000
+            tout=5
 #             tout = .5000/len(process_list)
             for proc in process_list:
                 proc.join(timeout=tout)
@@ -131,7 +126,7 @@ class AlphaBeta:
                 if bestscore >= AlphaBeta.__beta__():
                     return (bestscore, return_move)
             
-
+        print("---------------------")
         return (bestscore,return_move)
 
 
@@ -185,13 +180,8 @@ class AlphaBeta:
                 else:   #lose board
                     return AlphaBeta.__alpha__()
             
-        if depth == 0:  # leaves of alpha-beta pruning                
-            op = player._board._flip(player._mycolor)
-#             stability_score =  heuristic.stability(player._board, op)
-#             board_score = (evaluator.getHeuristicValue(player, len(moves)))
-
+        if depth == 0:  # leaves of alpha-beta pruning          
             score =  eval.getTotal(player,player._mycolor)
-#             score = (stability_score + board_score) / 2
             
             if(BloomCheckerFirst):
                 hashValue = Utils.HashingOperation.BoardToHashCode(board)
@@ -200,7 +190,8 @@ class AlphaBeta:
                     player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
             return score
         
-        maxVal = AlphaBeta.__alpha__()
+#         maxVal = AlphaBeta.__alpha__()
+        maxVal = alpha
         
         
         for move in moves:          
@@ -234,14 +225,11 @@ class AlphaBeta:
                     return AlphaBeta.__alpha__()
                 
         if depth == 0:
-#             op = player._board._flip(player._mycolor)
-#             return heuristic.stability(player._board, op)
-            op = player._board._flip(player._mycolor)
-
             return eval.getTotal(player,player._mycolor)
         
         
-        minVal = AlphaBeta.__beta__()
+#         minVal = AlphaBeta.__beta__()
+        minVal = beta
         
         for move in moves:         
             board.push(move)

@@ -3,13 +3,18 @@ import sys
 import time
 
 from game.board import Reversi
-import myPlayer as myPlayer
-import player.ai.RandomPlayer as Enemy1
+import player.ai.AlphaBetaPlayer as myPlayer
 from ui.ui import Gui
 
+from yuki import AB as Enemy1
+# from yuki import SEQRANDOM as Enemy1
+# from yuki import SEQ as myPlayer
 
+
+# import player.ai.RandomPlayer as Enemy1
 # import player.ai.BeginnerLevelPlayer2 as Enemy1
-DISPLAY_MODE=False
+# import player.ai.BeginnerLevelPlayer2 as Enemy1
+DISPLAY_MODE=True
 
 b = Reversi.Board(10)
 
@@ -64,13 +69,11 @@ while not b.is_game_over():
     
     
     if(DISPLAY_MODE):
-        
         #si les available move sont mal affiches, mets a None. Je debuggerais qd je serais sur mon linux
         availMove = [m for m in players[nextplayer]._board.legal_moves()]
 
         (nbB, nbW) = b.get_nb_pieces()
         game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
-        
         
         b.push([nextplayercolor, x, y])
         game_board.clear_board(b)

@@ -40,7 +40,6 @@ class myPlayer(PlayerInterface):
         move = self.moveManager()
             
         self._board.push(move)
-#         print("I am playing ", move)
 
         (c,x,y) = move
         assert(c==self._mycolor)
@@ -50,7 +49,6 @@ class myPlayer(PlayerInterface):
 
     def playOpponentMove(self, x,y):
         assert(self._board.is_valid_move(self._opponent, x, y))
-#         print("Opponent played ", (x,y))
         self._board.push([self._opponent, x, y])
 
     def newGame(self, color):
@@ -86,7 +84,7 @@ class myPlayer(PlayerInterface):
 #             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
             print("Special depth For Prunning: ", nb1+nb2)
             (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self,
-                                                                depth=4, 
+                                                                depth=self._board._boardsize * self._board._boardsize - (nb1+nb2), 
                                                                 Parallelization=False,
                                                                 BloomCheckerFirst=False)
            

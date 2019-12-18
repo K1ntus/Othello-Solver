@@ -119,16 +119,13 @@ class myPlayer(PlayerInterface):
     # negamax alpha beta sorted moves
     def NegamaxABSM(self, depth, moveTested, board, alpha, beta, color, BloomCheckerFirst=False):        
         sign = 1 if color == self._mycolor else -1
+        maximising = True
         op_color = playerHelper.getOpColor(color)
-        if depth == 0 or board.is_game_over():
+        if op_color is not self._mycolor:
+            maximising = False
             
-            val = (eval.getTotal(self,self._mycolor),moveTested)
-                   
-            if(BloomCheckerFirst):
-                hashValue = Utils.HashingOperation.BoardToHashCode(board)
-                res_contain = player._bloomTable.__contains__(key=hashValue)
-                if(not res_contain):
-                    player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
+        if depth == 0 or board.is_game_over():
+            return  (eval.getTotal(self,self._mycolor), moveTested)
             # return eval.getTotalNegaMAx(self,color)
         sortedMoves = boardHelper.getSortedMoves(board)
         # sortedMoves = self._board.legal_moves()
@@ -137,14 +134,22 @@ class myPlayer(PlayerInterface):
         
         for move in sortedMoves:
             board.push(move)
-            (val,_) = (self.NegamaxABSM(depth - 1, moveTested, board, -beta, -alpha, op_color))
+            (val, moveTested) = (self.NegamaxABSM(depth - 1, moveTested, board, -beta, -alpha, op_color))
             val=-val
             # best = max(best, val)
             board.pop()
-            alpha = max(alpha, val)
-            if alpha >= beta:
-                return (alpha,moveTested)
-        return (alpha,moveTested)
+            if maximising:
+                if(val > alpha):
+                    alpha = val
+                if(beta <= alpha):
+                    break
+            else:
+                if(val < beta):
+                    alpha = val
+                if(beta <= alpha):
+                    break
+                
+        return (alpha, moveTested)
 
 
     def ia_NegamaxABSM(self, depth = 2, BloomCheckerFirst = False, Parallelization = False):        
