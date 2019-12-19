@@ -4,8 +4,10 @@ import time
 
 from game.board import Reversi
 # import player.ai.AlphaBetaPlayer as myPlayer
-import player.ai.AiPlayer1 as myPlayer
+import player.ai.AiPlayer1 as Enemy1
+import player.ai.AiPlayerPVS as myPlayer
 import ia_v2 as Enemy1
+# import jd as myPlayer
 from ui.ui import Gui
 
 
@@ -38,8 +40,8 @@ if(DISPLAY_MODE):
     time.sleep(1)
 
 outputs = ["",""]
-sysstdout= sys.stdout
-stringio = StringIO()
+# sysstdout= sys.stdout
+# stringio = StringIO()
 
 print(b.legal_moves())
 while not b.is_game_over():
@@ -52,13 +54,13 @@ while not b.is_game_over():
     othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
     
     currentTime = time.time()
-    sys.stdout = stringio
+    # sys.stdout = stringio
     move = players[nextplayer].getPlayerMove()
-    sys.stdout = sysstdout
-    playeroutput = "\r" + stringio.getvalue()
-    stringio.truncate(0)
-    print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
-    outputs[nextplayer] += playeroutput
+    # sys.stdout = sysstdout
+    # playeroutput = "\r" + stringio.getvalue()
+    # stringio.truncate(0)
+    # print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
+    # outputs[nextplayer] += playeroutput
     totalTime[nextplayer] += time.time() - currentTime
     print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
     (x,y) = move 
