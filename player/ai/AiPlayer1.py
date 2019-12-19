@@ -54,7 +54,7 @@ class myPlayer(PlayerInterface):
         if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self, self._mycolor)
         best = alpha
-        moves = boardHelper.getSortedMoves(self._board)
+        moves = boardHelper.getSortedMoves(self._board,self)
         for move in moves:
             self._board.push(move)
             val = self._min_max(depth - 1,alpha,beta)
@@ -72,7 +72,7 @@ class myPlayer(PlayerInterface):
         if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self,playerHelper.getOpColor(self._mycolor))
         worst = beta
-        moves = boardHelper.getSortedMoves(self._board)
+        moves = boardHelper.getSortedMoves(self._board,self)
         for move in moves:
             self._board.push(move)
             val = self._max_min(depth - 1,alpha,beta)

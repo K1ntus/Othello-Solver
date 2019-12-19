@@ -1,13 +1,7 @@
 
-import time
-
-from game.board import Reversi
-from helpers import boardHelper as boardHelper
-from helpers import playerHelper as playerHelper
 from intelligence.heuristics import StableStrategy, CornerStrategy
-from intelligence.heuristics.BoardWeight import BoardStaticWeight as BoardStaticWeight
 import intelligence.heuristics.strategy as strategy
-import intelligence.heuristics.CornerStrategy as CornerStrategy
+# import intelligence.heuristics.CornerStrategy as CornerStrategy
 import helpers.boardHelper as boardHelper
 
 from intelligence.heuristics.BoardWeight import BoardStaticWeight
@@ -28,13 +22,13 @@ def getTotal(player, color):
     # cornerGrabScore = 0
     stabilityScore = 0
     # if nbOccupied <= 20:
-    mobilityScore = strategy.mobility(player)
-    if nbOccupied>89:
-         discDiffScore = strategy.discDiff(player)
+    mobilityScore = strategy.mobility(player,color)
+    if nbOccupied>80:
+         discDiffScore = strategy.discDiff(player,color)
     parityScore = strategy.parity(player,color)
     # discDiffScore = strategy.discDiff(player)
     staticBoardScore = strategy.boardWeight(player, color)
-    cornerGrabScore = CornerStrategy.cornerGrab(player)
+    cornerGrabScore = CornerStrategy.cornerGrab(player,color)
     staticBoardScore = StableStrategy.stability(player, color)
 
 
@@ -54,11 +48,15 @@ def getTotal(player, color):
         return 500 * parityScore + 500 * discDiffScore + 10000 * cornerGrabScore + 10000 * stabilityScore
 
 
-def evalBoard(board, player_color):
+def evalBoard(board,player, color):
     tot = 0
     size = board.get_board_size()
     for x in range(size):
         for y in range(size):
-            if boardHelper.getCaseColor(board,x,y) == player_color:
-                tot += BoardStaticWeight.weightTable1[y][x]
+            if boardHelper.getCaseColor(board,x,y) == color:
+                tot += BoardStaticWeight.weightTable3[y][x]
+    nbOccupied = board._nbWHITE + board._nbBLACK
+    if 20< nbOccupied< 80:
+        tot += CornerStrategy.cornerGrab(player, color)
+        tot += StableStrategy.stability(player, color)
     return tot

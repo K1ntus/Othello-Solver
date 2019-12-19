@@ -6,7 +6,7 @@ _BLACK = 1
 _WHITE = 2
 _EMPTY = 0
 
-# mark a copy version of stableBaord
+# mark the case (x,y) as stable
 def markStable(stableBaord,x,y):
     key = ""+str(x)+""+str(y)
     stableBaord.add(key)

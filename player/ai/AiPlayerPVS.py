@@ -7,26 +7,26 @@ from player.playerInterface import *
 import intelligence.heuristics.eval as eval
 import helpers.playerHelper as playerHelper
 import helpers.boardHelper as boardHelper
-
+import copy
 
 class myPlayer(PlayerInterface):
-    _NotSTABLE=0
-    _STABLE=1
+    _NotSTABLE = 0
+    _STABLE = 1
+
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
 
-
     def getPlayerName(self):
-        return "AI MinMax AB"
+        return "AI PVS"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1, -1)
-        moves = self._ia_max_min(3)
-        print("play1 ai moves : ", moves)
+        moves = self._ia_pvs(-9999999999, 9999999999, 3)
         move = moves[randint(0, len(moves) - 1)]
+        # score,move = self.abNegaMax(self._board,3, -9999999999, 9999999999)
         self._board.push(move)
         print("I am playing ", move)
         (c, x, y) = move
@@ -50,52 +50,123 @@ class myPlayer(PlayerInterface):
         else:
             print("I lost :(!!")
 
-    def _max_min(self, depth=3,alpha=-10000,beta=10000):
+    # def pvs(self, alpha, beta, depth):
+    #     if depth == 0 or self._board.is_game_over():
+    #         return eval.getTotal(self, playerHelper.getOpColor(self._mycolor))
+    #     moves = boardHelper.getSortedMoves(self._board,self)
+    #     bSearcjPv = True
+    #     for move in moves:
+    #         self._board.push(move)
+    #         if bSearcjPv:
+    #             value = -self.pvs(-beta, -alpha, depth - 1)
+    #         else:
+    #             value = -self.pvs(-alpha - 1, -alpha, depth - 1)
+    #             if value > alpha:
+    #                 value = -self.pvs(-beta, -alpha, depth - 1)
+    #         self._board.pop()
+    #
+    #         if value >= beta:
+    #             return beta
+    #         if value > alpha:
+    #             alpha = value
+    #             bSearcjPv = False
+    #     return alpha
+
+    def abNegaMax(self,board,depth,alpha,beta):
+        if depth == 0 or self._board.is_game_over():
+            if self._mycolor == self._board._nextPlayer:
+                return eval.getTotal(self,self._mycolor), None
+            else:
+                return eval.getTotal(self, self._mycolor), None
+
+        bestMove = None
+        bestScore = -9999999999
+
+        moves = board.legal_moves()
+        for move in moves:
+            board.push(move)
+            newBoard = copy.deepcopy(self._board)
+            board.pop()
+            recursedScore, currentMove = self.abNegaMax(newBoard,depth-1,-beta,-max(alpha,bestScore))
+            currentScore = -recursedScore
+
+            if currentScore > bestScore:
+                bestScore = currentScore
+                bestMove = move
+                if bestScore >= beta:
+                    return bestScore, bestMove
+        return bestScore, bestMove
+
+
+
+
+    def pvss(self,board, depth, alpha, beta):
+        if depth == 0 or self._board.is_game_over():
+            # return eval.getTotal(self, playerHelper.getOpColor(self._mycolor)), None
+            return eval.getTotal(self, self._mycolor), None
+        moves = boardHelper.getSortedMoves(board,self)
+        bestMove = None
+        bestScore = -9999999999
+        adaptiveBeta = beta
+        for move in moves:
+            board.push(move)
+            newBoard = copy.deepcopy(self._board)
+            board.pop()
+            (recursedScore, currentMove) = self.abNegaMax(newBoard, depth-1, -adaptiveBeta, -max(alpha,bestScore))
+            currentScore =  -recursedScore
+            # Update the best score
+            if currentScore > bestScore:
+                if adaptiveBeta == beta or depth - 2 <= 0:
+                    bestScore = currentScore
+                    bestMove = move
+                else:
+
+                    (negativeBestScore, bestMove) = self.pvss(newBoard,depth, -beta, -currentScore)
+                    bestScore = -negativeBestScore
+
+            if bestScore >= beta:
+                return bestScore, bestMove
+            adaptiveBeta = max(alpha, bestScore) + 1
+
+        return (bestScore, bestMove)
+
+    def negaScout(self,depth,alpha,beta):
         if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self, self._mycolor)
-        best = alpha
-        moves = boardHelper.getSortedMoves(self._board)
+
+        score = -9999999999
+        n = beta
+        moves = boardHelper.getSortedMoves(self._board,self)
         for move in moves:
             self._board.push(move)
-            val = self._min_max(depth - 1,alpha,beta)
+            cur = - self.negaScout(depth-1,-n, -alpha)
+            if(cur > score):
+                if n== beta or depth<=2:
+                    score =cur
+                else:
+                    score = - self.negaScout(depth-1,-beta,-cur)
+            if(score>alpha):
+                alpha=score
             self._board.pop()
-            if val > best:
-                best = val
-            if best>=beta:
-                return best
-            if best > alpha:
-                alpha=best
+            if alpha>= beta:
+                return alpha
+            n=alpha+1
 
-        return best
+        return score
 
-    def _min_max(self, depth=3,alpha=-10000,beta=10000):
-        if depth == 0 or self._board.is_game_over():
-            return eval.getTotal(self,playerHelper.getOpColor(self._mycolor))
-        worst = beta
-        moves = boardHelper.getSortedMoves(self._board)
-        for move in moves:
-            self._board.push(move)
-            val = self._max_min(depth - 1,alpha,beta)
-            self._board.pop()
-            if val < worst:
-                worst = val
-            if worst <= alpha:
-                return worst
-            if worst > beta:
-                beta = worst
-        return worst
+
+
+
 
     # take in count the best shot
-    def _ia_max_min(self, depth=3):
+    def _ia_pvs(self, alpha, beta, depth=3):
         best = -9999999999
-        alpha = -9999999999
-        beta = 9999999999
         best_shot = None
         list_of_equal_moves = []
         moves = self._board.legal_moves()
         for move in moves:
             self._board.push(move)
-            v = self._min_max(depth,alpha,beta)
+            v = - self.negaScout(depth, alpha, beta)
             if v > best or best_shot is None:
                 best = v
                 best_shot = move
