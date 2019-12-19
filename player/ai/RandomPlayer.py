@@ -5,6 +5,9 @@ from game.board import Reversi
 from player.playerInterface import *
 from random import randint
 
+"""
+just a simple AI that is returning a random move over all the available
+"""
 class myPlayer(PlayerInterface):
 
     def __init__(self):

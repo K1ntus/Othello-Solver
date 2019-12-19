@@ -4,7 +4,7 @@ import time
 
 from game.board import Reversi
 # import player.ai.AiPlayer1 as myPlayer
-import ia_v2 as myPlayer
+import player.ai.BeginnerLevelPlayer2 as myPlayer
 import player.ai.AlphaBetaPlayer as Enemy1
 from ui.ui import Gui
 

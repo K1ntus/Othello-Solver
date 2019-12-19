@@ -15,16 +15,30 @@ _WHITE = 2
 _EMPTY = 0
 class HashingOperation(object):
     '''
-    classdocs
+    This class offers utils operation to convert a board to a custom
+    hash, and vice-versa.
+    
+    The way that a board is Hashed follow these rules:
+    
+    Letter is giving the horizontal position. The color depends
+    of the case of the letter. If it is upper, then it is a white token.
+    If it is lower, then that is a black token.
+    
+    The letter is then followed by an alphanumerical number giving the horizontal
+    position.
+    
+    exemple: "e4F6" means one black token in column e and line 4. One white in column f and line 6
     '''
 
     @staticmethod
     def BoardToHashCode(reversi_game, score = 0):
+        """Return the linked hash of a board"""
         board_str = HashingOperation.board_to_str(reversi_game)
         return HashingOperation.StringToHashCode(board_str)
     
     @staticmethod
     def StringToHashCode(board_str):
+        """Convert a board string to hashcode readable by Bloom filter implementation"""
 #         print("Board is: ", board_str)
         byte_str = str.encode(board_str)
         type(byte_str)
@@ -79,6 +93,7 @@ class HashingOperation(object):
     
     @staticmethod
     def _piece2str(c, x, y):        
+        """Convert a piece to a string"""
         x = HashingOperation.IndiceToChar(x)        
         
         if c==_WHITE:
@@ -93,6 +108,7 @@ class HashingOperation(object):
 
     @staticmethod
     def board_to_str(reversi_game):
+        """Convert a board to a string"""
         toreturn=""
         y = 1
         for l in reversi_game._board:

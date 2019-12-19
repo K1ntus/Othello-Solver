@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//bloom/__init__.py=utf-8
 encoding//bloom/bloom_filter.py=utf-8
+encoding//bloom/test_bloom_filter.py=utf-8
 encoding//data/__init__.py=utf-8
 encoding//data/bloom_filter.py=utf-8
 encoding//data/python2x3.py=utf-8
@@ -18,5 +19,6 @@ encoding//player/ai/AlphaBetaPlayer.py=utf-8
 encoding//player/ai/BeginnerLevelPlayer.py=utf-8
 encoding//player/ai/BeginnerLevelPlayer2.py=utf-8
 encoding//player/ai/RandomPlayer.py=utf-8
+encoding//player/ai/ShittyLevelPlayer.py=utf-8
 encoding/Reversi.py=utf-8
 encoding/myPlayer.py=utf-8

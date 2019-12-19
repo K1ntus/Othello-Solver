@@ -2,8 +2,6 @@
 
 # -*- coding: utf-8 -*-
 
-
-# The MAIN AI TO DEVELOP
 import time
 
 from bloom import BloomFilter
@@ -71,6 +69,35 @@ class myPlayer(PlayerInterface):
 
 
     def moveManager(self):
+        """ define the way to calculate the next move depending of the number
+        of non-free tokens on the board.
+        
+        For the Early Game, if the sum of pieces is lower than a constant, then we are 
+        looking into a bloomtable containing a list of well-known Opening Move.
+        If one is find, we are playing this move.
+        
+        For the Mid-Game, we are doing a simple AlphaBeta Pruning over few depth.
+        Two experimental modes has been implemented, One using the parallelization
+        (which will create process only for the fist layer of AB) and another one
+        is using Bloom Filter. Both of them are currently not used, because we are
+        losing a bit of performance regarding the result we will obtain. The parallelization
+        will also reduce the pruning because we will not pass the alpha and beta value 
+        over process.
+        Concerning the BloomCheckerFirst, the goal was to instanciate every board that we saw
+        with a pretty high heuristic value while we are looking over the AB tree.
+        Unfortunatly, with the current implementation, we will instanciate these board, even
+        if it could lead to some wrong path.
+        
+        The End-Game is used when the number of pieces is greater than another constant. This phase
+        of the game currently have a lot less available move than the "mid-game", so we increased
+        the depth for the AB-pruning.
+        
+        
+        In case of problem (ie. no moves has been found, then None), We Generate a move using a simple
+        heuristic that will return the best move over the number of tokens flipped. This function/way of work
+        shall be replaced in the future.
+        """
+        
         (nb1,nb2) = self._board.get_nb_pieces()   
         val = 0
         
@@ -116,6 +143,10 @@ class myPlayer(PlayerInterface):
 
     #bullshit
     def getNumberPoints(self, move):
+        """ Deprecated.
+        Used by the MoveManager if no move has been found, we need to keep it while we do not
+        have replaced the way to prevent None move.
+        """
         (current_point_white, current_point_black) = self._board.get_nb_pieces()
         self._board.push(move)
         (new_point_white, new_point_black) = self._board.get_nb_pieces()

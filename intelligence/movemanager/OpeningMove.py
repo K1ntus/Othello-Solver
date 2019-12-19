@@ -11,6 +11,10 @@ from intelligence.movemanager import MovingData
 
 
 class OpeningMove:
+    ''' Class used to manage the opening move (ie. at the beginning of the game).
+    We are currently using a bloom filter that will contains hashed board that we will
+    compare with board after pushing a move to test
+    '''
     def __init__(self, color):
         self._bloom = BloomFilter(max_elements=10000, error_rate=0.005, filename=None, start_fresh=False)
         self.InstanciateHashMoveList(color)
@@ -18,12 +22,22 @@ class OpeningMove:
         
     @classmethod
     def fixStringForNewMove(self, toCompare, toUpdate):
+        """Utils function to make readable a list of opening move by separating the hash 
+        by substring of size 2"""
         for i in range(0, len(toCompare), 2):
             toUpdate.replace(toCompare[i:i+2], "")
     
         return toUpdate
 
     def GetMove(self, board):
+        """
+        Check if an opening move is available for the player depending of his available move
+        
+        We check if the board after a push is present in the bloom filters, 
+            if it is, we append it to a list
+            
+        At he end, we return a random move from this result list.
+        """
 #         print("Board key: ", Utils.HashingOperation.board_to_str(board))
 
         currentBoardHashValue = Utils.HashingOperation.BoardToHashCode(board)
@@ -63,7 +77,10 @@ class OpeningMove:
     
     
     
-    def InstanciateHashMoveList(self, color):        
+    def InstanciateHashMoveList(self, color):    
+        """
+        Add an hashed board to the bloom filter managing the opening move
+        """    
         openingMoveArray = self.GetOpeningMoveList(color)
         for input_str in openingMoveArray:
 #             if(color == Board._WHITE):
@@ -82,6 +99,9 @@ class OpeningMove:
     
     @classmethod
     def MoveStringToHash(input_str):
+        """
+        convert a board+move to a hashed string that we will manage the color of the player.
+        """
         _board = Reversi.Board(10)
         
         for char_id in range(0, len(input_str), 2):
@@ -103,6 +123,7 @@ class OpeningMove:
     
     @classmethod
     def GetOpeningMoveList(self, color):
+        """Return an array of string corresponding to opening moves"""
 #         return MovingData.OpeningMoveData.getMoveList()
         #diagonal opening
         opening_moves = ["e5F5E6f6"]

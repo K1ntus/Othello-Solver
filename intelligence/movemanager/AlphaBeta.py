@@ -10,9 +10,19 @@ from game.board import Reversi
 from intelligence.heuristics import eval
 from ase.calculators.emt import beta
 
-
 class AlphaBeta:
  
+    
+    '''Class Implementing an AB-Pruning for reversi with 2 experimental options.
+            Both of them are currently not used, because we are
+                    losing a bit of performance regarding the result we will obtain. The parallelization
+                    will also reduce the pruning because we will not pass the alpha and beta value 
+                    over process.
+                    Concerning the BloomCheckerFirst, the goal was to instanciate every board that we saw
+                    with a pretty high heuristic value while we are looking over the AB tree.
+                    Unfortunatly, with the current implementation, we will instanciate these board, even
+                    if it could lead to some wrong path.
+        '''
     def __init__(self, player):
         self._player = player
         self._board = player._board
@@ -42,6 +52,8 @@ class AlphaBeta:
     
     @classmethod
     def __minValueForInstanciation__(self):
+        """Deprecated.
+            The heuristic score required to instanciate a board in the bloom filter"""
         return 99.95
 
     
@@ -51,6 +63,8 @@ class AlphaBeta:
         
     @staticmethod
     def __CopyCurrentBoard__(player):
+        """Function used to copy the current Reversi board and work over a 
+        copy. Mainly used for the multithreading"""
         res = Reversi.Board(player._board._boardsize)        
         
         for x in range(0,res._boardsize,1):
@@ -66,6 +80,7 @@ class AlphaBeta:
             BloomCheckerFirst = False, 
             Parallelization   = False
         ):
+        """function that will organize the AB-pruning depending of the options enabled"""
         moves = player._board.legal_moves()
 
 
@@ -133,6 +148,7 @@ class AlphaBeta:
 
     @classmethod
     def alphaBetaNoParallelizationWrapper(self, player, depth, alpha, beta, move, BloomCheckerFirst):
+        """wrapper used only for the sequential AB-pruning."""
         player._board.push(move)
         score = AlphaBeta.max_score_alpha_beta(player, player._board, depth, alpha, beta, BloomCheckerFirst)
         if score > alpha:            
@@ -143,13 +159,22 @@ class AlphaBeta:
     
     @classmethod
     def alphaBetaParallelizationWrapper(self, player, depth, alpha, beta, move, queue, BloomCheckerFirst):
+        """wrapper used only for the multiprocessing AB-pruning, to organize the parameters, set up the Queue
+        or create a copy of the board"""
         copiedBoard = AlphaBeta.__CopyCurrentBoard__(player)
+        player._board.push(move)
         score = AlphaBeta.max_score_alpha_beta(player, copiedBoard, depth, alpha, beta, BloomCheckerFirst)
+        player._board.pop()
         if score > alpha:            
             alpha = score
         queue.put( (alpha, move) )
         copiedBoard = None
         return alpha
+        
+        
+        
+        
+        
         
     # Also the max and min value function:
     @classmethod
