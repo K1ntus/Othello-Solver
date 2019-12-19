@@ -51,9 +51,7 @@ class myPlayer(PlayerInterface):
             print("I lost :(!!")
 
     def _max_min(self, depth=3,alpha=-10000,beta=10000):
-        if self._board.is_game_over():
-            return 9999999999
-        if depth == 0:
+        if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self, self._mycolor)
         best = alpha
         moves = boardHelper.getSortedMoves(self._board)
@@ -71,9 +69,7 @@ class myPlayer(PlayerInterface):
         return best
 
     def _min_max(self, depth=3,alpha=-10000,beta=10000):
-        if self._board.is_game_over():
-            return -9999999999
-        if depth == 0:
+        if depth == 0 or self._board.is_game_over():
             return eval.getTotal(self,playerHelper.getOpColor(self._mycolor))
         worst = beta
         moves = boardHelper.getSortedMoves(self._board)
@@ -99,7 +95,7 @@ class myPlayer(PlayerInterface):
         moves = self._board.legal_moves()
         for move in moves:
             self._board.push(move)
-            v = self._max_min(depth,alpha,beta)
+            v = self._min_max(depth,alpha,beta)
             if v > best or best_shot is None:
                 best = v
                 best_shot = move

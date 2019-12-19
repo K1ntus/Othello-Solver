@@ -102,7 +102,7 @@ class myPlayer(PlayerInterface):
         sortedMoves = boardHelper.getSortedMoves(self._board)
         for move in sortedMoves:
             self._board.push(move)
-            v = -self.negC(depth)
+            v = -self.negE(depth,alpha,beta)
             if v > best or best_shot is None:
                 best = v
                 best_shot = move
