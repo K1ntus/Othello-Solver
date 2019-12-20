@@ -29,7 +29,7 @@ def getTotal(player, color):
     # discDiffScore = strategy.discDiff(player)
     staticBoardScore = strategy.boardWeight(player, color)
     cornerGrabScore = CornerStrategy.cornerGrab(player,color)
-    staticBoardScore = StableStrategy.stability(player, color)
+    stabilityScore = StableStrategy.stability(player, color)
 
 
 

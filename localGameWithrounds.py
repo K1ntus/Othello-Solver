@@ -1,20 +1,20 @@
 
-import player.ai.AiPlayer1 as AiPlayer1
+import player.ai.AiPlayer2 as player
 import player.ai.RandomPlayer as RandomPlayer
 import game.board.Reversi as Reversi
-import myPlayer
 import time
 from io import StringIO
 import sys
 
-list = []
+listPlayer1 = []
+listPlayer2 = []
 
 
 def startGame():
     b = Reversi.Board(10)
 
     players = []
-    player1 = AiPlayer1.AiPlayer1()
+    player1 = player.myPlayer()
     player1.newGame(b._BLACK)
 
     players.append(player1)
@@ -43,13 +43,13 @@ def startGame():
         othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
 
         currentTime = time.time()
-        sys.stdout = stringio
+        # sys.stdout = stringio
         move = players[nextplayer].getPlayerMove()
-        sys.stdout = sysstdout
-        playeroutput = "\r" + stringio.getvalue()
-        stringio.truncate(0)
+        # sys.stdout = sysstdout
+        # playeroutput = "\r" + stringio.getvalue()
+        # stringio.truncate(0)
         # print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
-        outputs[nextplayer] += playeroutput
+        # outputs[nextplayer] += playeroutput
         totalTime[nextplayer] += time.time() - currentTime
         # print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
         (x, y) = move
@@ -70,8 +70,10 @@ def startGame():
     (nbwhites, nbblacks) = b.get_nb_pieces()
     print("Time:", totalTime)
     print("Winner: ", end="")
-    global list
-    list.append(totalTime[0])
+    global listPlayer1
+    global listPlayer2
+    listPlayer1.append(totalTime[0])
+    listPlayer2.append(totalTime[1])
     if nbwhites > nbblacks:
         print("WHITE")
         return 2
@@ -94,10 +96,13 @@ def run(times):
         if res == 0:
             draw += 1
     print("Black : ", black, " White : ", white, " Draw : ", draw)
-    global list
-    size = len(list)
-    s = sum(list)
-    print("averge time :", str(s / size))
+    global listPlayer1
+    global listPlayer2
+    sizePlayer1 = len(listPlayer1)
+    sizePlayer2 = len(listPlayer2)
+    s1 = sum(listPlayer1)
+    s2 = sum(listPlayer2)
+    print("averge time :", str(s1 / sizePlayer1),str(s2 / sizePlayer2))
 
 
-run(10)
+run(1)
