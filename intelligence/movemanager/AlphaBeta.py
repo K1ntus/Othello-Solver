@@ -306,7 +306,8 @@ class AlphaBeta:
                  
         
             if minVal > beta:
-                beta = self.__synch_update_beta__(minVal)
+                beta = minVal
+#                 beta = self.__synch_update_beta__(minVal)
                     
             if (time.time() - self.startTime > __MaxAllowedTimeInSeconds__):
                 break
