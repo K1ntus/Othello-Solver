@@ -3,12 +3,16 @@ Created on 20 nov. 2019
  
 @author: jordane
 '''
+from ase.calculators.emt import beta
 from multiprocessing import Queue, Process, Lock
+import time
 
 from bloom import __utils__ as Utils
 from game.board import Reversi
 from intelligence.heuristics import eval
-from ase.calculators.emt import beta
+
+__MaxAllowedTimeInSeconds__ = 7
+
 
 class AlphaBeta:
  
@@ -23,24 +27,45 @@ class AlphaBeta:
                     Unfortunatly, with the current implementation, we will instanciate these board, even
                     if it could lead to some wrong path.
         '''
-    def __init__(self, player):
-        self._player = player
-        self._board = player._board
-        self._mycolor = player._mycolor
+    def __init__(self):
+        self.startTime = 0
+        
+        self.synch_alpha = AlphaBeta.__alpha__()
+        self.synch_alpha_locker = Lock()
+        self.synch_beta = AlphaBeta.__beta__()
+        self.synch_beta_locker = Lock()
          
-        self._bloomTable = player._bloomTable
-         
-    def __update__(self, player):
-        self._player = player
-        self._board = player._board
-        self._mycolor = player._mycolor
-         
-        self._bloomTable = player._bloomTable
+    def __reset__(self):
+        self.startTime = 0
         
         
+        self.synch_alpha = AlphaBeta.__alpha__()
+        self.synch_alpha_locker = Lock()
+        self.synch_beta = AlphaBeta.__beta__()
+        self.synch_beta_locker = Lock()
         
         
-
+    @classmethod
+    def __synch_update_alpha__(self, newVal):
+        self.synch_alpha_locker.acquire()
+        if(newVal < self.synch_alpha):
+            self.synch_alpha = newVal
+        self.synch_alpha_locker.release()
+        return self.synch_alpha
+        
+    @classmethod
+    def __synch_update_beta__(self, newVal):
+        self.synch_beta_locker.acquire()
+        if(newVal > self.synch_beta):
+            self.synch_beta = newVal
+        self.synch_beta_locker.release()
+        return self.synch_beta
+    
+    def __get_synch_beta__(self):
+        return self.synch_beta
+    
+    def __get_synch_alpha__(self):
+        return self.synch_alpha
 
     @staticmethod
     def __alpha__():
@@ -73,8 +98,8 @@ class AlphaBeta:
                 
         return res
         
-    @staticmethod
-    def __alpha_beta_main_wrapper__(
+        
+    def __alpha_beta_main_wrapper__(self,
             player, 
             depth = 3, #nb pair svp
             BloomCheckerFirst = False, 
@@ -83,7 +108,7 @@ class AlphaBeta:
         """function that will organize the AB-pruning depending of the options enabled"""
         moves = player._board.legal_moves()
 
-
+        startTime = time.time()
         return_move = None
         bestscore = AlphaBeta.__alpha__()
         q = Queue()
@@ -110,12 +135,12 @@ class AlphaBeta:
             if(Parallelization): 
 #                 if __name__ == '__main__':
 #                     freeze_support()                
-                    proc = Process(target=AlphaBeta.alphaBetaParallelizationWrapper,  args=(player, depth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), m, q, BloomCheckerFirst))
+                    proc = Process(target=self.alphaBetaParallelizationWrapper,  args=(player, depth, AlphaBeta.__alpha__(), AlphaBeta.__beta__(), m, q, BloomCheckerFirst))
                     proc.start()
                     process_list.append(proc)
             else:
 
-                (score)  = AlphaBeta.alphaBetaNoParallelizationWrapper(player, depth, bestscore, AlphaBeta.__beta__(), m, BloomCheckerFirst)
+                (score)  = self.alphaBetaNoParallelizationWrapper(player, depth, bestscore, AlphaBeta.__beta__(), m, BloomCheckerFirst)
     
                 if score > bestscore:
                     bestscore = score
@@ -125,15 +150,17 @@ class AlphaBeta:
 #                     print("Instanciate a table with the score", score)  
                     player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(player._board))
                     player._board.pop() 
+                if (time.time() - startTime > __MaxAllowedTimeInSeconds__):
+                    break
 
                 
         if(Parallelization):
-            tout=5
+#             tout=5
 #             tout = .5000/len(process_list)
             for proc in process_list:
-                proc.join(timeout=tout)
+                proc.join()#timeout=tout)
             while q.qsize() > 0:
-                (score,move) = q.get(block=False, timeout=.100)
+                (score,move) = q.get(block=True)
                  
                 if score > bestscore:
                     bestscore = score
@@ -150,7 +177,8 @@ class AlphaBeta:
     def alphaBetaNoParallelizationWrapper(self, player, depth, alpha, beta, move, BloomCheckerFirst):
         """wrapper used only for the sequential AB-pruning."""
         player._board.push(move)
-        score = AlphaBeta.min_score_alpha_beta(player, player._board, depth, alpha, beta, BloomCheckerFirst)
+        self.startTime = time.time()
+        score = self.min_score_alpha_beta(player, player._board, depth, alpha, beta, BloomCheckerFirst)
         if score > alpha:            
             alpha = score
         player._board.pop()
@@ -162,8 +190,9 @@ class AlphaBeta:
         """wrapper used only for the multiprocessing AB-pruning, to organize the parameters, set up the Queue
         or create a copy of the board"""
         copiedBoard = AlphaBeta.__CopyCurrentBoard__(player)
+        self.startTime = time.time()
         player._board.push(move)
-        score = AlphaBeta.min_score_alpha_beta(player, copiedBoard, depth, alpha, beta, BloomCheckerFirst)
+        score = self.min_score_alpha_beta(player, copiedBoard, depth, alpha, beta, BloomCheckerFirst)
         player._board.pop()
         if score > alpha:            
             alpha = score
@@ -207,7 +236,7 @@ class AlphaBeta:
                 else:   #lose board
                     return AlphaBeta.__alpha__()
             
-        if depth == 0 or board.is_game_over():  # leaves of alpha-beta pruning          
+        if depth == 0 or board.is_game_over() or time.time() - self.startTime > __MaxAllowedTimeInSeconds__:  # leaves of alpha-beta pruning          
             score =  eval.getTotal(player,player._mycolor)
             return score
              
@@ -218,12 +247,14 @@ class AlphaBeta:
                     player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
             return score
         
+        
+#         maxVal = self.synch_alpha  
         maxVal = alpha
         
         
         for move in moves:       
             board.push(move)
-            score = AlphaBeta.min_score_alpha_beta(player, board, depth-1, alpha, beta, BloomCheckerFirst)
+            score = self.min_score_alpha_beta(player, board, depth-1, alpha, beta, BloomCheckerFirst)
             board.pop()
             
             if score > maxVal:
@@ -232,8 +263,12 @@ class AlphaBeta:
                 return maxVal
         
             if maxVal > alpha:
+#                 alpha = self.__synch_update_alpha__(maxVal)
                 alpha = maxVal
                  
+                
+            if (time.time() - self.startTime > __MaxAllowedTimeInSeconds__):
+                break
             
         return maxVal
 
@@ -243,14 +278,16 @@ class AlphaBeta:
         moves = board.legal_moves()
         
                 
-        if depth == 0 or board.is_game_over():
+        if depth == 0 or board.is_game_over() or time.time() - self.startTime > __MaxAllowedTimeInSeconds__:
             return eval.getTotal(player,player._mycolor)
         
+#         minVal = self.synch_beta
         minVal = beta
         
-        for move in moves:         
+        for move in moves:
+                 
             board.push(move)
-            score = AlphaBeta.max_score_alpha_beta(player, board, depth-1, alpha, beta, BloomCheckerFirst)
+            score = self.max_score_alpha_beta(player, board, depth-1, alpha, beta, BloomCheckerFirst)
             board.pop()
             
             
@@ -269,8 +306,10 @@ class AlphaBeta:
                  
         
             if minVal > beta:
-                beta = minVal
+                beta = self.__synch_update_beta__(minVal)
                     
+            if (time.time() - self.startTime > __MaxAllowedTimeInSeconds__):
+                break
                     
             
         return minVal

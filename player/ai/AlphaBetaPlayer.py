@@ -26,7 +26,8 @@ class myPlayer(PlayerInterface):
         
         self._bloomTable = None
         
-#         self._alphaBetaManager = AlphaBeta.AlphaBeta(self)
+#         self.alphaBeta_instance = None
+        
 #         print(self._board)
         
 
@@ -62,6 +63,7 @@ class myPlayer(PlayerInterface):
             
         self._openingMover = OpeningMove(self._mycolor)        
         self._opponent = 1 if color == 2 else 2        
+#         self.alphaBeta_instance = AlphaBeta()
         self._bloomTable = BloomFilter(max_elements=5000, error_rate=0.01, filename=None, start_fresh=False)
 
     def endGame(self, winner):
@@ -104,6 +106,7 @@ class myPlayer(PlayerInterface):
         
         (nb1,nb2) = self._board.get_nb_pieces()   
         val = 0
+        alphaBeta_instance = AlphaBeta()
         
         # Early-Game: Check opening move in a custom bloom filter
         if(nb1+nb2 < MoveManager.__AI_OPENING_MOVE_VALUE__()): 
@@ -111,7 +114,7 @@ class myPlayer(PlayerInterface):
             move = self._openingMover.GetMove(self._board)
             
             if(move is None): #No Opening Move has been found, need to calculate the AB-pruning
-                (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
+                (val, move) = alphaBeta_instance.__alpha_beta_main_wrapper__(player=self, 
                                                                 depth=3,
                                                                 Parallelization=False,
                                                                 BloomCheckerFirst=False)
@@ -119,8 +122,8 @@ class myPlayer(PlayerInterface):
         # End-Game: Special depth alpha-beta
         elif ((nb1+nb2) > MoveManager.__AI_ENDGAME_VALUE__(self._board)):   
 #             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
-            print("Special depth For Prunning: ", nb1+nb2)
-            (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self,
+            print("Special depth For Pruning: ", nb1+nb2)
+            (val, move) = alphaBeta_instance.__alpha_beta_main_wrapper__(player=self,
                                                                 depth=self._board._boardsize * self._board._boardsize - (nb1+nb2), 
                                                                 Parallelization=False,
                                                                 BloomCheckerFirst=False)
@@ -128,9 +131,9 @@ class myPlayer(PlayerInterface):
         # Mid-Game: Usual Case. Alpha Beta. Can use the parallelization, or chose to check a bloom filter if a good board has already been find 
         else:   
             #Alpha and Beta should be set directly on the AlphaBeta class
-            (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
-                                                                depth=3,
-                                                                Parallelization=False,
+            (val, move) = alphaBeta_instance.__alpha_beta_main_wrapper__(player=self, 
+                                                                depth=4,
+                                                                Parallelization=True,
                                                                 BloomCheckerFirst=False)
             
         # No move has been find, generate one with a simple heuristic

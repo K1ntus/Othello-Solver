@@ -4,7 +4,7 @@ import time
 
 from game.board import Reversi
 # import player.ai.AiPlayer1 as myPlayer
-import player.ai.BeginnerLevelPlayer2 as myPlayer
+import player.ai.AiPlayer1 as myPlayer
 import player.ai.AlphaBetaPlayer as Enemy1
 from ui.ui import Gui
 
@@ -74,7 +74,6 @@ while not b.is_game_over():
     
     
     if(DISPLAY_MODE):
-        #si les available move sont mal affiches, mets a None. Je debuggerais qd je serais sur mon linux
         availMove = [m for m in players[nextplayer]._board.legal_moves()]
 
         (nbB, nbW) = b.get_nb_pieces()
