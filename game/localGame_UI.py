@@ -8,6 +8,14 @@ import player.ai.BeginnerLevelPlayer2 as myPlayer
 import player.ai.AlphaBetaPlayer as Enemy1
 from ui.ui import Gui
 
+'''
+This script implements a pygame script that
+will manage the display of the current board by
+showing cells occupied by White, Black or Empty.
+
+Current score for both players and there available
+moves.
+'''
 
 # import player.ai.RandomPlayer as Enemy1
 # import player.ai.BeginnerLevelPlayer2 as Enemy1

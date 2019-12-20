@@ -64,7 +64,7 @@ class AlphaBeta:
     @staticmethod
     def __CopyCurrentBoard__(player):
         """Function used to copy the current Reversi board and work over a 
-        copy. Mainly used for the multithreading"""
+        copy. Mainly used for multithreading"""
         res = Reversi.Board(player._board._boardsize)        
         
         for x in range(0,res._boardsize,1):
@@ -150,7 +150,7 @@ class AlphaBeta:
     def alphaBetaNoParallelizationWrapper(self, player, depth, alpha, beta, move, BloomCheckerFirst):
         """wrapper used only for the sequential AB-pruning."""
         player._board.push(move)
-        score = AlphaBeta.max_score_alpha_beta(player, player._board, depth, alpha, beta, BloomCheckerFirst)
+        score = AlphaBeta.min_score_alpha_beta(player, player._board, depth, alpha, beta, BloomCheckerFirst)
         if score > alpha:            
             alpha = score
         player._board.pop()
@@ -163,7 +163,7 @@ class AlphaBeta:
         or create a copy of the board"""
         copiedBoard = AlphaBeta.__CopyCurrentBoard__(player)
         player._board.push(move)
-        score = AlphaBeta.max_score_alpha_beta(player, copiedBoard, depth, alpha, beta, BloomCheckerFirst)
+        score = AlphaBeta.min_score_alpha_beta(player, copiedBoard, depth, alpha, beta, BloomCheckerFirst)
         player._board.pop()
         if score > alpha:            
             alpha = score

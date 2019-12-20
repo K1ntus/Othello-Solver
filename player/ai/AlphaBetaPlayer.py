@@ -14,6 +14,10 @@ from intelligence.movemanager.OpeningMove import OpeningMove
 
 
 class myPlayer(PlayerInterface):
+    '''A more elaborated AI using a version of Alpha-Beta Pruning algorithm.
+    He also have some experimentals options of enabled (Usage of Bloom and Multiprocessing)
+    
+    Check moveManager method documentation for a more in-depth description.'''
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -27,7 +31,7 @@ class myPlayer(PlayerInterface):
         
 
     def getPlayerName(self):
-        return "Random Player"
+        return "Alpha Beta Pruning player"
 
     def getPlayerMove(self):
         
@@ -105,6 +109,12 @@ class myPlayer(PlayerInterface):
         if(nb1+nb2 < MoveManager.__AI_OPENING_MOVE_VALUE__()): 
             print("Check if ", Utils.HashingOperation.BoardToHashCode(self._board), "is present")
             move = self._openingMover.GetMove(self._board)
+            
+            if(move is None): #No Opening Move has been found, need to calculate the AB-pruning
+                (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self, 
+                                                                depth=3,
+                                                                Parallelization=False,
+                                                                BloomCheckerFirst=False)
             
         # End-Game: Special depth alpha-beta
         elif ((nb1+nb2) > MoveManager.__AI_ENDGAME_VALUE__(self._board)):   

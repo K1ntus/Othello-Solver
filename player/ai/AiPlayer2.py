@@ -8,17 +8,10 @@ import intelligence.heuristics.eval as eval
 import helpers.playerHelper as playerHelper
 import helpers.boardHelper as boardHelper
 
-
-<<<<<<< HEAD
-class AiPlayer2(PlayerInterface):
-    _NotSTABLE = 0
-    _STABLE = 1
-
-=======
+'''AI Implementing a Negamax ABS'''
 class myPlayer(PlayerInterface):
     _NotSTABLE=0
     _STABLE=1
->>>>>>> jordane_workspace
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None

@@ -1,8 +1,12 @@
 '''
 Created on 18 déc. 2019
 
-@author: jmasson
-'''
+Script that contains a list of Opening Move following our
+hashing method. These moves can be found on internet and has 
+been converted to make them compatible with our reversi
+board version. (Usually, Board is 8x8 while it is 
+currently 10x10. Which is changing the position of every 
+tokens.'''
 
 
 

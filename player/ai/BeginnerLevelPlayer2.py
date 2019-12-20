@@ -9,16 +9,16 @@ from asyncio.tasks import sleep
 WIDTH = 9
 HEIGHT = 9
 
-#bit better than the first beginner player
-
 class myPlayer(PlayerInterface):
-
+    ''' 
+    the same than Beginner Level Player but with a bit of randomness at the beginning of the game.
+    '''
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Random Player"
+        return "Simple Player with Randomness"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

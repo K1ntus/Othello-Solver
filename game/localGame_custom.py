@@ -10,6 +10,15 @@ import sys
 import os
 from contextlib import redirect_stdout # save in file
 
+
+'''
+A special implementation of localGame used to do probability tests over multiple game.
+It is possible to print the state of every round by put on <verb>. If this variable 
+is set at False, only the final board (ie. when game will be over) will be printed.
+
+These messages are also saved into a file over a custom folder by using the dup mechanics.
+(Output file can be set at the send of this script)
+'''
 # b = Reversi.Board(10)
 
 nbTest = 300

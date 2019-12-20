@@ -31,6 +31,7 @@ class MoveManager(object):
 
     @staticmethod
     def MoveForGameBeginning(player, moves):
+        """Deprecated."""
         best_move = moves[randint(0,len(moves)-1)]
         max_value = player.getNumberPoints(best_move) + MoveManager.applyBiais(player._board, player._mycolor, best_move)
         for m in moves:
