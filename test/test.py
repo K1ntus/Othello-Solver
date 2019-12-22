@@ -1,5 +1,6 @@
 import timeit
 import game.board.ReversiBit as ReversiBit
+import multiprocessing
 # import helpers.boardHelper as boardHelper
 
 # print(boardHelper.getSortedMoves(b,b._nextPlayer))
@@ -32,7 +33,7 @@ from threading import Thread
 def checkboard():
     b = ReversiBit.Board(10)
     b.push([1, 3, 5])
-    moves = b.legal_moves_bit()
+    moves = b.legal_moves()
     print(moves)
     b.bbPrint()
 
@@ -44,3 +45,4 @@ def checkboard():
     #         print(j)
 
 print(timeit.timeit(checkboard, number=1))
+print(multiprocessing.cpu_count())

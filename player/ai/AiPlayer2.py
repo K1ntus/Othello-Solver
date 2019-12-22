@@ -18,11 +18,11 @@ class myPlayer(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1,-1)
-        moves = [m for m in self._board.generateMoves()]
-        # print("legal moves ----------------------------")
-        # print(self._board.legal_moves())
-        # print("BIT legal moves")
-        # print(self._board.generateMoves())
+        moves = [m for m in self._board.legal_moves()]
+        print("legal moves ----------------------------")
+        print(self._board.old_legal_moves())
+        print("BIT legal moves")
+        print(self._board.legal_moves())
         # print(self._board)
         # self._board.bbPrint()
         move = moves[randint(0,len(moves)-1)]
@@ -36,7 +36,6 @@ class myPlayer(PlayerInterface):
 
     def playOpponentMove(self, x,y):
         assert(self._board.is_valid_move(self._opponent, x, y))
-#         print("Opponent played ", (x,y))
         self._board.push([self._opponent, x, y])
 
     def newGame(self, color):

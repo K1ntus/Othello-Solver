@@ -45,7 +45,8 @@ def getSortedMoves(board,player):
     moves = board.legal_moves()
     for m in moves:
         board.push(m)
-        sortedMoves.append((m,eval.evalBoard(board,player,tmp_player)))
+        sortedMoves.append((m,eval.getTotal2(player,tmp_player)))
+        # sortedMoves.append((m,eval.evalBoard(board,player,tmp_player)))
         board.pop()
     sortedMoves = sorted(sortedMoves, key=lambda node: node[1], reverse=True)
     sortedMoves = [node[0] for node in sortedMoves]

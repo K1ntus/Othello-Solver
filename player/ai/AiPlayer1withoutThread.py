@@ -7,7 +7,6 @@ from player.playerInterface import *
 import intelligence.heuristics.eval as eval
 import helpers.playerHelper as playerHelper
 import helpers.boardHelper as boardHelper
-import multiprocessing
 import threading as Thread
 import multiprocessing
 import concurrent.futures
@@ -16,10 +15,8 @@ import queue
 import copy
 import os
 
-# MAX_WOKER = multiprocessing.cpu_count()
+cornerList = [[1,0, 9], [1,9, 9], [1,9, 0], [1,0, 0]]
 MAX_WOKER = 10
-
-
 class myPlayer(PlayerInterface):
     _NotSTABLE = 0
     _STABLE = 1
@@ -35,7 +32,8 @@ class myPlayer(PlayerInterface):
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
             return (-1, -1)
-        moves = self._ia_max_min_thread()
+        # moves = self._ia_max_min_thread()
+        moves = self._ia_max_min()
         move = moves[randint(0, len(moves) - 1)]
         self._board.push(move)
         # print("I am playing ", move)
@@ -53,7 +51,7 @@ class myPlayer(PlayerInterface):
     def newGame(self, color):
         self._mycolor = color
         self._opponent = 1 if color == 2 else 2
-        self.cornerList = [[color, 0, 9], [color, 9, 9], [color, 9, 0], [color, 0, 0]]
+        self.cornerList = [[color,0, 9], [color,9, 9], [color,9, 0], [color,0, 0]]
 
     def endGame(self, winner):
         if self._mycolor == winner:
@@ -100,9 +98,9 @@ class myPlayer(PlayerInterface):
     # take in count the best shot
     def _ia_max_min(self):
         nbOccupied = self._board._nbWHITE + self._board._nbBLACK
-        if nbOccupied <= 20:
+        if nbOccupied<=20:
             depth = 6
-        if nbOccupied <= 80:
+        if nbOccupied <=80:
             depth = 3
         else:
             depth = 6
@@ -129,15 +127,14 @@ class myPlayer(PlayerInterface):
         return list_of_equal_moves
 
     # ===================== min max for concurrent ======================#
-    def _max_min_con(self, player, m, depth, alpha, beta):
+    def _max_min_con(self, player,m, depth, alpha, beta):
         if depth == 0 or player._board.is_game_over():
             return eval.getTotal(player, self._mycolor), m
         # best = alpha
-        # moves = boardHelper.getSortedMoves(player._board, self)
-        moves = player._board.legal_moves()
+        moves = boardHelper.getSortedMoves(player._board, self)
         for move in moves:
             player._board.push(move)
-            val, tmp = self._min_max_con(player, m, depth - 1, alpha, beta)
+            val, tmp = self._min_max_con(player, m,depth - 1, alpha, beta)
             alpha = max(alpha, val)
             player._board.pop()
             if alpha >= beta:
@@ -145,19 +142,18 @@ class myPlayer(PlayerInterface):
 
         return alpha, m
 
-    def _min_max_con(self, player, m, depth, alpha, beta):
+    def _min_max_con(self, player, m,depth, alpha, beta):
         # if alpha == -9999999999:
         #     print("Executing our Task on Process {}".format(os.getpid()))
 
         if depth == 0 or player._board.is_game_over():
-            # return eval.getTotal(player, playerHelper.getOpColor(self._mycolor)), m
-            return eval.getTotal(player, self._mycolor), m
+            return -eval.getTotal(player, playerHelper.getOpColor(self._mycolor)), m
+            # return eval.getTotal(player, self._mycolor), m
         # worst = beta
-        # moves = boardHelper.getSortedMoves(player._board, self)
-        moves = player._board.legal_moves()
+        moves = boardHelper.getSortedMoves(player._board, self)
         for move in moves:
             player._board.push(move)
-            val, tmp = self._max_min_con(player, m, depth - 1, alpha, beta)
+            val, tmp = self._max_min_con(player,m, depth - 1, alpha, beta)
             beta = min(beta, val)
             player._board.pop()
 
@@ -165,21 +161,21 @@ class myPlayer(PlayerInterface):
                 return alpha, m
         return beta, m
 
+
+
+
+
+
     # take in count the best shot
     def _ia_max_min_thread(self):
         global MAX_WOKER
         nbOccupied = self._board._nbWHITE + self._board._nbBLACK
-        if nbOccupied <= 20:
-            depth = 4
-        if 20 < nbOccupied <= 45:
-            depth = 4
-        if 45 < nbOccupied <= 55:
-            depth = 4
-        if 55 < nbOccupied <= 80:
-            depth = 4
-        if 80 < nbOccupied:
-            depth = 4
-
+        if nbOccupied<=20:
+            depth = 6
+        if nbOccupied <=80:
+            depth = 3
+        else:
+            depth = 6
 
         sign = 1
         # if depth % 2 == 0:
@@ -191,27 +187,26 @@ class myPlayer(PlayerInterface):
         list_of_equal_moves = []
         moves = self._board.legal_moves()
 
-        cornerArr = []
+        cornerArr=[]
         # killer corner moves
         for move in moves:
             if move in self.cornerList:
                 cornerArr.append(move)
-        if len(cornerArr) > 0:
+        if len(cornerArr)>0:
             return cornerArr
 
-        # if (len(moves) < 6):
-        #     return self._ia_max_min()
+        if (len(moves) < 6):
+            return self._ia_max_min()
+
 
         # ====================== use concurrent futures =========== #
 
-        futures = []
+        futures =[]
         with concurrent.futures.ProcessPoolExecutor(MAX_WOKER) as executor:
             for move in moves:
                 player = copy.deepcopy(self)
                 player._board.push(move)
-                # self._board.push(move)
                 futures.append(executor.submit(self._min_max_con, player, move, depth, alpha, beta))
-                # self._board.pop()
 
         for future in concurrent.futures.as_completed(futures):
             data = future.result()
@@ -223,3 +218,5 @@ class myPlayer(PlayerInterface):
                 list_of_equal_moves.append(data[1])
         return list_of_equal_moves
         # ========================================================= #
+
+

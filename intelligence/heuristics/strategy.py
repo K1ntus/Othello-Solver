@@ -3,8 +3,9 @@ import helpers.playerHelper as playerHelper
 from intelligence.heuristics import BoardWeight
 
 
-# ---------- mobility ----------#
-def mobility(player,color):
+# mobility heuristic
+# try to limit opponent player's legal moves
+def mobility(player, color):
     currentBoard = player._board
     opcolor = playerHelper.getOpColor(color)
     myMobility = len(boardHelper.legal_moves_for_player(currentBoard, color))
@@ -13,41 +14,38 @@ def mobility(player,color):
     return 100 * (myMobility - opMobility) / (myMobility + opMobility + 1)
 
 
-def potentialMobility(player):
-    # TODO
-    pass
-
-
 # 1 if my player is expected to make the last move
 # -1 if other player is expected to make the last move
-
-def parity(player,color):
+def parity(player, color):
+    opcolor = playerHelper.getOpColor(color)
     currentBoard = player._board
     size = currentBoard.get_board_size() * currentBoard.get_board_size()
     remain = size - currentBoard._nbWHITE - currentBoard._nbBLACK
     if remain % 2 == 0:
-        if color == player._mycolor:
-            return - 1
-        else:
-            return 1
-    else:
-        if color == player._mycolor:
+        if opcolor == currentBoard._nextPlayer:
             return 1
         else:
             return -1
+    else:
+        if opcolor == currentBoard._nextPlayer:
+            return -1
+        else:
+            return 1
 
 
-# disc different between my player and other player
-def discDiff(player,color):
+# number of discs on the board between (color) as my player and other player
+def discDiff(player, color):
     currentBoard = player._board
     nbBlack = currentBoard._nbBLACK
     nbWhite = currentBoard._nbWHITE
-    if color == 1:
+    if color == player._board._BLACK:
         return 100 * (nbBlack - nbWhite) / (nbBlack + nbWhite + 1)
     else:
         return 100 * (nbWhite - nbBlack) / (nbBlack + nbWhite + 1)
 
+
 # ignore 1/4 zone according to occupied corner
+# calculate the board score according to color as my player
 def boardWeight(player, color):
     board = player._board
     # weightTable = [
@@ -62,6 +60,7 @@ def boardWeight(player, color):
     #     [-100,   -200,    100,     -50,    -50,    -50,    -50,       100,      -200,    -100],
     #     [200,    -100,    100,      50,     50,     50,     50,       100,      -100,     200],
     # ]
+
     weightTable = BoardWeight.BoardStaticWeight.weightTable3
     empty = board._EMPTY
 
@@ -127,4 +126,3 @@ def boardWeight(player, color):
     # else :
     #     return -op_weight
     return my_weight
-
