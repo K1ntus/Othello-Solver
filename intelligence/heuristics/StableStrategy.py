@@ -1,8 +1,8 @@
 
 from threading import Thread
 
-from helpers import boardHelper as boardHelper
-from helpers import playerHelper as playerHelper
+import helpers.boardHelper as boardHelper
+import helpers.playerHelper as playerHelper
 import copy
 
 #  ------------------------------ Stability -----------------------------------#
@@ -21,28 +21,15 @@ class StableThread(Thread):
 def stability(player, color):
     if (player._board._nbBLACK + player._board._nbWHITE) < 12:
         return 0
-    my_color = player._mycolor
-    op_color = boardHelper.getOpColor(my_color)
-    myStable = 20 * stabilityForPlayer(player, my_color)
-    opStable = 20 * stabilityForPlayer(player, op_color)
-    if (myStable + opStable) != 0:
-        return 100 * (myStable - opStable) / (myStable + opStable)
-    else:
-        return 0
-
-
-def stabilityNegaMax(player, color):
-    if (player._board._nbBLACK + player._board._nbWHITE) < 12:
-        return 0
-    # this is for nega max
     my_color = color
+    # TODO to be update
     op_color = boardHelper.getOpColor(my_color)
     myStable = 20 * stabilityForPlayer(player, my_color)
     opStable = 20 * stabilityForPlayer(player, op_color)
-    if (myStable + opStable) != 0:
-        return 100 * (myStable - opStable) / (myStable + opStable)
-    else:
-        return 0
+
+    return myStable - opStable
+
+
 
 def stabilityThread(player, color):
     if (player._board._nbBLACK + player._board._nbWHITE) < 12:
@@ -101,13 +88,14 @@ def fromTopRight(player, color, stableBoard):
     size = currentBoard.get_board_size() - 1
     nbTop = 0
     nbRight = 0
-
+    # check horizontal
     for y in range(size, -1, -1):
         if boardHelper.getCaseColor(currentBoard, 0, y) == color:
             playerHelper.markStable(stableBoard, 0, y)
             nbTop += 1
         else:
             break
+    # check vertical
     for x in range(0, size + 1):
         if boardHelper.getCaseColor(currentBoard, x, size) == color:
             playerHelper.markStable(stableBoard, x, size)

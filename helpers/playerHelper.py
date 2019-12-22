@@ -6,7 +6,7 @@ _BLACK = 1
 _WHITE = 2
 _EMPTY = 0
 
-# mark a copy version of stableBaord
+# mark the case (x,y) as stable
 def markStable(stableBaord,x,y):
     key = ""+str(x)+""+str(y)
     stableBaord.add(key)
@@ -18,11 +18,6 @@ def isStable(stableBaord,x,y):
 
     return key in stableBaord
 
-def getNbStable(player, color):
-    if player._mycolor == color:
-        return player._nbMyStable
-    else:
-        return player._nbOpStable
 
 def getOpColor(color):
     mycolor = color

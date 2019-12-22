@@ -1,24 +1,33 @@
 #http://www.samsoft.org.uk/reversi/openings.htm
 # from IPython.utils.py3compat import xrange
 from random import randint
+import time
 
-from game.board import Reversi
 from bloom import __utils__ as Utils
 from bloom.__utils__ import HashingOperation
 from bloom.bloom_filter import BloomFilter
+from game.board import Reversi
+from intelligence.movemanager import MovingData
 
 
 class OpeningMove:
     def __init__(self, color):
         self._bloom = BloomFilter(max_elements=10000, error_rate=0.005, filename=None, start_fresh=False)
         self.InstanciateHashMoveList(color)
+        
+        
+    @classmethod
+    def fixStringForNewMove(self, toCompare, toUpdate):
+        for i in range(0, len(toCompare), 2):
+            toUpdate.replace(toCompare[i:i+2], "")
     
+        return toUpdate
 
     def GetMove(self, board):
 #         print("Board key: ", Utils.HashingOperation.board_to_str(board))
 
-        hashValue = Utils.HashingOperation.BoardToHashCode(board)
-        res_contain = self._bloom.__contains__(key=hashValue)
+        currentBoardHashValue = Utils.HashingOperation.BoardToHashCode(board)
+        res_contain = self._bloom.__contains__(key=currentBoardHashValue)
 #         if(res_contain):
 #         print("Search Opening move In The Bloom Filter", flush=True)
             
@@ -31,14 +40,15 @@ class OpeningMove:
             board.push(m)
                 
                 
-            hashValue = Utils.HashingOperation.BoardToHashCode(board)
-            res_contain = self._bloom.__contains__(key=hashValue)
+            newBoardHashValue = Utils.HashingOperation.BoardToHashCode(board)
+            updatedBoardHashValue = self.fixStringForNewMove(currentBoardHashValue, newBoardHashValue)
+            res_contain = self._bloom.__contains__(key=updatedBoardHashValue)
             if(res_contain):
-#                 print("Adding: ", hashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
+#                 print("Adding: ", updatedBoardHashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
                 move.append(m)
                 find_a_move = True
             else:
-                print(Utils.HashingOperation.board_to_str(board), " -> ", hashValue)
+                print(Utils.HashingOperation.board_to_str(board), " -> ", updatedBoardHashValue)
             board.pop()
         if(find_a_move):
             return move[randint(0,len(move)-1)]
@@ -48,6 +58,7 @@ class OpeningMove:
 #             return None
         print("No move has been predicted")
 
+#         time.sleep(1)
         return None
     
     
@@ -60,6 +71,8 @@ class OpeningMove:
 #             else: 
 #                 someString = input_str
             someString = input_str
+            if(color is Reversi.Board._WHITE):
+                someString.swapcase()
             h = Utils.HashingOperation.StringToHashCode(someString)
             self._bloom.add(key=h)
 #             print("Instanciate: ", someString, " -> ", h)
@@ -90,37 +103,38 @@ class OpeningMove:
     
     @classmethod
     def GetOpeningMoveList(self, color):
+#         return MovingData.OpeningMoveData.getMoveList()
         #diagonal opening
         opening_moves = ["e5F5E6f6"]
-        
+         
 #         diagonalOpeningsWhite = [
 #             "e5F5E6f6",
 #             "f4e5f5E6f6"                    # DiagonalOpening
 #             
 #         ]
-        
-        
+         
+         
         diagonalOpeningsBlack = [
 #                 "d4D5e5F5E6f6",           # Diagonal Opening ?good
                 "f4e5f5E6f6",               # Diagonal Opening
                 "E4f4e5f5E6f6",             # Diagonal Opening
                 "f4G4e5F5E6f6",
-                
+                 
                 "f4G4e5f5g5E6f6",           # Diagonal Opening +
-                
+                 
                 "f4G4e5f5G5E6F6G6",         # Dialog Opening ++
                 "E4F4G4E5f5g5E6f6",         # Dialog Opening ++
-                
+                 
                 "f4G4e5f5g5h5E6F6G6",                
                 "f3E4f4G4E5f5g5E6f6",       # Heath/Tobidashi
                 "f4g4e5f5G5h5E6F6G6",       # Heath/Tobidashi +
-                
+                 
 #                 "d4E4D5E5F5E6f6",           
 #                 "d4E4d5E5F5d6e6f6",         # Diagonal Opening ++
 #                 
 #                 
 #                 # Variations linked to Diagonal Opening ++
-
+ 
                 "c4D4c5D5E5c6D6e6D7",           # Cow
                 "c4d4e4c5d5e5c6D6e6D7",         # Chimney
                 "c4D4c5d5e5f5c6D6e6D7",         # Cow +
@@ -128,7 +142,7 @@ class OpeningMove:
                 "d3c4D4C5f5c6F6D7",             # Tanida
                 "c4D4C5f5c6D7",                 # Cow Bat/Bat/Cambridge
                 "d3c4D4C5B6f5c6D7F6",           # Aircraft/Feldborg  
-
+ 
 #                 "d4E4d5E5F5d6E6f6E7",           # Cow
 #                 "d4e4f4d5e5f5d6E6f6E7",         # Chimney
 #                 "d4E4d5e5f5g5d6E6f6E7",         # Cow +
@@ -136,9 +150,9 @@ class OpeningMove:
 #                 "D5d4E4d6E7g5G6e3",             # Tanida
 #                 "D5d4E4d6E7g5",                 # Cow Bat/Bat/Cambridge
 #                 "D5d4E4d6E7g5G6e3C6",           # Aircraft/Feldborg
-
+ 
 #                 # End
-
+ 
 #                 
 #                 
 #                 "d4E4C5D5E5F5d6e6f6",           # Heath/Tobidashi
@@ -148,13 +162,13 @@ class OpeningMove:
                 "E4F4G4d5e5f5g5h5E6F6G6",         # Heath-Chimney +
                 "E4F4G4E5F5g5h5E6F6G6"
 #                 "e3F3d4E4C5D5d6"                # Iwasaki Variation    
-
-
  
-            
+ 
+  
+             
             ]
-
-       
+ 
+        
         parallelOpeningsBlack = [
             "E4f4E5f5E6f6",             # Parallel Opening
             "E4f4d5e5f5E6f6"            # Parallel Opening +
@@ -163,8 +177,8 @@ class OpeningMove:
 #             "E4f4E5f5E6f6",             # Parallel Opening
 #             "d5e4f4e5f5E6f6"            # Parallel Opening +
 #             ]
-
-       
+ 
+        
         perpendicularOpenings = [
             "f4e5f5E6F6G6",             # Perpendicular Opening (C4e3)
             "f4e5f5E6F6G6e7",           # Perpendicular Opening + (C4e3F5)
@@ -173,19 +187,19 @@ class OpeningMove:
             "E4f4e5f5e6f6G6d7f7",       # Tiger ++
             "E4f4e5F5e6f6g6h6d7",       # Perpendicular Opening + (C4e3F6)
             "D4f4E5f5e6f6g6h6d7",       # Personak Opening (after Perpendicular Opening + C4e3F6)
-            
+             
             "F3F4e5F5e6F6G6e7",         # Sweallow
             "F3F4e5F5e6f6G6e7g7"        # Sweallow +
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+             
+             
+             
+             
+             
+             
+             
+             
+             
+             
 #             "f4D5d6G6f7D7h7F8",
 #             "f4D5G6f7G7h7",
 #             "f4D5G5d6G6h6f7G7h7G8",
@@ -234,7 +248,7 @@ class OpeningMove:
 #             "f4D5G5d6E7f7",
 #             "f4D5"
             ]
-        
+         
         opening_moves += diagonalOpeningsBlack
         opening_moves += parallelOpeningsBlack
 #         if(color == Board._BLACK):
@@ -244,7 +258,9 @@ class OpeningMove:
 #             opening_moves += diagonalOpeningsWhite
 #             opening_moves += parallelOpeningsWhite
         opening_moves += perpendicularOpenings
-         
+        
+        opening_moves += MovingData.OpeningMoveData.getMoveList()
+          
         return opening_moves
         
         

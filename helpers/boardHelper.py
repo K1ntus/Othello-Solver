@@ -1,4 +1,5 @@
 from intelligence.heuristics import eval
+import helpers.playerHelper as playerHelper
 
 _NotSTABLE = 0
 _STABLE = 1
@@ -36,14 +37,16 @@ def legal_moves_for_player(board,player_color):
             moves = [[player_color, -1, -1]] # We shall pass
         return moves
 
-# base on player on current board
-def getSortedMoves(board):
+# base on next player on current board
+def getSortedMoves(board,player):
     sortedMoves = []
     # moves = legal_moves_for_player(board,player_color)
+    tmp_player = board._nextPlayer
     moves = board.legal_moves()
     for m in moves:
         board.push(m)
-        sortedMoves.append((m,eval.evalBoard(board,board._nextPlayer)))
+        sortedMoves.append((m,eval.getTotal2(player,tmp_player)))
+        # sortedMoves.append((m,eval.evalBoard(board,player,tmp_player)))
         board.pop()
     sortedMoves = sorted(sortedMoves, key=lambda node: node[1], reverse=True)
     sortedMoves = [node[0] for node in sortedMoves]

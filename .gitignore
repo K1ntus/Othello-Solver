@@ -3,3 +3,4 @@ log.txt
 *log*
 .settings/org.eclipse.core.resources.prefs
 __pycache__/
+venv

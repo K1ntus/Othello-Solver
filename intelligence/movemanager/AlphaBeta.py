@@ -7,7 +7,6 @@ from multiprocessing import Queue, Process, Lock
 
 from bloom import __utils__ as Utils
 from game.board import Reversi
-from intelligence.heuristics import StableStrategy as heuristic
 from intelligence.heuristics import eval
 
 
@@ -30,21 +29,15 @@ class AlphaBeta:
         
         
         
-        
-        
-        
-        
-
-
 
 
     @staticmethod
     def __alpha__():
-        return -100000
+        return -float('Inf')
     
     @staticmethod
     def __beta__():
-        return 100000
+        return float('Inf')
     
     @classmethod
     def __minValueForInstanciation__(self):
@@ -133,7 +126,7 @@ class AlphaBeta:
                 if bestscore >= AlphaBeta.__beta__():
                     return (bestscore, return_move)
             
-
+        print("---------------------")
         return (bestscore,return_move)
 
 
@@ -197,7 +190,8 @@ class AlphaBeta:
                     player._bloomTable.add(key=Utils.HashingOperation.BoardToHashCode(board))
             return score
         
-        maxVal = AlphaBeta.__alpha__()
+#         maxVal = AlphaBeta.__alpha__()
+        maxVal = alpha
         
         
         for move in moves:          
@@ -234,7 +228,8 @@ class AlphaBeta:
             return eval.getTotal(player,player._mycolor)
         
         
-        minVal = AlphaBeta.__beta__()
+#         minVal = AlphaBeta.__beta__()
+        minVal = beta
         
         for move in moves:         
             board.push(move)

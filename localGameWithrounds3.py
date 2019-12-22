@@ -1,5 +1,5 @@
 
-import player.ai.AiPlayer2 as AiPlayer2
+import player.ai.AiPlayer3 as AiPlayer3
 import player.ai.RandomPlayer as RandomPlayer
 import game.board.Reversi as Reversi
 import myPlayer
@@ -14,7 +14,7 @@ def startGame():
     b = Reversi.Board(10)
 
     players = []
-    player1 = AiPlayer2.myPlayer()
+    player1 = AiPlayer3.AiPlayer3()
     player1.newGame(b._BLACK)
 
     players.append(player1)
@@ -29,8 +29,8 @@ def startGame():
     nbmoves = 1
 
     outputs = ["", ""]
-    sysstdout = sys.stdout
-    stringio = StringIO()
+    # sysstdout = sys.stdout
+    # stringio = StringIO()
 
     print(b.legal_moves())
     while not b.is_game_over():
@@ -43,13 +43,13 @@ def startGame():
         othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
 
         currentTime = time.time()
-        sys.stdout = stringio
+        # sys.stdout = stringio
         move = players[nextplayer].getPlayerMove()
-        sys.stdout = sysstdout
-        playeroutput = "\r" + stringio.getvalue()
-        stringio.truncate(0)
+        # sys.stdout = sysstdout
+        # playeroutput = "\r" + stringio.getvalue()
+        # stringio.truncate(0)
         # print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
-        outputs[nextplayer] += playeroutput
+        # outputs[nextplayer] += playeroutput
         totalTime[nextplayer] += time.time() - currentTime
         # print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
         (x, y) = move

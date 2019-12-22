@@ -3,8 +3,13 @@ import sys
 import time
 
 from game.board import Reversi
-import player.ai.AlphaBetaPlayer as myPlayer
-import player.ai.AiPlayer1 as Enemy1
+# import player.ai.AlphaBetaPlayer as myPlayer
+# import player.ai.AiPlayer1 as myPlayer
+import player.ai.AiPlayerPVS as myPlayer
+# import player.ai.RandomPlayer as myPlayer
+import ia_v2 as Enemy1
+# import alexis as Enemy1
+# import jd as myPlayer
 from ui.ui import Gui
 
 
@@ -13,7 +18,7 @@ from ui.ui import Gui
 # import player.ai.BeginnerLevelPlayer2 as Enemy1
 # import player.ai.AlphaBetaPlayer as Enemy1localGame.py
 
-DISPLAY_MODE=False
+DISPLAY_MODE=True
 
 b = Reversi.Board(10)
 
@@ -37,10 +42,10 @@ if(DISPLAY_MODE):
     time.sleep(1)
 
 outputs = ["",""]
-sysstdout= sys.stdout
-stringio = StringIO()
+# sysstdout= sys.stdout
+# stringio = StringIO()
 
-print(b.legal_moves())
+# print(b.legal_moves())
 while not b.is_game_over():
 #     print("Referee Board:")
 #     print(b)
@@ -51,16 +56,17 @@ while not b.is_game_over():
     othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
     
     currentTime = time.time()
-    sys.stdout = stringio
+    # sys.stdout = stringio
     move = players[nextplayer].getPlayerMove()
-    sys.stdout = sysstdout
-    playeroutput = "\r" + stringio.getvalue()
-    stringio.truncate(0)
-    print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
-    outputs[nextplayer] += playeroutput
+    # sys.stdout = sysstdout
+    # playeroutput = "\r" + stringio.getvalue()
+    # stringio.truncate(0)
+    # print(("[Player "+str(nextplayer) + "] ").join(playeroutput.splitlines(True)))
+    # outputs[nextplayer] += playeroutput
     totalTime[nextplayer] += time.time() - currentTime
-    print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
-    (x,y) = move 
+    # print("Player ", nextplayercolor, players[nextplayer].getPlayerName(), "plays" + str(move))
+    (x,y) = move
+    print(nextplayercolor,x,y)
     if not b.is_valid_move(nextplayercolor,x,y):
         print(otherplayer, nextplayer, nextplayercolor)
         print("Problem: illegal move")
@@ -76,7 +82,7 @@ while not b.is_game_over():
         
         b.push([nextplayercolor, x, y])
         game_board.clear_board(b)
-        print(b)
+        # print(b)
         (nbB, nbW) = b.get_nb_pieces()
         game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
         availMove = None

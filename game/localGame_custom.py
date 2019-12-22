@@ -2,7 +2,7 @@
 
 from game.board import Reversi
 from player.ai import ShittyLevelPlayer, BeginnerLevelPlayer, BeginnerLevelPlayer2, RandomPlayer
-import player.ai.AlphaBetaPlayer as myPlayer
+from player.ai import AlphaBetaPlayer as myPlayer
 import time
 from io import StringIO
 import sys

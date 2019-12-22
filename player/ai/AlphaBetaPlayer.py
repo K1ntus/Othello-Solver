@@ -84,7 +84,7 @@ class myPlayer(PlayerInterface):
 #             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
             print("Special depth For Prunning: ", nb1+nb2)
             (val, move) = AlphaBeta.__alpha_beta_main_wrapper__(player=self,
-                                                                depth=10, 
+                                                                depth=self._board._boardsize * self._board._boardsize - (nb1+nb2), 
                                                                 Parallelization=False,
                                                                 BloomCheckerFirst=False)
            
