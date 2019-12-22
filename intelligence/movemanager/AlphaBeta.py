@@ -40,7 +40,7 @@ class AlphaBeta:
 
     @staticmethod
     def __alpha__():
-        return 0
+        return -100000
     
     @staticmethod
     def __beta__():
