@@ -10,6 +10,12 @@ WIDTH = 9
 HEIGHT = 9
 
 class myPlayer(PlayerInterface):
+    '''
+    An AI that should not be used. It is currently an odd implementation
+    of tree search for a good move.
+    
+    Kinda Deprecated AI, so he will not be commented.
+    '''
 
     def __init__(self):
         self._board = Reversi.Board(10)

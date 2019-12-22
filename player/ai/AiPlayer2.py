@@ -5,8 +5,14 @@ from game.board import ReversiBit
 from player.playerInterface import *
 from random import randint
 
-class myPlayer(PlayerInterface):
+import intelligence.heuristics.eval as eval
+import helpers.playerHelper as playerHelper
+import helpers.boardHelper as boardHelper
 
+'''AI Implementing a Negamax ABS'''
+class myPlayer(PlayerInterface):
+    _NotSTABLE=0
+    _STABLE=1
     def __init__(self):
         self._board = ReversiBit.Board(10)
         self._mycolor = None

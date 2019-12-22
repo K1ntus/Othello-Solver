@@ -3,11 +3,19 @@ import sys
 import time
 
 from game.board import Reversi
-import player.ai.AlphaBetaPlayer as myPlayer
-import player.ai.AiPlayer1 as Enemy1
+# import player.ai.AiPlayer1 as myPlayer
+import player.ai.AiPlayer1 as myPlayer
+import player.ai.AlphaBetaPlayer as Enemy1
 from ui.ui import Gui
 
+'''
+This script implements a pygame script that
+will manage the display of the current board by
+showing cells occupied by White, Black or Empty.
 
+Current score for both players and there available
+moves.
+'''
 
 # import player.ai.RandomPlayer as Enemy1
 # import player.ai.BeginnerLevelPlayer2 as Enemy1
@@ -68,7 +76,6 @@ while not b.is_game_over():
     
     
     if(DISPLAY_MODE):
-        #si les available move sont mal affiches, mets a None. Je debuggerais qd je serais sur mon linux
         availMove = [m for m in players[nextplayer]._board.legal_moves()]
 
         (nbB, nbW) = b.get_nb_pieces()

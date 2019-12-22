@@ -11,13 +11,17 @@ WIDTH = 9
 HEIGHT = 9
 
 class myPlayer(PlayerInterface):
+    '''
+    Simple AI player that returns the move with will flip the most
+    higher number of token
+    '''
 
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Random Player"
+        return "Simple player"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

@@ -6,17 +6,17 @@ _BLACK = 1
 _WHITE = 2
 _EMPTY = 0
 
-# mark the case (x,y) as stable
-def markStable(stableBaord,x,y):
+# mark a copy version of stableBoard
+def markStable(stableBoard,x,y):
     key = ""+str(x)+""+str(y)
-    stableBaord.add(key)
+    stableBoard.add(key)
 
 
 # return isStable for a copy version of stableBoard
-def isStable(stableBaord,x,y):
+def isStable(stableBoard,x,y):
     key = ""+str(x)+""+str(y)
 
-    return key in stableBaord
+    return key in stableBoard
 
 
 def getOpColor(color):

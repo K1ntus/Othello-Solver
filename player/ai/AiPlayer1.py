@@ -20,10 +20,10 @@ import os
 MAX_WOKER = 10
 
 
-class myPlayer(PlayerInterface):
-    _NotSTABLE = 0
-    _STABLE = 1
 
+class myPlayer(PlayerInterface):
+    _NotSTABLE=0
+    _STABLE=1
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None

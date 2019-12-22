@@ -32,6 +32,7 @@ def getTotal(player, color):
     stabilityScore = StableStrategy.stability(player, color)
 
 
+    stabilityScore = StableStrategy.stability(player, color)
 
 
     # stabilityScore = 0

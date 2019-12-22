@@ -8,15 +8,17 @@ from random import randint
 
 class MoveManager(object):
     '''
-    classdocs
+    Basicly a class that was managing move, but almost only used now to contains constants
     '''
     
     @staticmethod
     def __AI_OPENING_MOVE_VALUE__():
+        """ return the number of pieces required until the end of the Beginning phase"""
         return 12
     
     @staticmethod
     def __AI_ENDGAME_VALUE__(board):
+        """ return the number of pieces required until the start of the End Phase"""
         return board._boardsize * board._boardsize - 10 #10 cells are free
     
 
@@ -29,6 +31,7 @@ class MoveManager(object):
 
     @staticmethod
     def MoveForGameBeginning(player, moves):
+        """Deprecated."""
         best_move = moves[randint(0,len(moves)-1)]
         max_value = player.getNumberPoints(best_move) + MoveManager.applyBiais(player._board, player._mycolor, best_move)
         for m in moves:
@@ -41,6 +44,7 @@ class MoveManager(object):
     
     @classmethod
     def applyBiais(self, _board, _mycolor, move):
+        """Deprecated."""
         (_, x, y) = move
         value = 0
         lr_border = False

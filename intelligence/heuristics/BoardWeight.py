@@ -1,6 +1,18 @@
 
 # A static table
 class BoardStaticWeight:
+    '''
+    Class that contains multiple fixed board weight.
+    Weight are usually working this way:
+    - Corner = highest score
+    - Next-To Corner = Lowest score
+    - Border = Good score
+    - Next-To Border = negative score
+    
+    By having such values, we prevent our ai to
+    make the opposite to use KillerMove and also
+    make ours capable of such killer moves
+    '''
     weightTable1 = [
         [200,    -100,    100,       8,      8,      8,      8,       100,      -100,     200],
         [-100,   -200,    -10,     -50,    -50,    -50,    -50,       -10,      -200,    -100],
@@ -83,13 +95,13 @@ class BoardStaticWeight:
 
     weightPreventKillerMove = [
         [ 0,  -500, 0,0,0,0,0,0,   -500,   0],
-        [-500, -1000,  5,   -50,   -50,   -50,   -50,   5,  -1000,  -500],
-        [0,5,0,0,0,0,0,0,5,0],
+        [-500, -1000,  50,   -50,   -50,   -50,   -50,   50,  -1000,  -500],
+        [0,50,0,0,0,0,0,0,5,0],
         [0,-50,0,0,0,0,0,0,-50,0],
         [0,-50,0,0,0,0,0,0,-50,0],
         [0,-50,0,0,0,0,0,0,-50,0],
         [0,-50,0,0,0,0,0,0,-50,0],
-        [0,5,0,0,0,0,0,0,5,0],
-        [-500, -1000,  5,   -50,   -50,   -50,   -50,   5,  -1000,  -500],
+        [0,50,0,0,0,0,0,0,5,0],
+        [-500, -1000,  50,   -50,   -50,   -50,   -50,   50,  -1000,  -500],
         [ 0,  -500, 0,0,0,0,0,0,   -500,   0],
         ]
