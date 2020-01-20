@@ -1,234 +1,165 @@
+#!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
 
-from multiprocessing import Queue, Process, Lock
-from random import randint
 import time
 
+from bloom import BloomFilter
 from bloom import __utils__ as Utils
 from game.board import Reversi
-from helpers import boardHelper as boardHelper
-from helpers import playerHelper as playerHelper
-import intelligence.heuristics.eval as eval
+from intelligence.movemanager.AlphaBeta import AlphaBeta
 from intelligence.movemanager.MoveManager import MoveManager
 from intelligence.movemanager.OpeningMove import OpeningMove
-from player.playerInterface import PlayerInterface
+from player.playerInterface import *
 
 
 class myPlayer(PlayerInterface):
-    _NotSTABLE=0
-    _STABLE=1
+    '''A more elaborated AI using a version of Alpha-Beta Pruning algorithm.
+    He also have some experimentals options of enabled (Usage of Bloom and Multiprocessing)
+    
+    Check moveManager method documentation for a more in-depth description.'''
+
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
-
+        self._BoardScore = None
+        
+        self._bloomTable = None
+        
+#         self.alphaBeta_instance = None
+        
+#         print(self._board)
+        
 
     def getPlayerName(self):
-        return "Player 1"
+        return "Alpha Beta Pruning player"
 
     def getPlayerMove(self):
+        
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
-            return (-1, -1)
+            return (-1,-1)
+        
         move = self.moveManager()
-#         print("play1 ai moves : ", moves)
-#         if(move is not None):
-#             move = moves[randint(0, len(moves) - 1)]
-#         else:
-#             try:
-#                 move = moves[0]
-#             except:
-#                 print("Moves list", moves)
-#                 return(0,0)
+            
         self._board.push(move)
-        print("I am playing ", move)
-        (c, x, y) = move
-        assert (c == self._mycolor)
+
+        (c,x,y) = move
+        assert(c==self._mycolor)
         print("My current board :")
         print(self._board)
-        return (x, y)
-    
-    
-    
+        return (x,y) 
 
-    def moveManager(self):
-        (nb1,nb2) = self._board.get_nb_pieces()   
-        val = 0
-        move = None
-        
-#         # Early-Game: Check opening move in a custom bloom filter
-        if(nb1+nb2 < MoveManager.__AI_OPENING_MOVE_VALUE__()): 
-            print("Check if ", Utils.HashingOperation.BoardToHashCode(self._board), "is present")
-            move = self._openingMover.GetMove(self._board)
-        # End-Game: Special depth alpha-beta
-        elif ((nb1+nb2) > MoveManager.__AI_ENDGAME_VALUE__(self._board)):   
-            print("Special depth For Prunning: ", nb1+nb2)
-            (move) = self.ia_NegamaxABSM(depth=3, BloomCheckerFirst=True, Parallelization=True)
-            
-        # Mid-Game: Usual Case. Alpha Beta. Can use the parallelization, or chose to check a bloom filter if a good board has already been find 
-        else:   
-            #Alpha and Beta should be set directly on the AlphaBeta class
-            (move) = self.ia_NegamaxABSM(depth=3, Parallelization=True)
-             
-             
-#         time.sleep(5)
-        # No move has been find, generate one with a simple heuristic
-        if move is None:    
-            print("")
-            print("")
-            print("Default value. No move has been found")
-            val = -7578748789
-            (move, _) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves()) 
-            
-        print("")
-        print("")
-        print("")
-        print("Val is:", val)
-        return move
-        
-
-    def playOpponentMove(self, x, y):
-        assert (self._board.is_valid_move(self._opponent, x, y))
-        # print("Opponent played ", (x, y))
+    def playOpponentMove(self, x,y):
+        assert(self._board.is_valid_move(self._opponent, x, y))
         self._board.push([self._opponent, x, y])
 
     def newGame(self, color):
         self._mycolor = color
-        self._openingMover = OpeningMove(self._mycolor)  
-        self._opponent = 1 if color == 2 else 2
+        if(color == self._board._BLACK):
+            print("Init Black Player ")
+        else:
+            print("Init White Player ")
+            
+        self._openingMover = OpeningMove(self._mycolor)        
+        self._opponent = 1 if color == 2 else 2        
+#         self.alphaBeta_instance = AlphaBeta()
+        self._bloomTable = BloomFilter(max_elements=5000, error_rate=0.01, filename=None, start_fresh=False)
 
     def endGame(self, winner):
         if self._mycolor == winner:
             print("I won!!!")
         else:
             print("I lost :(!!")
-            
-            
-    @staticmethod
-    def __CopyCurrentBoard__(player):
-        res = Reversi.Board(player._board._boardsize)        
-        
-        for x in range(0,res._boardsize,1):
-            for y in range(0,res._boardsize,1):
-                res._board[y][x] = player._board._board[y][x]
-                
-        return res
-            
-            
-            
-            
-    # negamax alpha beta sorted moves
-    def NegamaxABSM(self, depth, moveTested, board, alpha, beta, color, BloomCheckerFirst=False):        
-        sign = 1 if color == self._mycolor else -1
-        maximising = True
-        op_color = playerHelper.getOpColor(color)
-        if op_color is not self._mycolor:
-            maximising = False
-            
-        if depth == 0 or board.is_game_over():
-            return  (eval.getTotal(self,self._mycolor), moveTested)
-            # return eval.getTotalNegaMAx(self,color)
-        sortedMoves = boardHelper.getSortedMoves(board)
-        # sortedMoves = self._board.legal_moves()
-
-        # best = -10000
-        
-        for move in sortedMoves:
-            board.push(move)
-            (val, moveTested) = (self.NegamaxABSM(depth - 1, moveTested, board, -beta, -alpha, op_color))
-            val=-val
-            # best = max(best, val)
-            board.pop()
-            if maximising:
-                if(val > alpha):
-                    alpha = val
-                if(beta <= alpha):
-                    break
-            else:
-                if(val < beta):
-                    alpha = val
-                if(beta <= alpha):
-                    break
-                
-        return (alpha, moveTested)
 
 
-    def ia_NegamaxABSM(self, depth = 2, BloomCheckerFirst = False, Parallelization = False):        
-        alpha = 20
-        best = -10000
-        beta = 10000
-        best_shot = None
-        
-        q = Queue()
-        process_list = []
-        
-        list_of_equal_moves = []
-        moves = self._board.legal_moves()
-        for move in moves:
-            if(BloomCheckerFirst):
-                self._board.push(move)
-                hashValue = Utils.HashingOperation.BoardToHashCode(self._board)
-                self._board.pop() 
-                res_contain = self._bloomTable.__contains__(key=hashValue)
-                if(res_contain):
-                    bestscore = (eval.getTotal(self,self._mycolor),move)
-                    print("Find a table with the corresponding move, returning it", bestscore)  
-                    return [move]
-                    #remove the element from the bloom filter
-                    #auto return move ?
-            self._board.push(move)
-            # v = self.NegamaxABSM(depth, alpha, beta,self._mycolor)
-            
-            
-                
-            if(Parallelization): 
-                if(__name__ == '__main__'):           
-                    proc = Process(target=self.NegamaxABSM, args=(depth, move, myPlayer.__CopyCurrentBoard__(self), alpha, beta, playerHelper.getOpColor(self._mycolor), BloomCheckerFirst))
-                    proc.start()
-                    process_list.append({proc:move})
-                else:
-                    (v, _) = self.NegamaxABSM(depth, move, self._board, alpha, beta,playerHelper.getOpColor(self._mycolor))
-                    if v > best or best_shot is None:
-                        best = v
-                        best_shot = move
-                        list_of_equal_moves = [move]
-                    elif v == best:
-                        list_of_equal_moves.append(move)
-                    
-            else:
-                (v, _) = self.NegamaxABSM(depth, move, self._board, alpha, beta,playerHelper.getOpColor(self._mycolor), BloomCheckerFirst=BloomCheckerFirst)
-                if v > best or best_shot is None:
-                    best = v
-                    best_shot = move
-                    list_of_equal_moves = [move]
-                elif v == best:
-                    list_of_equal_moves.append(move)
-            self._board.pop()
-            
-            
-        
-                
-        if(Parallelization):
-#             tout=.5000
-#             tout = .5000/len(process_list)
-            for proc in process_list:
-                proc.join()
-            while q.qsize() > 0:
-                (v,move) = q.get()                
 
-                if v > best or best_shot is None:
-                    best = v
-                    best_shot = move
-                    list_of_equal_moves = [move]
-                elif v == best:
-                    list_of_equal_moves.append(move)
+    def moveManager(self):
+        """ define the way to calculate the next move depending of the number
+        of non-free tokens on the board.
+        
+        For the Early Game, if the sum of pieces is lower than a constant, then we are 
+        looking into a bloomtable containing a list of well-known Opening Move.
+        If one is find, we are playing this move.
+        
+        For the Mid-Game, we are doing a simple AlphaBeta Pruning over few depth.
+        Two experimental modes has been implemented, One using the parallelization
+        (which will create process only for the fist layer of AB) and another one
+        is using Bloom Filter. Both of them are currently not used, because we are
+        losing a bit of performance regarding the result we will obtain. The parallelization
+        will also reduce the pruning because we will not pass the alpha and beta value 
+        over process.
+        Concerning the BloomCheckerFirst, the goal was to instanciate every board that we saw
+        with a pretty high heuristic value while we are looking over the AB tree.
+        Unfortunatly, with the current implementation, we will instanciate these board, even
+        if it could lead to some wrong path.
+        
+        The End-Game is used when the number of pieces is greater than another constant. This phase
+        of the game currently have a lot less available move than the "mid-game", so we increased
+        the depth for the AB-pruning.
+        
+        
+        In case of problem (ie. no moves has been found, then None), We Generate a move using a simple
+        heuristic that will return the best move over the number of tokens flipped. This function/way of work
+        shall be replaced in the future.
+        """
+        
+        (nb1,nb2) = self._board.get_nb_pieces()   
+        val = 0
+        alphaBeta_instance = AlphaBeta()
+        
+        # Early-Game: Check opening move in a custom bloom filter
+        if(nb1+nb2 < MoveManager.__AI_OPENING_MOVE_VALUE__()): 
+            print("Check if ", Utils.HashingOperation.BoardToHashCode(self._board), "is present")
+            move = self._openingMover.GetMove(self._board)
             
+            if(move is None): #No Opening Move has been found, need to calculate the AB-pruning
+                (val, move) = alphaBeta_instance.__alpha_beta_main_wrapper__(player=self, 
+                                                                depth=3,
+                                                                Parallelization=False,
+                                                                BloomCheckerFirst=False)
             
-        return list_of_equal_moves[randint(0, len(list_of_equal_moves) - 1)]
-#         return list_of_equal_moves
-    
-    
+        # End-Game: Special depth alpha-beta
+        elif ((nb1+nb2) > MoveManager.__AI_ENDGAME_VALUE__(self._board)):   
+#             self._maxDepth = WIDTH*HEIGHT - (nb1+nb2)
+            print("Special depth For Pruning: ", nb1+nb2)
+            (val, move) = alphaBeta_instance.__alpha_beta_main_wrapper__(player=self,
+                                                                depth=self._board._boardsize * self._board._boardsize - (nb1+nb2), 
+                                                                Parallelization=False,
+                                                                BloomCheckerFirst=False)
+           
+        # Mid-Game: Usual Case. Alpha Beta. Can use the parallelization, or chose to check a bloom filter if a good board has already been find 
+        else:   
+            #Alpha and Beta should be set directly on the AlphaBeta class
+            (val, move) = alphaBeta_instance.__alpha_beta_main_wrapper__(player=self, 
+                                                                depth=3,
+                                                                Parallelization=False,
+                                                                BloomCheckerFirst=False)
+            
+        # No move has been find, generate one with a simple heuristic
+        if move is None:    
+            print("")
+            print("")
+            print("Default value. No move has been found")
+            val = -7578748789
+#             time.sleep(1)
+            (move, _) = MoveManager.MoveForGameBeginning(self, self._board.legal_moves()) 
+            
+        print("")
+        print("")
+        print("")
+        print("Val is:", val)
+#         time.sleep(1)
+        return move
+        
+
+
     #bullshit
     def getNumberPoints(self, move):
+        """ Deprecated.
+        Used by the MoveManager if no move has been found, we need to keep it while we do not
+        have replaced the way to prevent None move.
+        """
         (current_point_white, current_point_black) = self._board.get_nb_pieces()
         self._board.push(move)
         (new_point_white, new_point_black) = self._board.get_nb_pieces()
@@ -241,6 +172,3 @@ class myPlayer(PlayerInterface):
 
 
 
-
-    
-    

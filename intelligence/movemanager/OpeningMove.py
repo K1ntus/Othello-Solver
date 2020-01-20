@@ -61,8 +61,8 @@ class OpeningMove:
 #                 print("Adding: ", updatedBoardHashValue, " -> ", Utils.HashingOperation.board_to_str(board), flush=True)
                 move.append(m)
                 find_a_move = True
-            else:
-                print(Utils.HashingOperation.board_to_str(board), " -> ", updatedBoardHashValue)
+#             else:
+#                 print(Utils.HashingOperation.board_to_str(board), " -> ", updatedBoardHashValue)
             board.pop()
         if(find_a_move):
             return move[randint(0,len(move)-1)]

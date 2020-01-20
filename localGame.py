@@ -1,27 +1,9 @@
+import Reversi
+import myPlayer
+import player.ai.RandomPlayer as enemyPlayer
+import time
 from io import StringIO
 import sys
-import time
-
-from game.board import Reversi
-# import player.ai.AiPlayer1 as myPlayer
-import player.ai.AiPlayer1 as myPlayer
-import player.ai.AlphaBetaPlayer as Enemy1
-from ui.ui import Gui
-
-'''
-This script implements a pygame script that
-will manage the display of the current board by
-showing cells occupied by White, Black or Empty.
-
-Current score for both players and there available
-moves.
-'''
-
-# import player.ai.RandomPlayer as Enemy1
-# import player.ai.BeginnerLevelPlayer2 as Enemy1
-# import player.ai.AlphaBetaPlayer as Enemy1localGame.py
-
-DISPLAY_MODE=False
 
 b = Reversi.Board(10)
 
@@ -29,8 +11,7 @@ players = []
 player1 = myPlayer.myPlayer()
 player1.newGame(b._BLACK)
 players.append(player1)
-# player2 = myPlayer.myPlayer()
-player2 = Enemy1.myPlayer()
+player2 = enemyPlayer.myPlayer()
 player2.newGame(b._WHITE)
 players.append(player2)
 
@@ -38,11 +19,6 @@ totalTime = [0,0] # total real time for each player
 nextplayer = 0
 nextplayercolor = b._BLACK
 nbmoves = 1
-game_board = None
-if(DISPLAY_MODE):
-    game_board = Gui()
-    game_board.show_game()
-    time.sleep(1)
 
 outputs = ["",""]
 sysstdout= sys.stdout
@@ -50,10 +26,10 @@ stringio = StringIO()
 
 print(b.legal_moves())
 while not b.is_game_over():
-#     print("Referee Board:")
-#     print(b)
-#     print("Before move", nbmoves)
-#     print("Legal Moves: ", b.legal_moves())
+    print("Referee Board:")
+    print(b)
+    print("Before move", nbmoves)
+    print("Legal Moves: ", b.legal_moves())
     nbmoves += 1
     otherplayer = (nextplayer + 1) % 2
     othercolor = b._BLACK if nextplayercolor == b._WHITE else b._WHITE
@@ -73,34 +49,13 @@ while not b.is_game_over():
         print(otherplayer, nextplayer, nextplayercolor)
         print("Problem: illegal move")
         break
-    
-    
-    if(DISPLAY_MODE):
-        availMove = [m for m in players[nextplayer]._board.legal_moves()]
-
-        (nbB, nbW) = b.get_nb_pieces()
-        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
-        
-        b.push([nextplayercolor, x, y])
-        game_board.clear_board(b)
-        print(b)
-        (nbB, nbW) = b.get_nb_pieces()
-        game_board.update(board=b, blacks=nbB, whites=nbW, availMove=availMove, current_player_color=nextplayercolor)
-        availMove = None
-    else:        
-        b.push([nextplayercolor, x, y])
-        
+    b.push([nextplayercolor, x, y])
     players[otherplayer].playOpponentMove(x,y)
-    
-    
-    
 
     nextplayer = otherplayer
     nextplayercolor = othercolor
-    
-#     time.sleep(5)
 
-    
+    print(b)
 
 print("The game is over")
 print(b)
@@ -113,6 +68,4 @@ elif nbblacks > nbwhites:
     print("BLACK")
 else:
     print("DEUCE")
-    
-time.sleep(1000)
 

@@ -132,8 +132,8 @@ class myPlayer(PlayerInterface):
         else:   
             #Alpha and Beta should be set directly on the AlphaBeta class
             (val, move) = alphaBeta_instance.__alpha_beta_main_wrapper__(player=self, 
-                                                                depth=4,
-                                                                Parallelization=True,
+                                                                depth=3,
+                                                                Parallelization=False,
                                                                 BloomCheckerFirst=False)
             
         # No move has been find, generate one with a simple heuristic
